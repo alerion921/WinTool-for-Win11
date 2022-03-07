@@ -989,7 +989,7 @@ $ultimateclean.Add_Click({
 
 $ultimatepower.Add_Click({
 Write-Host "Enabling and Activating Highest Performance Power Plan..."
-	Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool/blob/master/files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
+	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
 	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
 	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
     $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan" + "`r`n" + "`r`n" + "  Ready for Next Task"
@@ -1592,8 +1592,8 @@ $essentialtweaks.Add_Click({
     Write-Host "Running O&O Shutup with Recommended Settings"
     $ResultText.text += "`r`n" +"Running O&O Shutup with Recommended Settings"
     Import-Module BitsTransfer
-    Start-BitsTransfer -Source "https://raw.githubusercontent.com/alerion921/WinTool/master/files/ooshutup10.cfg" -Destination ooshutup10.cfg
-    Start-BitsTransfer -Source "https://github.com/alerion921/WinTool/blob/master/files/OOSU10.exe" -Destination OOSU10.exe
+    Start-BitsTransfer -Source "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/ooshutup10.cfg" -Destination ooshutup10.cfg
+    Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
     Write-Host "Disabling UAC..."
@@ -2699,7 +2699,7 @@ $gamingtweaks.Add_Click({
 
     Write-Host "Disabling High Precision Event Timer..."
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling High Precision Event Timer..."
-    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool/blob/master/files/SetTimerResolutionService.exe" -OutFile "$Env:windir\system32\SetTimerResolutionService.exe" -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/SetTimerResolutionService.exe" -OutFile "$Env:windir\system32\SetTimerResolutionService.exe" -ErrorAction SilentlyContinue
     New-Service -name "SetTimerResolutionService" -BinaryPathName "$Env:windir\system32\SetTimerResolutionService.exe" -StartupType Automatic | Out-Null -ErrorAction SilentlyContinue
     bcdedit /set x2apicpolicy Enable | Out-Null
     bcdedit /set configaccesspolicy Default | Out-Null
@@ -2722,8 +2722,8 @@ $gamingtweaks.Add_Click({
     $CheckGPU = wmic path win32_VideoController get name
     if(($CheckGPU -like "*GTX*") -or ($CheckGPU -like "*RTX*")) {
     Write-Host "NVIDIA GTX/RTX Card Detected! Applying Nvidia Power Tweaks..."
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool/master/files/BaseProfile.nip" -OutFile "$Env:windir\system32\BaseProfile.nip" -ErrorAction SilentlyContinue
-    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool/blob/master/files/nvidiaProfileInspector.exe" -OutFile "$Env:windir\system32\nvidiaProfileInspector.exe" -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/BaseProfile.nip" -OutFile "$Env:windir\system32\BaseProfile.nip" -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/nvidiaProfileInspector.exe" -OutFile "$Env:windir\system32\nvidiaProfileInspector.exe" -ErrorAction SilentlyContinue
     Push-Location
     set-location "$Env:windir\system32\"
     nvidiaProfileInspector.exe /s -load "BaseProfile.nip"
