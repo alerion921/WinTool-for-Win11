@@ -801,10 +801,10 @@ $getosinfo.Add_Click({
     $myIP=(Invoke-WebRequest -uri "https://api.ipify.org/").Content
     $licence=(Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
 
-    $ResultText.text =  "`r`n" + "  Welcome: " + $env:UserName + "`r`n"+ "`r`n"+ "`r`n" + 
-                        "  System Information: " + "`r`n" + 
+    $ResultText.text =  "`r`n" + 
+                        "  Username: " + $env:UserName + "`r`n" + 
                         "  OS: " + $name, "`r`n" + 
-                        "  Architechture: " + $bit, "`r`n" + 
+                        "  Architechture: " + $bit, "`r`n" +
                         "  Build: " + $ver, "`r`n" + 
                         "  External IP: " + $myIP, "`r`n" + 
                         "  Licence: " + $licence
