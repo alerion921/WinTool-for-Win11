@@ -880,7 +880,14 @@ $_Press_Enter
 $wingetupdate.Add_Click({
     Write-Host "Updating all Winget Apps (Applications supported by Winget, if you are unsure you could always check winget.run)"
     $ResultText.text = "`r`n" +"`r`n" + "  Updating all Winget Apps (Applications supported by Winget, if you are unsure you could always check winget.run)"
-    Start-Process cmd.exe -ArgumentList "/C winget upgrade --all" 
+    $UpgradeScript = {
+        $name='Winget Upgrader - Offload Process'
+         $host.ui.RawUI.WindowTitle = $name
+         Write-Host "This offload process makes the WinTool app not crash.."
+         cmd /C winget upgrade --all
+       }
+       
+    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $UpgradeScript" 
     if($?) { Write-Host "Finished Updating Winget Applets" }
     $ResultText.text = "`r`n" + "  Finished Updating Winget Applets" + "`r`n" + "`r`n" + "  Ready for Next Task"
 })
@@ -2944,7 +2951,7 @@ $securitypatches.Add_Click({
 	Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
 	Set-SmbServerConfiguration -EnableSMB2Protocol $false -Force
 
-    Start-Job -Name "PowerShell Hardening" -ScriptBlock {
+    <#Start-Job -Name "PowerShell Hardening" -ScriptBlock {
         #Disable Powershell v2
         Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2Root" -NoRestart
         Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2" -NoRestart
@@ -2961,12 +2968,12 @@ $securitypatches.Add_Click({
         Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging\" -Name "EnableScriptBlockLogging" -Type "DWORD" -Value "1" -Force
         Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription\" -Name "EnableTranscripting" -Type "DWORD" -Value "1" -Force
         Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription\" -Name "EnableInvocationHeader" -Type "DWORD" -Value "1" -Force
-    
+        
         #Prevent WinRM from using Basic Authentication
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client" -Name "AllowBasic" -Type "DWORD" -Value 0 -Force
     
         $ResultText.text = "`r`n" +"`r`n" + "  Powershell security patches has been applied..."
-    }
+    }#>
     
     #Windows Defender Configuration Files
     New-Item -Path "C:\" -Name "Temp" -ItemType "directory" -Force | Out-Null; New-Item -Path "C:\temp\" -Name "Windows Defender" -ItemType "directory" -Force | Out-Null; Copy-Item -Path .\Files\"Windows Defender Configuration Files"\* -Destination "C:\temp\Windows Defender\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
