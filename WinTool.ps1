@@ -885,7 +885,7 @@ $wingetupdate.Add_Click({
          $host.ui.RawUI.WindowTitle = $name
          Write-Host "You can still use WinTool to do other tasks while this is running..."
          Write-Host "Thats why this script now got its own process."
-         /C winget upgrade --all
+         cmd /C winget upgrade --all
        }
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $UpgradeScript" 
