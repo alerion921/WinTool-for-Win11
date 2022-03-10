@@ -1,8 +1,10 @@
 Some credits here to:
 https://github.com/christitustech
 https://github.com/DaddyMadu
+https://github.com/simeononsecurity
+https://github.com/gordonbay
 
-Since this started out as a fork from ChrisTitusTech but it has been heavily modified since..
+Since this started out as a fork from ChrisTitusTech i give credit but it has been heavily modified since.. so it does not qualify as a fork no more since i have added countless improvements...
 
 Paste this command into Powershell (admin):
 ```
