@@ -880,9 +880,20 @@ $_Press_Enter
 $wingetupdate.Add_Click({
     Write-Host "Updating all Winget Apps (Applications supported by Winget, if you are unsure you could always check winget.run)"
     $ResultText.text = "`r`n" +"`r`n" + "  Updating all Winget Apps (Applications supported by Winget, if you are unsure you could always check winget.run)"
-    Start-Process cmd.exe -ArgumentList "/C winget upgrade --all" 
-    if($?) { Write-Host "Finished Updating Winget Applets" }
-    $ResultText.text = "`r`n" + "  Finished Updating Winget Applets" + "`r`n" + "`r`n" + "  Ready for Next Task"
+    $UpgradeScript = {
+        $name='Winget Upgrade - Standalone Window...'
+         $host.ui.RawUI.WindowTitle = $name
+         Write-Host "You can still use WinTool to do other tasks while this is running..."
+         Write-Host "Thats why this script now got its own process."
+         /C winget upgrade --all
+       }
+       
+    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $UpgradeScript" 
+    if($UpgradeScript) { 
+        Write-Host "Finished Updating Winget Applets" 
+        $ResultText.text = "`r`n" + "  Finished Updating Winget Applets" + "`r`n" + "`r`n" + "  Ready for Next Task"
+    }
+    
 })
     
 $sfcscan.Add_Click({
