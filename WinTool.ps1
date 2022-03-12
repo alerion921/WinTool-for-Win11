@@ -970,7 +970,7 @@ Function Get-FileSize([string[]]$Array) {
     
     Foreach($String in $Array){
         $FolderInfo = Get-ChildItem -Recurse $String
-        $totalSize = "{0:N2}" -f (($FolderInfo | Measure-Object -Property Length -Sum -ErrorAction Stop).Sum / 1gb)
+        $totalSize = "{0:N2}" -f (($FolderInfo | Measure-Object -Property Length -Sum -ErrorAction Stop).Sum / 1MB)
         $Output.add($String, $totalSize)
     }
     $Output.add("Total", "{0:N2}" -f ($Output.Values | Measure-Object -Sum).Sum)
@@ -979,21 +979,20 @@ Function Get-FileSize([string[]]$Array) {
 
 $ultimateclean.Add_Click({
 
-    Get-FileSize "$RecycleBin",
-    "$env:windir\SoftwareDistribution\",
-    "$env:windir\System32\LogFiles\", 
-    "$env:systemdrive\Users\$user\AppData\Local\Temp\",
-    "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\",
-    "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\AppCache\",
-    "$env:systemdrive\Users\$user\cookies\",
-    "$env:systemdrive\Users\$user\Local Settings\Temporary Internet Files\",
-    "$env:systemdrive\Users\$user\recent\",
+    Get-FileSize "$RecycleBin","$env:windir\SoftwareDistribution\","$env:windir\System32\LogFiles\"
+<#
+    "$env:userprofile\AppData\Local\Temp\",
+    "$env:userprofile\AppData\Local\Microsoft\Windows\WER\",
+    "$env:userprofile\AppData\Local\Microsoft\Windows\AppCache\",
+    "$env:userprofile\cookies\",
+    "$env:userprofile\Local Settings\Temporary Internet Files\",
+    "$env:userprofile\recent\",
     "$env:systemdrive\Temp\",
     "$env:windir\Temp\",
     "$env:windir\Prefetch\",
     "$env:windir\Logs\CBS\",
     "$env:ProgramData\Microsoft\Windows\WER\",
-    "$env:systemdrive\Windows.old"
+    "$env:systemdrive\Windows.old"#>
 
     # Create list of users
     Write-Host -ForegroundColor Green "Getting the list of Users`n"
@@ -1019,13 +1018,13 @@ $ultimateclean.Add_Click({
     Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:windir\Logs\CBS\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:ProgramData\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-    Remove-Item -Path "$env:systemdrive\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    <#Remove-Item -Path "$env:systemdrive\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:systemdrive\*._mp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:systemdrive\*.log" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:systemdrive\*.gid" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:systemdrive\*.chk" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     Remove-Item -Path "$env:systemdrive\*.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-    Remove-Item -Path "$env:windir\*.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:windir\*.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose#>
     Remove-Item -Path "$env:systemdrive\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
     # Only grab log files sitting in the root of the Logfiles directory
