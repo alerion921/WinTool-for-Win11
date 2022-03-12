@@ -964,48 +964,76 @@ $dismfix.Add_Click({
     $ResultText.text = "`r`n" + "  If the system had corrupt files and they have been successfully restored you should get a message in the new window that opened up" + "`r`n" + "`r`n" + "  Ready for Next Task"
 })
 
+Function Get-FileSize([string[]]$Array) {
+
+    $Output = @{}
+    
+    Foreach($String in $Array){
+        $FolderInfo = Get-ChildItem -Recurse $String
+        $totalSize = "{0:N2}" -f (($FolderInfo | Measure-Object -Property Length -Sum -ErrorAction Stop).Sum / 1gb)
+        $Output.add($String, $totalSize)
+    }
+    $Output.add("Total", "{0:N2}" -f ($Output.Values | Measure-Object -Sum).Sum)
+    $Output
+    }
+
 $ultimateclean.Add_Click({
+
+    Get-FileSize "$RecycleBin",
+    "$env:windir\SoftwareDistribution\",
+    "$env:windir\System32\LogFiles\", 
+    "$env:systemdrive\Users\$user\AppData\Local\Temp\",
+    "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\",
+    "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\AppCache\",
+    "$env:systemdrive\Users\$user\cookies\",
+    "$env:systemdrive\Users\$user\Local Settings\Temporary Internet Files\",
+    "$env:systemdrive\Users\$user\recent\",
+    "$env:systemdrive\Temp\",
+    "$env:windir\Temp\",
+    "$env:windir\Prefetch\",
+    "$env:windir\Logs\CBS\",
+    "$env:ProgramData\Microsoft\Windows\WER\",
+    "$env:systemdrive\Windows.old"
 
     # Create list of users
     Write-Host -ForegroundColor Green "Getting the list of Users`n"
-    $Users = Get-ChildItem "C:\Users" | Select-Object Name
+    $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
     $users = $Users.Name 
 
     # Clear User Temp Folders
     Write-Host -ForegroundColor Yellow "Clearing User Temp Folders`n"
     Foreach ($user in $Users) {
-        Remove-Item -Path "C:\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\AppCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "C:\Users\$user\cookies\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "C:\Users\$user\Local Settings\Temporary Internet Files\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "C:\Users\$user\recent\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\AppCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Users\$user\cookies\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Users\$user\Local Settings\Temporary Internet Files\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Users\$user\recent\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     }
     Write-Host -ForegroundColor Yellow "Done...`n"
 
     # Clear Windows Temp Folder
     Write-Host -ForegroundColor Yellow "Clearing Windows Temp, Logs and Prefetch Folders`n"
-    Foreach ($user in $Users) {
-        #Remove-Item -Path "C:\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:windir\Logs\CBS\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:ProgramData\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\*._mp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\*.log" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\*.gid" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\*.chk" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\*.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:windir\*.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        Remove-Item -Path "$env:systemdrive\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:windir\Logs\CBS\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:ProgramData\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\*._mp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\*.log" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\*.gid" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\*.chk" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\*.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:windir\*.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    Remove-Item -Path "$env:systemdrive\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
-        # Only grab log files sitting in the root of the Logfiles directory
-        $Sys32Files = Get-ChildItem -Path "$env:windir\System32\LogFiles" | Where-Object { ($_.name -like "*.log")}
-        foreach ($File in $Sys32Files) {
-            Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
-        }
+    # Only grab log files sitting in the root of the Logfiles directory
+    $Sys32Files = Get-ChildItem -Path "$env:windir\System32\LogFiles" | Where-Object { ($_.name -like "*.log")}
+    foreach ($File in $Sys32Files) {
+        Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
     }
+    
     Write-Host -ForegroundColor Yellow "Done...`n"        
 
      # Get the size of the Windows Updates folder (SoftwareDistribution)
@@ -1085,7 +1113,9 @@ $ultimateclean.Add_Click({
         Write-Host -ForegroundColor Green "Done`n `n"
     }
 
-    $CleanKnownTemp = Read-Host "Clear all known locations for temp files? (Y/N)"
+   
+
+    <#$CleanKnownTemp = Read-Host "Clear all known locations for temp files? (Y/N)"
 
     if ($CleanKnownTemp -eq 'Y') {
         $TempFileLocation = "$env:windir\Temp", "$env:TEMP", "$env:windir\prefetch\", "$env:SystemDrive\recycled\*.*", "$env:SystemDrive\recycled\*.*", "$env:userprofile\cookies\*.*", "$env:userprofile\Local Settings\Temporary Internet Files\*.*", "$env:userprofile\recent\*.*", "$env:userprofile\cookies\*.*"
@@ -1102,7 +1132,9 @@ $ultimateclean.Add_Click({
             Write-Host "Cleared $TempFileCount files from diffrent temporary locations.. Total deleted: $TempFolderSize"
             $ResultText.text = "`r`n" + "`r`n" + "  Cleared $TempFileCount files from diffrent temporary locations.." + "`r`n" + "Total deleted: $TempFolderSize"
         }
-    }
+    }#>
+    
+    
 
     <#$OffloadScript = {
         $name='Ultimate Cleaner Offload Process'
