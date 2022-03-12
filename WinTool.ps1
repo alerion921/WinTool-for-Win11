@@ -966,7 +966,7 @@ $dismfix.Add_Click({
 
 $ultimateclean.Add_Click({
 
-    $ResultText.text = "`r`n" +"`r`n" + "  Running Ultimate Cleaning... Please Wait" 
+    <#$ResultText.text = "`r`n" +"`r`n" + "  Running Ultimate Cleaning... Please Wait" 
 
     $TempFileLocation = "$env:windir\Temp", "$env:TEMP", "$env:windir\prefetch\", "$env:SystemDrive\recycled\*.*", "$env:SystemDrive\recycled\*.*", "$env:userprofile\cookies\*.*", "$env:userprofile\Local Settings\Temporary Internet Files\*.*", "$env:userprofile\recent\*.*", "$env:userprofile\cookies\*.*"
     $TempFile = Get-ChildItem $TempFileLocation -Recurse
@@ -981,7 +981,7 @@ $ultimateclean.Add_Click({
         $TempFile | Remove-Item -Confirm:$false -Recurse -Force -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         Write-Host "Cleared $TempFileCount files from diffrent temporary locations.. Total deleted: $TempFolderSize"
         $ResultText.text = "`r`n" + "`r`n" + "  Cleared $TempFileCount files from diffrent temporary locations.." + "`r`n" + "Total deleted: $TempFolderSize"
-    }
+    }#>
 
     $OffloadScript = {
         $name='Ultimate Cleaner Offload Process'
@@ -996,7 +996,15 @@ $ultimateclean.Add_Click({
          cmd /C del /f /s /q %systemdrive%\*.old
          cmd /C del /f /s /q %windir%\*.bak
          cmd /C rmdir /s /q c:\Windows.old#>
-         Remove-Item -Path "%systemdrive%\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\*.tmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\*._mp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\*.log -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\*.gid -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\*.chk -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\*.old -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %windir%\*.bak -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path %systemdrive%\Windows.old -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
 
        }
        
