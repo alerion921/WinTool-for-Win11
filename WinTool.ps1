@@ -988,14 +988,16 @@ $ultimateclean.Add_Click({
          $host.ui.RawUI.WindowTitle = $name
          Write-Host "This offload process makes the WinTool app not crash.."
          Write-Host "Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists.."
-         cmd /C del /f /s /q %systemdrive%\*.tmp
+         <#cmd /C del /f /s /q %systemdrive%\*.tmp
          cmd /C del /f /s /q %systemdrive%\*._mp
          cmd /C del /f /s /q %systemdrive%\*.log
          cmd /C del /f /s /q %systemdrive%\*.gid
          cmd /C del /f /s /q %systemdrive%\*.chk
          cmd /C del /f /s /q %systemdrive%\*.old
          cmd /C del /f /s /q %windir%\*.bak
-         cmd /C rmdir /s /q c:\Windows.old
+         cmd /C rmdir /s /q c:\Windows.old#>
+         Remove-Item -Path "%systemdrive%\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
        }
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript" 
