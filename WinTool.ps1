@@ -966,49 +966,160 @@ $dismfix.Add_Click({
 
 $ultimateclean.Add_Click({
 
-    <#$ResultText.text = "`r`n" +"`r`n" + "  Running Ultimate Cleaning... Please Wait" 
+    # Create list of users
+    Write-Host -ForegroundColor Green "Getting the list of Users`n"
+    $Users = Get-ChildItem "C:\Users" | Select-Object Name
+    $users = $Users.Name 
 
-    $TempFileLocation = "$env:windir\Temp", "$env:TEMP", "$env:windir\prefetch\", "$env:SystemDrive\recycled\*.*", "$env:SystemDrive\recycled\*.*", "$env:userprofile\cookies\*.*", "$env:userprofile\Local Settings\Temporary Internet Files\*.*", "$env:userprofile\recent\*.*", "$env:userprofile\cookies\*.*"
-    $TempFile = Get-ChildItem $TempFileLocation -Recurse
-    $TempFileCount = ($TempFile).count
-    $TempFolderSize = "{0:n2}" -f ((Get-ChildItem $TempFileLocation -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB) + "mb"
-
-    if($TempFileCount -eq "0") { 
-        Write-Host "There are no files in the folder $TempFileLocation"
-        $ResultText.text = "`r`n" +"`r`n" + "  There are no files to delete in the folders $TempFileLocation"
+    # Clear User Temp Folders
+    Write-Host -ForegroundColor Yellow "Clearing User Temp Folders`n"
+    Foreach ($user in $Users) {
+        Remove-Item -Path "C:\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\AppCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Users\$user\cookies\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Users\$user\Local Settings\Temporary Internet Files\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Users\$user\recent\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
     }
-    Else {
-        $TempFile | Remove-Item -Confirm:$false -Recurse -Force -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        Write-Host "Cleared $TempFileCount files from diffrent temporary locations.. Total deleted: $TempFolderSize"
-        $ResultText.text = "`r`n" + "`r`n" + "  Cleared $TempFileCount files from diffrent temporary locations.." + "`r`n" + "Total deleted: $TempFolderSize"
-    }#>
+    Write-Host -ForegroundColor Yellow "Done...`n"
 
-    $OffloadScript = {
+    # Clear Windows Temp Folder
+    Write-Host -ForegroundColor Yellow "Clearing Windows Temp, Logs and Prefetch Folders`n"
+    Foreach ($user in $Users) {
+        #Remove-Item -Path "C:\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:windir\Logs\CBS\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:ProgramData\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\*.tmp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\*._mp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\*.log" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\*.gid" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\*.chk" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\*.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:windir\*.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemdrive\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
+        # Only grab log files sitting in the root of the Logfiles directory
+        $Sys32Files = Get-ChildItem -Path "$env:windir\System32\LogFiles" | Where-Object { ($_.name -like "*.log")}
+        foreach ($File in $Sys32Files) {
+            Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
+        }
+    }
+    Write-Host -ForegroundColor Yellow "Done...`n"        
+
+     # Get the size of the Windows Updates folder (SoftwareDistribution)
+     $WUfoldersize = (Get-ChildItem "$env:windir\SoftwareDistribution" -Recurse | Measure-Object Length -s).sum / 1Gb
+
+     # Ask the user if they would like to clean the Windows Update folder
+     #if ($WUfoldersize -gt 0.5) {
+         Write-Host "The Software Distribution folder is" ("{0:N2} GB" -f $WUFoldersize)
+         $CleanWU = Read-Host "Do you want clean the Software Distribution folder and reset Windows Updates? (Y/N)"
+     #}
+
+    if ($CleanWU -eq 'Y') { 
+        Write-Host -ForegroundColor Yellow "Restarting Windows Update Service and Deleting SoftwareDistribution Folder`n"
+        # Stop the Windows Update service
+        try {
+            Stop-Service -Name wuauserv
+        }
+        catch {
+            $ErrorMessage = $_.Exception.Message
+            Write-Warning "$ErrorMessage" 
+        }
+        # Delete the folder
+        Remove-Item "$env:windir\SoftwareDistribution" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Start-Sleep -s 3
+
+        # Start the Windows Update service
+        try {
+            Start-Service -Name wuauserv
+        }
+        catch {
+            $ErrorMessage = $_.Exception.Message
+            Write-Warning "$ErrorMessage" 
+        }
+        Write-Host -ForegroundColor Yellow "Done..."
+        Write-Host -ForegroundColor Yellow "Please rerun Windows Update to pull down the latest updates `n"
+    }
+
+    $CleanBin = Read-Host "Would you like to empty the Recycle Bin for All Users? (Y/N)"
+    
+    if ($Cleanbin -eq 'Y') {
+        Write-Host -ForegroundColor Green "Cleaning Recycle Bin`n"
+        $ErrorActionPreference = 'SilentlyContinue'
+        $RecycleBin = "C:\`$Recycle.Bin"
+        $BinFolders = Get-ChildItem $RecycleBin -Directory -Force
+
+        Foreach ($Folder in $BinFolders) {
+            # Translate the SID to a User Account
+            $objSID = New-Object System.Security.Principal.SecurityIdentifier ($folder)
+            try {
+                $objUser = $objSID.Translate( [System.Security.Principal.NTAccount])
+                Write-Host -Foreground Yellow -Background Black "Cleaning $objUser Recycle Bin"
+            }
+            # If SID cannot be Translated, Throw out the SID instead of error
+            catch {
+                $objUser = $objSID.Value
+                Write-Host -Foreground Yellow -Background Black "$objUser"
+            }
+            $Files = @()
+
+            if ($PSVersionTable.PSVersion -Like "*2*") {
+                $Files = Get-ChildItem $Folder.FullName -Recurse -Force
+            }
+            else {
+                $Files = Get-ChildItem $Folder.FullName -File -Recurse -Force
+                $Files += Get-ChildItem $Folder.FullName -Directory -Recurse -Force
+            }
+
+            $FileTotal = $Files.Count
+
+            for ($i = 1; $i -le $Files.Count; $i++) {
+                $FileName = Select-Object -InputObject $Files[($i - 1)]
+                Write-Progress -Activity "Recycle Bin Clean-up" -Status "Attempting to Delete File [$i / $FileTotal]: $FileName" -PercentComplete (($i / $Files.count) * 100) -Id 1
+                Remove-Item -Path $Files[($i - 1)].FullName -Recurse -Force
+            }
+            Write-Progress -Activity "Recycle Bin Clean-up" -Status "Complete" -Completed -Id 1
+        }
+        Write-Host -ForegroundColor Green "Done`n `n"
+    }
+
+    $CleanKnownTemp = Read-Host "Clear all known locations for temp files? (Y/N)"
+
+    if ($CleanKnownTemp -eq 'Y') {
+        $TempFileLocation = "$env:windir\Temp", "$env:TEMP", "$env:windir\prefetch\", "$env:SystemDrive\recycled\*.*", "$env:SystemDrive\recycled\*.*", "$env:userprofile\cookies\*.*", "$env:userprofile\Local Settings\Temporary Internet Files\*.*", "$env:userprofile\recent\*.*", "$env:userprofile\cookies\*.*"
+        $TempFile = Get-ChildItem $TempFileLocation -Recurse
+        $TempFileCount = ($TempFile).count
+        $TempFolderSize = "{0:n2}" -f ((Get-ChildItem $TempFileLocation -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB) + "mb"
+
+        if($TempFileCount -eq "0") { 
+            Write-Host "There are no files in the folder $TempFileLocation"
+            $ResultText.text = "`r`n" +"`r`n" + "  There are no files to delete in the folders $TempFileLocation"
+        }
+        Else {
+            $TempFile | Remove-Item -Confirm:$false -Recurse -Force -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            Write-Host "Cleared $TempFileCount files from diffrent temporary locations.. Total deleted: $TempFolderSize"
+            $ResultText.text = "`r`n" + "`r`n" + "  Cleared $TempFileCount files from diffrent temporary locations.." + "`r`n" + "Total deleted: $TempFolderSize"
+        }
+    }
+
+    <#$OffloadScript = {
         $name='Ultimate Cleaner Offload Process'
          $host.ui.RawUI.WindowTitle = $name
          Write-Host "This offload process makes the WinTool app not crash.."
          Write-Host "Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists.."
-         <#cmd /C del /f /s /q %systemdrive%\*.tmp
+         cmd /C del /f /s /q %systemdrive%\*.tmp
          cmd /C del /f /s /q %systemdrive%\*._mp
          cmd /C del /f /s /q %systemdrive%\*.log
          cmd /C del /f /s /q %systemdrive%\*.gid
          cmd /C del /f /s /q %systemdrive%\*.chk
          cmd /C del /f /s /q %systemdrive%\*.old
          cmd /C del /f /s /q %windir%\*.bak
-         cmd /C rmdir /s /q c:\Windows.old#>
-         Remove-Item -Path %systemdrive%\*.tmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %systemdrive%\*._mp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %systemdrive%\*.log -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %systemdrive%\*.gid -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %systemdrive%\*.chk -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %systemdrive%\*.old -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %windir%\*.bak -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path %systemdrive%\Windows.old -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-
-
+         cmd /C rmdir /s /q c:\Windows.old
        }
        
-    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript" 
+    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript" #>
 })
 
 $ultimatepower.Add_Click({
