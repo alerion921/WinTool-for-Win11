@@ -1024,8 +1024,7 @@ $ultimateclean.Add_Click({
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                # Comment out the following line to remove the Chrome Write Font Cache too.
-                # Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\ChromeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\ChromeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
                 # Check Chrome Profiles. It looks as though when creating profiles, it just numbers them Profile 1, Profile 2 etc.
                 $Profiles = Get-ChildItem -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
@@ -1064,24 +1063,23 @@ $ultimateclean.Add_Click({
         Foreach ($user in $Users) {
             if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data") {
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                #Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                #Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                #Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                # Comment out the following line to remove the Edge Write Font Cache too.
-                # Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\EdgeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\EdgeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             
                 # Check Edge Profiles. It looks as though when creating profiles, it just numbers them Profile 1, Profile 2 etc.
                 $Profiles = Get-ChildItem -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
                 foreach ($Account in $Profiles) {
                     $Account = $Account.Name 
                     Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    #Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
                     Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    #Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                     Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    #Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
             }
             Write-Host -ForegroundColor Yellow "Done...`n" 
@@ -1365,14 +1363,22 @@ $ultimateclean.Add_Click({
             $host.ui.RawUI.WindowTitle = $name
             Write-Host "This offload process makes the WinTool app not crash.."
             Write-Host "Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists.."
-            cmd /C del /f /s /q %systemdrive%\*.tmp
-            cmd /C del /f /s /q %systemdrive%\*._mp
-            cmd /C del /f /s /q %systemdrive%\*.log
-            cmd /C del /f /s /q %systemdrive%\*.gid
-            cmd /C del /f /s /q %systemdrive%\*.chk
-            cmd /C del /f /s /q %systemdrive%\*.old
-            cmd /C del /f /s /q %windir%\*.bak
-            cmd /C rmdir /s /q c:\Windows.old
+            cmd /C del /f /s /q %systemdrive%\*.tmp -ForegroundColor Green
+            cmd /C del /f /s /q %systemdrive%\*._mp -ForegroundColor Green
+            cmd /C del /f /s /q %systemdrive%\*.log -ForegroundColor Green
+            cmd /C del /f /s /q %systemdrive%\*.gid -ForegroundColor Green
+            cmd /C del /f /s /q %systemdrive%\*.chk -ForegroundColor Green
+            cmd /C del /f /s /q %systemdrive%\*.old -ForegroundColor Green
+            cmd /C del /f /s /q %windir%\*.bak -ForegroundColor Green
+            cmd /C rmdir /s /q c:\Windows.old -ForegroundColor Green
+            
+            $freeBefore = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
+            $freeAfter = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
+            
+            Write-Host -ForegroundColor Yellow "Reclaimed {0:N4} MB of space" -f (($freeAfter - $freeBefore)/1MB)
+
+            Start-Sleep -s 10
+            
         }
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
@@ -1385,10 +1391,14 @@ $ultimateclean.Add_Click({
      @{ Name = "FreeSpace (GB)" ; Expression = { "{0:N1}" -f ( $_.Freespace / 1gb ) } },
      @{ Name = "PercentFree" ; Expression = { "{0:P1}" -f ( $_.FreeSpace / $_.Size ) } } |
      Format-Table -AutoSize | Out-String
-    
 
-    Write-Host -ForegroundColor Red "Before: $Before"
-    Write-Host -ForegroundColor Green "After: $After"
+    Write-Host -ForegroundColor Red "* BEFORE CLEANING * $Before"
+    Write-Host -ForegroundColor Green "* AFTER CLEANING * $After"
+
+    $freeBefore = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
+    $freeAfter = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
+    
+    Write-Host -ForegroundColor Yellow "Reclaimed {0:N4} MB of space" -f (($freeAfter - $freeBefore)/1MB)
     
 })
 
