@@ -967,24 +967,15 @@ $dismfix.Add_Click({
 
 $ultimateclean.Add_Click({
 
-    $Folders = Get-ChildItem -Path "$env:systemdrive\Users\$user\AppData\Local\Temp\" "$env:systemdrive\Temp\" "$env:windir\Temp\" "$env:windir\Prefetch\"
-
-    Foreach ($Folder in $Folders) {
-        $Before = Get-WmiObject -Path "$($_.Fullname)\*" -Recurse
-    }
-
-    @{ Name = "Size (GB)" ; Expression = { "{0:N1}" -f ( $_.Size / 1gb) } } |
-    Format-Table -AutoSize | Out-String
-    
 
     # Get Disk Size
-    #$Before = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName,
-    #@{ Name = "Drive" ; Expression = { ( $_.DeviceID ) } },
-    #@{ Name = "Size (GB)" ; Expression = { "{0:N1}" -f ( $_.Size / 1gb) } },
-    #@{ Name = "FreeSpace (GB)" ; Expression = { "{0:N1}" -f ( $_.Freespace / 1gb ) } },
-    #@{ Name = "PercentFree" ; Expression = { "{0:P1}" -f ( $_.FreeSpace / $_.Size ) } } |
-    #Format-Table -AutoSize | Out-String
-<#
+    $Before = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName,
+    @{ Name = "Drive" ; Expression = { ( $_.DeviceID ) } },
+    @{ Name = "Size (GB)" ; Expression = { "{0:N1}" -f ( $_.Size / 1gb) } },
+    @{ Name = "FreeSpace (GB)" ; Expression = { "{0:N1}" -f ( $_.Freespace / 1gb ) } },
+    @{ Name = "PercentFree" ; Expression = { "{0:P1}" -f ( $_.FreeSpace / $_.Size ) } } |
+    Format-Table -AutoSize | Out-String
+
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
     $users = $Users.Name 
 
@@ -1386,7 +1377,7 @@ $ultimateclean.Add_Click({
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
     }
-#>
+
      # Get Drive size after clean
      $After = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName,
      @{ Name = "Drive" ; Expression = { ( $_.DeviceID ) } },
