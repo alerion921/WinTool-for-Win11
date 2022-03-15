@@ -1363,22 +1363,14 @@ $ultimateclean.Add_Click({
             $host.ui.RawUI.WindowTitle = $name
             Write-Host "This offload process makes the WinTool app not crash.."
             Write-Host "Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists.."
-            cmd /C del /f /s /q %systemdrive%\*.tmp -ForegroundColor Green
-            cmd /C del /f /s /q %systemdrive%\*._mp -ForegroundColor Green
-            cmd /C del /f /s /q %systemdrive%\*.log -ForegroundColor Green
-            cmd /C del /f /s /q %systemdrive%\*.gid -ForegroundColor Green
-            cmd /C del /f /s /q %systemdrive%\*.chk -ForegroundColor Green
-            cmd /C del /f /s /q %systemdrive%\*.old -ForegroundColor Green
-            cmd /C del /f /s /q %windir%\*.bak -ForegroundColor Green
-            cmd /C rmdir /s /q c:\Windows.old -ForegroundColor Green
-            
-            $freeBefore = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
-            $freeAfter = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
-            
-            Write-Host -ForegroundColor Yellow "Reclaimed {0:N4} MB of space" -f (($freeAfter - $freeBefore)/1MB)
-
-            Start-Sleep -s 10
-            
+            cmd /C del /f /s /q %systemdrive%\*.tmp
+            cmd /C del /f /s /q %systemdrive%\*._mp
+            cmd /C del /f /s /q %systemdrive%\*.log
+            cmd /C del /f /s /q %systemdrive%\*.gid
+            cmd /C del /f /s /q %systemdrive%\*.chk
+            cmd /C del /f /s /q %systemdrive%\*.old
+            cmd /C del /f /s /q %windir%\*.bak
+            cmd /C rmdir /s /q c:\Windows.old
         }
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
@@ -1394,11 +1386,6 @@ $ultimateclean.Add_Click({
 
     Write-Host -ForegroundColor Red "* BEFORE CLEANING * $Before"
     Write-Host -ForegroundColor Green "* AFTER CLEANING * $After"
-
-    $freeBefore = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
-    $freeAfter = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Expand FreeSpace
-    
-    Write-Host -ForegroundColor Yellow "Reclaimed {0:N4} MB of space" -f (($freeAfter - $freeBefore)/1MB)
     
 })
 
