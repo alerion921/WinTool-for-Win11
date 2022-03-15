@@ -979,66 +979,81 @@ $ultimateclean.Add_Click({
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
     $users = $Users.Name 
 
-    $braveclean = Read-Host "Clear Brave Browser Cache? (Y/N)"
-    if ($braveclean -eq 'Y') {
-        # Clear Brave Browser
-        Write-Host -ForegroundColor Green "Clearing Brave Browser Cache`n"
-        taskkill /F /IM brave.exe
-        Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Code Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Service Worker\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            }
-            Write-Host -ForegroundColor Yellow "Done...`n"
-        }
-    }
-
-    $firefoxclean = Read-Host "Clear Firefox Cache? (Y/N)"
-    if ($firefoxclean -eq 'Y') {
-        # Clear Firefox Cache
-        Write-Host -ForegroundColor Green "Clearing Firefox Cache`n"
-        Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\thumbnails\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cookies.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\webappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\chromeappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\OfflineCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            }
-            Write-Host -ForegroundColor Yellow "Done...`n"
-        }
-    }
-
-    $googlechromeclean = Read-Host "Clear Google Chrome Cache? (Y/N)"
-    if ($googlechromeclean -eq 'Y') {
-        # Clear Google Chrome
-        Write-Host -ForegroundColor Green "Clearing Google Chrome Cache`n"
-        Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\ChromeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-
-                # Check Chrome Profiles. It looks as though when creating profiles, it just numbers them Profile 1, Profile 2 etc.
-                $Profiles = Get-ChildItem -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
-                foreach ($Account in $Profiles) {
-                    $Account = $Account.Name 
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    if (!(Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")){
+        Write-Host "Brave Browser is not installed & Folders can't be found.. Skipping clean..."
+    }  
+    else {
+        $braveclean = Read-Host "Clear Brave Browser Cache? (Y/N)"
+        if ($braveclean -eq 'Y') {
+            # Clear Brave Browser
+            Write-Host -ForegroundColor Green "Clearing Brave Browser Cache`n"
+            taskkill /F /IM brave.exe
+            Foreach ($user in $Users) {
+                if (Test-Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\") {
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Code Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Service Worker\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
+                Write-Host -ForegroundColor Yellow "Done...`n"
             }
-            Write-Host -ForegroundColor Yellow "Done...`n"
+        }
+    }
+
+    if (!(Test-Path "C:\Program Files\Mozilla Firefox\firefox.exe")){
+            Write-Host "Firefox is not installed & Folders can't be found.. Skipping clean..."
+    }  
+    else {
+        $firefoxclean = Read-Host "Clear Firefox Cache? (Y/N)"
+        if ($firefoxclean -eq 'Y') {
+            # Clear Firefox Cache
+            Write-Host -ForegroundColor Green "Clearing Firefox Cache`n"
+            Foreach ($user in $Users) {
+                if (Test-Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles") {
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\thumbnails\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cookies.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\webappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\chromeappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\OfflineCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                }
+                Write-Host -ForegroundColor Yellow "Done...`n"
+            }
+        }
+    }
+
+    if (!(Test-Path "C:\Program Files\Google\Chrome\Application\chrome.exe")){
+        Write-Host "Google Chrome is not installed & Folders can't be found.. Skipping clean..."
+    }  
+    else {
+            $googlechromeclean = Read-Host "Clear Google Chrome Cache? (Y/N)"
+            if ($googlechromeclean -eq 'Y') {
+            # Clear Google Chrome
+            Write-Host -ForegroundColor Green "Clearing Google Chrome Cache`n"
+            Foreach ($user in $Users) {
+                if (Test-Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data") {
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\ChromeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
+                    # Check Chrome Profiles. It looks as though when creating profiles, it just numbers them Profile 1, Profile 2 etc.
+                    $Profiles = Get-ChildItem -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
+                    foreach ($Account in $Profiles) {
+                        $Account = $Account.Name 
+                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
+                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    }
+                }
+                Write-Host -ForegroundColor Yellow "Done...`n"
+            }
         }
     }
 
