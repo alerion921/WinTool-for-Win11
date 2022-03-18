@@ -1116,16 +1116,21 @@ $ultimateclean.Add_Click({
             Write-Host -ForegroundColor Yellow "Done...`n" 
         }
     }
-    
-    $operaclean = Read-Host "Clear Opera Cache? (Y/N)"
-    if ($operaclean -eq 'Y') {
-        # Clear Opera
-        Write-Host -ForegroundColor Yellow "Clearing Opera Cache`n"
-        Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\Opera Software") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Opera Software\Opera Stable\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            } 
-            Write-Host -ForegroundColor Yellow "Done...`n"
+  
+    if (!(Test-Path "C:\Users\$user\AppData\Local\Programs\Opera")){
+        Write-Host "Opera is not installed & Folders can't be found.. Skipping clean..."
+    }  
+    else {
+        $operaclean = Read-Host "Clear Opera Cache? (Y/N)"
+        if ($operaclean -eq 'Y') {
+            # Clear Opera
+            Write-Host -ForegroundColor Yellow "Clearing Opera Cache`n"
+            Foreach ($user in $Users) {
+                if (Test-Path "C:\Users\$user\AppData\Local\Opera Software") {
+                    Remove-Item -Path "C:\Users\$user\AppData\Local\Opera Software\Opera Stable\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                } 
+                Write-Host -ForegroundColor Yellow "Done...`n"
+            }
         }
     }
 
@@ -1173,17 +1178,22 @@ $ultimateclean.Add_Click({
     }
     Write-Host -ForegroundColor Yellow "Done...`n"
 
-    $Dropboxclean = Read-Host "Clear Dropbox Cache? (Y/N)"
-    if ($Dropboxclean -eq 'Y') {
-        # Clear Dropbox
-        Write-Host -ForegroundColor Yellow "Clearing Dropbox Cache`n"
-        Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\Dropbox\") {
-                Remove-Item -Path "C:\Users\$user\Dropbox\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\Dropbox*\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+    if (!(Test-Path "C:\Program Files (x86)\Dropbox\Client")){
+        Write-Host "Dropbox is not installed & Folders can't be found.. Skipping clean..."
+    }  
+    else {
+        $Dropboxclean = Read-Host "Clear Dropbox Cache? (Y/N)"
+        if ($Dropboxclean -eq 'Y') {
+            # Clear Dropbox
+            Write-Host -ForegroundColor Yellow "Clearing Dropbox Cache`n"
+            Foreach ($user in $Users) {
+                if (Test-Path "C:\Users\$user\Dropbox\") {
+                    Remove-Item -Path "C:\Users\$user\Dropbox\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "C:\Users\$user\Dropbox*\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                }
             }
+            Write-Host -ForegroundColor Yellow "Done...`n"
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
     }
 
     # Clear HP Support Assistant Installation Folder
@@ -1261,7 +1271,6 @@ $ultimateclean.Add_Click({
 
 
     $CleanKnownTemp = Read-Host "Clear all System, User and Common Temp Files? (Y/N)"
-
     if ($CleanKnownTemp -eq 'Y') {
         # Clear User Temp Folders
         Write-Host -ForegroundColor Yellow "Clearing User Temp Folders`n"
@@ -1371,7 +1380,6 @@ $ultimateclean.Add_Click({
     }
     
     $SuperCleanOffload = Read-Host "Launch Superdeep Cleaner (May take 60 min or more)? (Y/N)"
-    
     if ($SuperCleanOffload -eq 'Y') {
         $OffloadScript = {
             $name='Superdeep Cleaner - Offload Process'
@@ -2356,6 +2364,10 @@ Write-Host "Disabling Action Center..."
     Write-Host "Changing default Explorer view to This PC..."
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
 
+    Write-Host "Forcing Windows Security Notifications to be Disabled..."
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
+
     #Restart Explorer so that the taskbar can update and not look break :D
     Stop-Process -name explorer
     Start-Sleep -s 5
@@ -2593,6 +2605,11 @@ $essentialundo.Add_Click({
     Write-Host "Changing default Explorer view to Quick Access..."
     $ResultText.text = "`r`n" +"`r`n" + "  Changing default Explorer view to Quick Access..."
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -ErrorAction SilentlyContinue
+
+    Write-Host "Enabling Windows Security Notifications..."
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 0
+
 
     #Restart Explorer so that the taskbar can update and not look break :D
     Stop-Process -name explorer
