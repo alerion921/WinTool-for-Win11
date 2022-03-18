@@ -598,7 +598,7 @@ $getosinfo.location              = New-Object System.Drawing.Point(3,815)
 $getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ncpa                            = New-Object system.Windows.Forms.Button
-$ncpa.text                       = "Network Connections"
+$ncpa.text                       = "Old Network Panel"
 $ncpa.width                      = 210
 $ncpa.height                     = 30
 $ncpa.location                   = New-Object System.Drawing.Point(3,325)
