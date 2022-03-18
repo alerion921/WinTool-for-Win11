@@ -484,6 +484,13 @@ $ultimatepower.height            = 30
 $ultimatepower.location          = New-Object System.Drawing.Point(3,325)
 $ultimatepower.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$restorepower                    = New-Object system.Windows.Forms.Button
+$restorepower.text               = "Restore Power Options"
+$restorepower.width              = 210
+$restorepower.height             = 30
+$restorepower.location           = New-Object System.Drawing.Point(3,360)
+$restorepower.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 $Label22                         = New-Object system.Windows.Forms.Label
 $Label22.text                    = "Extras"
 $Label22.AutoSize                = $true
@@ -617,6 +624,14 @@ $oldsystempanel.width            = 210
 $oldsystempanel.height           = 30
 $oldsystempanel.location         = New-Object System.Drawing.Point(3,430)
 $oldsystempanel.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+
+$oldpower                        = New-Object system.Windows.Forms.Button
+$oldpower.text                   = "Old Power Panel"
+$oldpower.width                  = 210
+$oldpower.height                 = 30
+$oldpower.location               = New-Object System.Drawing.Point(3,465)
+$oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $steam                           = New-Object system.Windows.Forms.Button
 $steam.text                      = "Steam"
@@ -787,11 +802,18 @@ $spotify.height                  = 30
 $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$oldpower                        = New-Object system.Windows.Forms.Button
+$oldpower.text                   = "Old Power Panel"
+$oldpower.width                  = 210
+$oldpower.height                 = 30
+$oldpower.location               = New-Object System.Drawing.Point(4,227)
+$oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 $Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
 $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$unbindstarticons,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$uconnect,$bnet,$eaapp,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
-$Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$sfcscan,$dismscan,$dismscan2,$dismfix,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
-$Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$ultimatepower))
+$Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$sfcscan,$dismscan,$dismscan2,$dismfix,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
+$Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$ultimatepower,$restorepower))
 $Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches))
 
 $getosinfo.Add_Click({
@@ -2370,6 +2392,12 @@ Write-Host "Disabling Action Center..."
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
+    
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
 
     #Restart Explorer so that the taskbar can update and not look break :D
     Stop-Process -name explorer
@@ -2610,8 +2638,10 @@ $essentialundo.Add_Click({
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -ErrorAction SilentlyContinue
 
     Write-Host "Enabling Windows Security Notifications..."
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 0
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 0
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
 
 
     #Restart Explorer so that the taskbar can update and not look break :D
@@ -3858,6 +3888,18 @@ $oldcontrolpanel.Add_Click({ #Old controlpanel
 
 $oldsystempanel.Add_Click({ #Old system panel
     cmd /c sysdm.cpl
+})
+
+$oldpower.Add_Click({
+    cmd /c powercfg.cpl
+})
+
+$restorepower.Add_Click({
+    powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a
+    powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e
+    powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+    Write-Host "Restored all power plans: Balanced, High Performance, and Power Saver"
+    $ResultText.text = "`r`n" +"`r`n" + "Restored all power plans: Balanced, High Performance, and Power Saver"
 })
 
 $NFS.Add_Click({
