@@ -625,7 +625,6 @@ $oldsystempanel.height           = 30
 $oldsystempanel.location         = New-Object System.Drawing.Point(3,430)
 $oldsystempanel.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-
 $oldpower                        = New-Object system.Windows.Forms.Button
 $oldpower.text                   = "Old Power Panel"
 $oldpower.width                  = 210
@@ -801,13 +800,6 @@ $spotify.width                   = 210
 $spotify.height                  = 30
 $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$oldpower                        = New-Object system.Windows.Forms.Button
-$oldpower.text                   = "Old Power Panel"
-$oldpower.width                  = 210
-$oldpower.height                 = 30
-$oldpower.location               = New-Object System.Drawing.Point(4,227)
-$oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
 $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$unbindstarticons,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
