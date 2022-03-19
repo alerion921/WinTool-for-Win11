@@ -29,6 +29,16 @@ else{
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
+if((Return-WindowsVersion) -notmatch "Windows 10"){
+    Write-Host "Please use " -NoNewline
+    Write-Host "Windows 10" -ForegroundColor Blue -NoNewline
+    Write-Host " or " -NoNewline
+    Write-Host "Windows 11" -ForegroundColor Cyan
+    Write-Host ".`n`n`n" -NoNewLine
+    Write-Host "Press any key to exit this script..." -ForegroundColor Red
+    $Console = [System.Console]::ReadKey() ;if($Console){Exit}
+}
+
 $Form                            = New-Object system.Windows.Forms.Form
 $Form.ClientSize                 = New-Object System.Drawing.Point(1050,1000)
 $Form.text                       = "WinTool by Alerion"
