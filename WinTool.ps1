@@ -1427,7 +1427,17 @@ $ultimateclean.Add_Click({
     
     $SuperCleanOffload = Read-Host "Launch Superdeep Cleaner (May take 60 min or more)? (Y/N)"
     if ($SuperCleanOffload -eq 'Y') {
-        $OffloadScript = {
+        $env:SystemDrive
+            Remove-Item $env:WINDIR\*.dmp -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:WINDIR\*.bak -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\*.tmp -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\*._mp -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\*.log -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\*.gid -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\*.chk -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\*.old -confirm:$false -Recurse -Force -Verbose
+            Remove-Item $env:SystemDrive\Windows.old -confirm:$false -Recurse -Force -Verbose
+        <#$OffloadScript = {
             $name='Superdeep Cleaner - Offload Process'
             $host.ui.RawUI.WindowTitle = $name
             Write-Host "This offload process makes the WinTool app not crash.."
@@ -1440,10 +1450,9 @@ $ultimateclean.Add_Click({
             cmd /C del /f /s /q %systemdrive%\*.old
             cmd /C del /f /s /q %windir%\*.bak
             cmd /C rmdir /s /q c:\Windows.old
-            Remove-Item $env:WINDIR\*.dmp -confirm:$false -Recurse -Force	
         }
        
-    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
+        Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"#>
     }
 
      # Get Drive size after clean
