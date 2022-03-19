@@ -29,16 +29,6 @@ else{
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
-if((Return-WindowsVersion) -notmatch "Windows 10"){
-    Write-Host "Please use " -NoNewline
-    Write-Host "Windows 10" -ForegroundColor Blue -NoNewline
-    Write-Host " or " -NoNewline
-    Write-Host "Windows 11" -ForegroundColor Cyan
-    Write-Host ".`n`n`n" -NoNewLine
-    Write-Host "Press any key to exit this script..." -ForegroundColor Red
-    $Console = [System.Console]::ReadKey() ;if($Console){Exit}
-}
-
 $Form                            = New-Object system.Windows.Forms.Form
 $Form.ClientSize                 = New-Object System.Drawing.Point(1050,1000)
 $Form.text                       = "WinTool by Alerion"
@@ -572,40 +562,45 @@ $NFS.height                      = 30
 $NFS.location                    = New-Object System.Drawing.Point(3,640)
 $NFS.Font                        = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$dis11check                      = New-Object system.Windows.Forms.Button
-$dis11check.text                 = "No Win11 Checks"
-$dis11check.width                = 210
-$dis11check.height               = 30
-$dis11check.location             = New-Object System.Drawing.Point(3,675)
-$dis11check.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$unbindstarticons                = New-Object system.Windows.Forms.Button
-$unbindstarticons.text           = "Unpin Start Tiles"
-$unbindstarticons.width          = 210
-$unbindstarticons.height         = 30
-$unbindstarticons.location       = New-Object System.Drawing.Point(3,710)
-$unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$addENkeyboard                   = New-Object system.Windows.Forms.Button
+$addENkeyboard.text              = "Adds NO Keyboard"
+$addENkeyboard.width             = 210
+$addENkeyboard.height            = 30
+$addENkeyboard.location          = New-Object System.Drawing.Point(3,675)
+$addENkeyboard.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $removeENkeyboard                = New-Object system.Windows.Forms.Button
 $removeENkeyboard.text           = "Del EN Keyboards"
 $removeENkeyboard.width          = 210
 $removeENkeyboard.height         = 30
-$removeENkeyboard.location       = New-Object System.Drawing.Point(3,745)
+$removeENkeyboard.location       = New-Object System.Drawing.Point(3,710)
 $removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$addENkeyboard                   = New-Object system.Windows.Forms.Button
-$addENkeyboard.text              = "Adds NO Keyboard"
-$addENkeyboard.width             = 210
-$addENkeyboard.height            = 30
-$addENkeyboard.location          = New-Object System.Drawing.Point(3,780)
-$addENkeyboard.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $getosinfo                       = New-Object system.Windows.Forms.Button
 $getosinfo.text                  = "OS Info"
 $getosinfo.width                 = 210
 $getosinfo.height                = 30
-$getosinfo.location              = New-Object System.Drawing.Point(3,815)
+$getosinfo.location              = New-Object System.Drawing.Point(3,745)
 $getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$OSName=(Get-WmiObject Win32_OperatingSystem).caption
+
+If($OSName -like "*Windows*10*")
+{
+    $dis11check                      = New-Object system.Windows.Forms.Button
+    $dis11check.text                 = "No Win11 Checks"
+    $dis11check.width                = 210
+    $dis11check.height               = 30
+    $dis11check.location             = New-Object System.Drawing.Point(3,780)
+    $dis11check.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+    $unbindstarticons                = New-Object system.Windows.Forms.Button
+    $unbindstarticons.text           = "Unpin Start Tiles"
+    $unbindstarticons.width          = 210
+    $unbindstarticons.height         = 30
+    $unbindstarticons.location       = New-Object System.Drawing.Point(3,815)
+    $unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+}
 
 $ncpa                            = New-Object system.Windows.Forms.Button
 $ncpa.text                       = "Old Network Panel"
@@ -990,8 +985,33 @@ $dismfix.Add_Click({
 
 
 $ultimateclean.Add_Click({
+	
+    $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
+    if ($regcachclean -eq 'Y') {
+        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Managed\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Unmanaged\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\usbflags\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache\Intranet\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+               
+        Stop-Process -ProcessName explorer -Force	
+        taskkill /F /IM explorer.exe
+        Start-Sleep -Seconds 3
+                
+        Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Explorer" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
-
+        Start-Process explorer.exe	
+    }
+    
     # Get Disk Size
     $Before = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName,
     @{ Name = "Drive" ; Expression = { ( $_.DeviceID ) } },
@@ -1418,6 +1438,7 @@ $ultimateclean.Add_Click({
             cmd /C del /f /s /q %systemdrive%\*.old
             cmd /C del /f /s /q %windir%\*.bak
             cmd /C rmdir /s /q c:\Windows.old
+            Remove-Item $env:WINDIR\*.dmp -confirm:$false -Recurse -Force	
         }
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
