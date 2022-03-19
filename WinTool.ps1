@@ -1181,9 +1181,9 @@ $ultimateclean.Add_Click({
     }
 
     # Clear Yandex
-    Write-Host -ForegroundColor Yellow "Clearing Yandex Cache`n"
-    Foreach ($user in $Users) {
-        if (Test-Path "C:\Users\$user\AppData\Local\Yandex") {
+    if (Test-Path "$env:LocalAppData\Yandex") {
+        Write-Host -ForegroundColor Yellow "Clearing Yandex Cache`n"
+        Foreach ($user in $Users) {
             Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\Media Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1205,24 +1205,28 @@ $ultimateclean.Add_Click({
         Write-Host -ForegroundColor Yellow "Done...`n" 
     }
 
-    # Delete Microsoft Teams Previous Version files
-    Write-Host -ForegroundColor Yellow "Clearing Teams Previous version`n"
-    Foreach ($user in $Users) {
-        if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Teams\") {
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        } 
+    if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
+        # Delete Microsoft Teams Previous Version files
+        Write-Host -ForegroundColor Yellow "Clearing Teams Previous version`n"
+        Foreach ($user in $Users) {
+            if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Teams\") {
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            } 
+        }
+        Write-Host -ForegroundColor Yellow "Done...`n"
     }
-    Write-Host -ForegroundColor Yellow "Done...`n"
 
-    # Delete SnagIt Crash Dump files
-    Write-Host -ForegroundColor Yellow "Clearing SnagIt Crash Dumps`n"
-    Foreach ($user in $Users) {
-        if (Test-Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt") {
-            Remove-Item -Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        } 
+    if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
+        # Delete SnagIt Crash Dump files
+        Write-Host -ForegroundColor Yellow "Clearing SnagIt Crash Dumps`n"
+        Foreach ($user in $Users) {
+            if (Test-Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt") {
+                Remove-Item -Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            } 
+        }
+        Write-Host -ForegroundColor Yellow "Done...`n"
     }
-    Write-Host -ForegroundColor Yellow "Done...`n"
 
     if (!(Test-Path "C:\Program Files (x86)\Dropbox\Client")){
         Write-Host "Dropbox is not installed & Folders can't be found.. Skipping clean..."
@@ -1247,6 +1251,7 @@ $ultimateclean.Add_Click({
         Remove-Item -Path "C:\swsetup" -Force -ErrorAction SilentlyContinue -Verbose
     } 
 
+    $DeleteOldDownloads = Read-Host "Delete User files from Download folder? (Y/N)"
     # Delete files from Downloads folder
     if ($DeleteOldDownloads -eq 'Y') { 
         Write-Host -ForegroundColor Yellow "Deleting files from User Downloads folder`n"
@@ -1271,18 +1276,20 @@ $ultimateclean.Add_Click({
         Write-Host -ForegroundColor Yellow "Done...`n"
     } 
 
-    # Delete files from Office Cache Folder
-    Write-Host -ForegroundColor Yellow "Clearing Office Cache Folder`n"
-    Foreach ($user in $Users) {
-        $officecache = "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache"
-        if (Test-Path $officecache) {
-            $OldFiles = Get-ChildItem -Path "$officecache\" -Recurse -File -ErrorAction SilentlyContinue
-            foreach ($file in $OldFiles) {
-                Remove-Item -Path "$officecache\$file" -Force -ErrorAction SilentlyContinue -Verbose
-            }
-        } 
+    if (Test-Path "$env:LocalAppData\Microsoft\Office") {
+        # Delete files from Office Cache Folder
+        Write-Host -ForegroundColor Yellow "Clearing Office Cache Folder`n"
+        Foreach ($user in $Users) {
+            $officecache = "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache"
+            if (Test-Path $officecache) {
+                $OldFiles = Get-ChildItem -Path "$officecache\" -Recurse -File -ErrorAction SilentlyContinue
+                foreach ($file in $OldFiles) {
+                    Remove-Item -Path "$officecache\$file" -Force -ErrorAction SilentlyContinue -Verbose
+                }
+            } 
+        }
+        Write-Host -ForegroundColor Yellow "Done...`n"
     }
-    Write-Host -ForegroundColor Yellow "Done...`n"
 
     # Delete files from LFSAgent Log folder https://www.lepide.com/
     if (Test-Path "$env:windir\LFSAgent\Logs") {
@@ -1328,7 +1335,6 @@ $ultimateclean.Add_Click({
             Remove-Item -Path "$env:systemdrive\Users\$user\Local Settings\Temporary Internet Files\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             Remove-Item -Path "$env:systemdrive\Users\$user\recent\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
 
         # Clear Windows Temp Folder
         Write-Host -ForegroundColor Yellow "Clearing Windows Temp, Logs and Prefetch Folders`n"
@@ -1344,9 +1350,9 @@ $ultimateclean.Add_Click({
         foreach ($File in $Sys32Files) {
             Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
         }
-    }
 
-    Write-Host -ForegroundColor Yellow "Done...`n"        
+        Write-Host -ForegroundColor Yellow "Done...`n"   
+    }     
 
      # Get the size of the Windows Updates folder (SoftwareDistribution)
      $WUfoldersize = (Get-ChildItem "$env:windir\SoftwareDistribution" -Recurse | Measure-Object Length -s).sum / 1Gb
@@ -1384,7 +1390,6 @@ $ultimateclean.Add_Click({
     }
 
     $CleanBin = Read-Host "Would you like to empty the Recycle Bin for All Users? (Y/N)"
-    
     if ($Cleanbin -eq 'Y') {
         Write-Host -ForegroundColor Green "Cleaning Recycle Bin`n"
         $ErrorActionPreference = 'SilentlyContinue'
@@ -1427,17 +1432,28 @@ $ultimateclean.Add_Click({
     
     $SuperCleanOffload = Read-Host "Launch Superdeep Cleaner (May take 60 min or more)? (Y/N)"
     if ($SuperCleanOffload -eq 'Y') {
-        $env:SystemDrive
-            Remove-Item $env:WINDIR\*.dmp -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:WINDIR\*.bak -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\*.tmp -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\*._mp -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\*.log -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\*.gid -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\*.chk -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\*.old -confirm:$false -Recurse -Force -Verbose
-            Remove-Item $env:SystemDrive\Windows.old -confirm:$false -Recurse -Force -Verbose
-        <#$OffloadScript = {
+
+        <#
+        Get-ChildItem -Path $env:WINDIR\* -Include *.dmp | Remove-Item
+        Get-ChildItem -Path $env:WINDIR\* -Include *.bak | Remove-Item -Verbose
+        Get-ChildItem -Path $env:SystemDrive\* -Include *.tmp | Remove-Item -Verbose
+        Get-ChildItem -Path $env:SystemDrive\* -Include *._mp | Remove-Item -Verbose
+        Get-ChildItem -Path $env:SystemDrive\* -Include *.log | Remove-Item -Verbose
+        Get-ChildItem -Path $env:SystemDrive\* -Include *.gid | Remove-Item -Verbose
+        Get-ChildItem -Path $env:SystemDrive\* -Include *.chk | Remove-Item -Verbose
+        Get-ChildItem -Path $env:SystemDrive\* -Include *.old | Remove-Item -Verbose
+
+        Remove-Item -Path "$env:WINDIR\" -Include *.dmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:WINDIR\" -Include *.bak -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:SystemDrive\" -Include *.tmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:SystemDrive\" -Include *._mp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:SystemDrive\" -Include *.log -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:SystemDrive\" -Include *.gid -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:SystemDrive\" -Include *.chk -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:SystemDrive\" -Include *.old -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        #>
+
+         $OffloadScript = {
             $name='Superdeep Cleaner - Offload Process'
             $host.ui.RawUI.WindowTitle = $name
             Write-Host "This offload process makes the WinTool app not crash.."
@@ -1449,11 +1465,12 @@ $ultimateclean.Add_Click({
             cmd /C del /f /s /q %systemdrive%\*.chk
             cmd /C del /f /s /q %systemdrive%\*.old
             cmd /C del /f /s /q %windir%\*.bak
-            cmd /C rmdir /s /q c:\Windows.old
         }
        
-        Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"#>
+        Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
+        Write-Host -ForegroundColor Yellow "Clearing Temporary hidden system files...`n"#>
     }
+    Write-Host -ForegroundColor Green "Done`n `n"
 
      # Get Drive size after clean
      $After = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DriveType -eq "3" } | Select-Object SystemName,
