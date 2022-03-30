@@ -593,14 +593,14 @@ If($OSName -like "*Windows*10*")
     $dis11check.height               = 30
     $dis11check.location             = New-Object System.Drawing.Point(3,780)
     $dis11check.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-    $unbindstarticons                = New-Object system.Windows.Forms.Button
-    $unbindstarticons.text           = "Unpin Start Tiles"
-    $unbindstarticons.width          = 210
-    $unbindstarticons.height         = 30
-    $unbindstarticons.location       = New-Object System.Drawing.Point(3,815)
-    $unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
+
+$unbindstarticons                = New-Object system.Windows.Forms.Button
+$unbindstarticons.text           = "Unpin Start Tiles"
+$unbindstarticons.width          = 210
+$unbindstarticons.height         = 30
+$unbindstarticons.location       = New-Object System.Drawing.Point(3,815)
+$unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ncpa                            = New-Object system.Windows.Forms.Button
 $ncpa.text                       = "Old Network Panel"
@@ -1433,8 +1433,8 @@ $ultimateclean.Add_Click({
     $SuperCleanOffload = Read-Host "Launch Superdeep Cleaner (May take 60 min or more)? (Y/N)"
     if ($SuperCleanOffload -eq 'Y') {
 
-        
-        Get-ChildItem -Path "$env:WINDIR\*" -Include *.dmp | Remove-Item -Verbose
+        #THIS STUPID SHIT STILL DOES NOT WORK :D
+        <#Get-ChildItem -Path "$env:WINDIR\*" -Include *.dmp | Remove-Item -Verbose
         Get-ChildItem -Path "$env:WINDIR\*" -Include *.bak | Remove-Item -Verbose
         Get-ChildItem -Path "$env:SystemDrive\*" -Include *.tmp | Remove-Item -Verbose
         Get-ChildItem -Path "$env:SystemDrive\*" -Include *._mp | Remove-Item -Verbose
@@ -1443,7 +1443,7 @@ $ultimateclean.Add_Click({
         Get-ChildItem -Path "$env:SystemDrive\*" -Include *.chk | Remove-Item -Verbose
         Get-ChildItem -Path "$env:SystemDrive\*" -Include *.old | Remove-Item -Verbose
 
-        <#Remove-Item -Path "$env:WINDIR\" -Include *.dmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:WINDIR\" -Include *.dmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:WINDIR\" -Include *.bak -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:SystemDrive\" -Include *.tmp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:SystemDrive\" -Include *._mp -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1451,7 +1451,8 @@ $ultimateclean.Add_Click({
         Remove-Item -Path "$env:SystemDrive\" -Include *.gid -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:SystemDrive\" -Include *.chk -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:SystemDrive\" -Include *.old -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        
+        #>
+
          $OffloadScript = {
             $name='Superdeep Cleaner - Offload Process'
             $host.ui.RawUI.WindowTitle = $name
@@ -1464,9 +1465,10 @@ $ultimateclean.Add_Click({
             cmd /C del /f /s /q %systemdrive%\*.chk
             cmd /C del /f /s /q %systemdrive%\*.old
             cmd /C del /f /s /q %windir%\*.bak
+            cmd /C del /f /s /q %systemdrive%\Windows.old
         }
        
-        Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"#>
+        Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
 
         Write-Host -ForegroundColor Yellow "Clearing Temporary hidden system files...`n"#>
     }
