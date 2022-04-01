@@ -838,7 +838,9 @@ $getosinfo.Add_Click({
 
 $batchinstall.Add_Click({
     $applications = @(
-        "## Utilities"
+        "Brave"
+        "Mozilla Firefox"
+        "Google Chrome"
         "Windows Terminal"
         "PowerToys (Preview)"
         "7-Zip"
@@ -851,22 +853,27 @@ $batchinstall.Add_Click({
         "WinSCP"
         "Advanced IP Scanner"
         "Everything"
-        "## Web Browsers"
-        "Brave"
-        "Mozilla Firefox"
-        "Google Chrome"
-        "## Video & Image Tools"
         "ShareX"
         "ImageGlass"
         "GIMP"
         "VLC media player"
         "MPC-HC"
-        "## Document Tools"
         "VSCodium"
         "Microsoft Visual Studio Code"
         "Notepad++"
         "Adobe Acrobat Reader DC"
+        "Steam"
+        "Discord"
+        "Epic Games"
+        "qBittorent"
+        "Teamviewer"
+        "NvClean Install"
+        "Dropbox"
+        "Open Office"
+        "Zoom"
+        "Spotify"
     )
+    
     $install = $applications | Out-GridView -Title "Select Application(s) to Install" -OutputMode Multiple
     foreach ($application in $install){
     	$ResultText.text = "`r`n" +"`r`n" + "Installing $application"
