@@ -314,7 +314,8 @@ $Label21.height                  = 10
 $Label21.location                = New-Object System.Drawing.Point(35,20)
 $Label21.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Force
+
+New-Item 'HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications' -Force | New-ItemProperty -Name ToastEnabled -Value 1 -Force -ErrorAction SilentlyContinue | Out-Null
 
 if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled") -eq '0') {
     $essentialundo                   = New-Object system.Windows.Forms.Button
