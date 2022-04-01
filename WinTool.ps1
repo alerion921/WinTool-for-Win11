@@ -600,14 +600,14 @@ If($OSName -like "*Windows*10*")
     $dis11check.height               = 30
     $dis11check.location             = New-Object System.Drawing.Point(3,780)
     $dis11check.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-}
 
-$unbindstarticons                = New-Object system.Windows.Forms.Button
-$unbindstarticons.text           = "Unpin Start Tiles"
-$unbindstarticons.width          = 210
-$unbindstarticons.height         = 30
-$unbindstarticons.location       = New-Object System.Drawing.Point(3,815)
-$unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    $unbindstarticons                = New-Object system.Windows.Forms.Button
+    $unbindstarticons.text           = "Unpin Start Tiles"
+    $unbindstarticons.width          = 210
+    $unbindstarticons.height         = 30
+    $unbindstarticons.location       = New-Object System.Drawing.Point(3,815)
+    $unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+}
 
 $ncpa                            = New-Object system.Windows.Forms.Button
 $ncpa.text                       = "Old Network Panel"
