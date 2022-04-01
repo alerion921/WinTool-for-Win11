@@ -435,6 +435,13 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $appearancefx.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
 
+$batchinstall                     = New-Object system.Windows.Forms.Button
+$batchinstall.text                = "Batch Install"
+$batchinstall.width               = 210
+$batchinstall.height              = 30
+$batchinstall.location            = New-Object System.Drawing.Point(3,570)
+$batchinstall.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
 $defaultwindowsupdate.width      = 210
@@ -811,7 +818,7 @@ $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchro
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$uconnect,$bnet,$eaapp,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$sfcscan,$dismscan,$dismscan2,$dismfix,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$ultimatepower,$restorepower))
-$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches))
+$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches,$batchinstall))
 
 $getosinfo.Add_Click({
     $name=(Get-WmiObject Win32_OperatingSystem).caption
@@ -827,6 +834,45 @@ $getosinfo.Add_Click({
                         "  Build: " + $ver, "`r`n" + 
                         "  External IP: " + $myIP, "`r`n" + 
                         "  Licence: " + $licence
+})
+
+$batchinstall.Add_Click({
+    $applications = @(
+        "## Utilities"
+        "Windows Terminal"
+        "PowerToys (Preview)"
+        "7-Zip"
+        "AutoHotkey"
+        "Discord"
+        "GitHub Desktop"
+        "TranslucentTB"
+        "balenaEtcher"
+        "PuTTY"
+        "WinSCP"
+        "Advanced IP Scanner"
+        "Everything"
+        "## Web Browsers"
+        "Brave"
+        "Mozilla Firefox"
+        "Google Chrome"
+        "## Video & Image Tools"
+        "ShareX"
+        "ImageGlass"
+        "GIMP"
+        "VLC media player"
+        "MPC-HC"
+        "## Document Tools"
+        "VSCodium"
+        "Microsoft Visual Studio Code"
+        "Notepad++"
+        "Adobe Acrobat Reader DC"
+    )
+    $install = $applications | Out-GridView -Title "Select Application(s) to Install" -OutputMode Multiple
+    foreach ($application in $install){
+    	$ResultText.text = "`r`n" +"`r`n" + "Installing $application"
+    	winget install -s winget -e "$application" --accept-source-agreements | Out-Host
+	}
+    $ResultText.text = "`r`n" + "Finished Installing Application(s)" + "`r`n" + "`r`n" + "Ready for Next Task"
 })
 
 $dis11check.Add_Click({
