@@ -332,7 +332,7 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
     $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
     $essentialtweaks.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
-} else {
+} elseif (!(Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled")){
     $essentialtweaks                 = New-Object system.Windows.Forms.Button
     $essentialtweaks.text            = "Essential Tweaks"
     $essentialtweaks.width           = 210
