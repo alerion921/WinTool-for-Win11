@@ -314,9 +314,6 @@ $Label21.height                  = 10
 $Label21.location                = New-Object System.Drawing.Point(35,20)
 $Label21.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-
-New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications' -Force | New-ItemProperty -Name ToastEnabled -Value 1 -Force | Out-Null
-
 if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled") -eq '0') {
     $essentialundo                   = New-Object system.Windows.Forms.Button
     $essentialundo.text              = "Undo Essential Tweaks"
@@ -327,6 +324,15 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $essentialundo.BackColor         = [System.Drawing.ColorTranslator]::FromHtml("#EE6055")  
     $essentialundo.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled") -eq '1') {
+    $essentialtweaks                 = New-Object system.Windows.Forms.Button
+    $essentialtweaks.text            = "Essential Tweaks"
+    $essentialtweaks.width           = 210
+    $essentialtweaks.height          = 65
+    $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
+    $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
+    $essentialtweaks.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+} else {
     $essentialtweaks                 = New-Object system.Windows.Forms.Button
     $essentialtweaks.text            = "Essential Tweaks"
     $essentialtweaks.width           = 210
