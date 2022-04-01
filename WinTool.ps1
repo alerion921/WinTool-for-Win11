@@ -332,6 +332,15 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
     $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
     $essentialtweaks.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+} elseif (!(Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications")) {
+    $essentialtweaks                 = New-Object system.Windows.Forms.Button
+    $essentialtweaks.text            = "Essential Tweaks"
+    $essentialtweaks.width           = 210
+    $essentialtweaks.height          = 65
+    $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
+    $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
+    $essentialtweaks.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 }
 
 $gamingtweaks                    = New-Object system.Windows.Forms.Button
@@ -879,6 +888,7 @@ $batchinstall.Add_Click({
     	$ResultText.text = "`r`n" +"`r`n" + "Installing $application"
     	winget install -s winget -e "$application" --accept-source-agreements | Out-Host
 	}
+
     $ResultText.text = "`r`n" + "Finished Installing Application(s)" + "`r`n" + "`r`n" + "Ready for Next Task"
 })
 
