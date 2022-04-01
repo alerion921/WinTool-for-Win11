@@ -867,13 +867,13 @@ $batchinstall.Add_Click({
         "Epic Games"
         "qBittorent"
         "Teamviewer"
-        "NvClean Install"
+        "NvClean"
         "Dropbox"
         "Open Office"
         "Zoom"
         "Spotify"
     )
-    
+
     $install = $applications | Out-GridView -Title "Select Application(s) to Install" -OutputMode Multiple
     foreach ($application in $install){
     	$ResultText.text = "`r`n" +"`r`n" + "Installing $application"
