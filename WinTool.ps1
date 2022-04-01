@@ -867,9 +867,9 @@ $batchinstall.Add_Click({
         "Epic Games"
         "qBittorent"
         "Teamviewer"
-        "NvClean"
+        "NVCleanstall"
         "Dropbox"
-        "Open Office"
+        "OpenOffice"
         "Zoom"
         "Spotify"
     )
