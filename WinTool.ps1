@@ -331,7 +331,7 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
     $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
     $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
-    $essentialtweaks.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+    $essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 } elseif (!(Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled")){
     $essentialtweaks                 = New-Object system.Windows.Forms.Button
     $essentialtweaks.text            = "Essential Tweaks"
@@ -340,7 +340,7 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
     $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
     $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
-    $essentialtweaks.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+    $essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 }
 
 $gamingtweaks                    = New-Object system.Windows.Forms.Button
@@ -2302,6 +2302,8 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
     # Removes Widgets from the Taskbar
+    #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
+    #New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
     reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 0
     reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 0
     reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 0
