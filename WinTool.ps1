@@ -2677,10 +2677,10 @@ $essentialundo.Add_Click({
     $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
     icacls $autoLoggerDir /grant:r SYSTEM:`(OI`)`(CI`)F | Out-Null
 
-    Write-Host "Enabling and starting Diagnostics Tracking Service..."
-    $ResultText.text = "`r`n" +"`r`n" + "  Enabling and starting Diagnostics Tracking Service..."
-    Set-Service "DiagTrack" -StartupType Automatic
-    Start-Service "DiagTrack"
+    #Write-Host "Enabling and starting Diagnostics Tracking Service..."
+    #$ResultText.text = "`r`n" +"`r`n" + "  Enabling and starting Diagnostics Tracking Service..."
+    #Set-Service "DiagTrack" -StartupType Automatic
+    #Start-Service "DiagTrack"
 
     Write-Host "Hiding known file extensions..."
     $ResultText.text = "`r`n" +"`r`n" + "  Hiding known file extensions..."
