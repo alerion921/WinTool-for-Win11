@@ -2310,19 +2310,30 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
     # Removes Widgets from the Taskbar
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarDa" -Value "0"
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -PropertyType "DWord" -Name "AllowNewsAndInterests" -Value "0"
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -PropertyType "DWord" -Name "EnableFeeds" -Value "0"
+
+    #CORRECT WAY OF ADDING NEW ENTRIES TO THE REGISTRY BUT IDK IT WORK SO WHY EDIT IT :D
+    #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
+    #New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
+
+   # If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
+        #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Force | Out-Null
+    #}
+
+    #kristian
+    
+    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 0
+    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 0
+    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 0
 
     # Removes Chat from the Taskbar
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarMn" -Value "0"
-    New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -PropertyType "DWord" -Name "ChatIcon" -Value "3"
+    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarMn /t REG_DWORD /d 0
+    reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" /f /v ChatIcon /t REG_DWORD /d 3
 
     # Removes Teams installation aswell
     Get-AppxPackage MicrosoftTeams* | Remove-AppxPackage
 
     # Default StartMenu alignment 0=Left
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarAl" -Value "0"
+    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarAl /t REG_DWORD /d 0
 
     Write-Host "Enabling NumLock after startup..."
     If (!(Test-Path "HKU:")) {
@@ -2699,27 +2710,28 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Hide tray icons..."
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
 
-
+    Write-Host "Re-Enabling Chat, Widgets, Search and Centering Start Menu..."
     $ResultText.text += "`r`n" +"Re-Enabling Chat, Widgets and Centering Start Menu..."
 
     # Restores Widgets to the Taskbar
-    Write-Host "Restoring widgets..."
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarDa" -Value "1"
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -PropertyType "DWord" -Name "AllowNewsAndInterests" -Value "1"
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -PropertyType "DWord" -Name "EnableFeeds" -Value "1"
+    #reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 1
+    #reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 1
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 1
+    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 1
+    
+    Write-Host "Showing Taskbar Search box..."
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
 
     # Restores Chat to the Taskbar
-    Write-Host "Restoring chat icon on taskbar..."
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarMn" -Value "1"
-    New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -PropertyType "DWord" -Name "ChatIcon" -Value "2"
+    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarMn /t REG_DWORD /d 1
+    reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" /f /v ChatIcon /t REG_DWORD /d 2
 
-    # Default StartMenu alignment 1=Left WIN11
-    Write-Host "Restoring default location of start menu..."
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarAl" -Value "1"
+    # Default StartMenu alignment for Win 11 Center = 1
+    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarAl /t REG_DWORD /d 1
     
     # Recovers search to the Taskbar
-    Write-Host "Showing Search box..."
-    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -PropertyType "DWord" -Name "SearchboxTaskbarMode" -Value "2"
+    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /f /v SearchboxTaskbarMode /t REG_DWORD /d 1
 
     Write-Host "Allowing Background Apps..."
     $ResultText.text = "`r`n" +"`r`n" + "  Raising UAC level..."
@@ -2761,10 +2773,10 @@ $essentialundo.Add_Click({
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -ErrorAction SilentlyContinue
 
     Write-Host "Enabling Windows Security Notifications..."
-    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
-    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
-    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
-    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
 
 
     #Restart Explorer so that the taskbar can update and not look break :D
