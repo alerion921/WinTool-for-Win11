@@ -2308,18 +2308,6 @@ $essentialtweaks.Add_Click({
 
     Write-Host "Hiding Search Box / Button..."
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
-
-    # Removes Widgets from the Taskbar
-
-    #CORRECT WAY OF ADDING NEW ENTRIES TO THE REGISTRY BUT IDK IT WORK SO WHY EDIT IT :D
-    #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
-    #New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
-
-   # If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
-        #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Force | Out-Null
-    #}
-
-    #kristian
     
     reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 0
     reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 0
@@ -2698,13 +2686,6 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Hiding known file extensions..."
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
 
-   <# Write-Host "Reset Local Group Policies to Stock Defaults..."
-    $ResultText.text = "`r`n" +"`r`n" + "  Raising UAC level..."
-    # cmd /c secedit /configure /cfg %windir%\inf\defltbase.inf /db defltbase.sdb /verbose
-    cmd /c RD /S /Q "%WinDir%\System32\GroupPolicyUsers"
-    cmd /c RD /S /Q "%WinDir%\System32\GroupPolicy"
-    cmd /c gpupdate /force
-    # Considered using Invoke-GPUpdate but requires module most people won't have installed#>
 
     Write-Host "Hide tray icons..."
     $ResultText.text = "`r`n" +"`r`n" + "  Hide tray icons..."
@@ -2763,10 +2744,8 @@ $essentialundo.Add_Click({
 
     Write-Host "Enabling Action Center..."
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Action Center..."
-    #reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Explorer" /f /v DisableNotificationCenter /t REG_DWORD /d 0
+    reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Explorer" /f /v DisableNotificationCenter /t REG_DWORD /d 0
     reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" /f /v ToastEnabled /t REG_DWORD /d 1
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
-	#Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -ErrorAction SilentlyContinue
 
     Write-Host "Changing default Explorer view to Quick Access..."
     $ResultText.text = "`r`n" +"`r`n" + "  Changing default Explorer view to Quick Access..."
