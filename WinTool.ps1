@@ -2744,7 +2744,7 @@ $essentialundo.Add_Click({
 
     Write-Host "Enabling Action Center..."
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Action Center..."
-    reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Explorer" /f /v DisableNotificationCenter /t REG_DWORD /d 0
+    Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
     reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" /f /v ToastEnabled /t REG_DWORD /d 1
 
     Write-Host "Changing default Explorer view to Quick Access..."
