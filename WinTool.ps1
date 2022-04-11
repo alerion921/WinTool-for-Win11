@@ -420,14 +420,14 @@ $Label13.height                  = 10
 $Label13.location                = New-Object System.Drawing.Point(60,475)
 $Label13.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-    if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
+    if (!(Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme")) {
         $darkmode                        = New-Object system.Windows.Forms.Button
         $darkmode.text                   = "Dark Mode"
         $darkmode.width                  = 210
         $darkmode.height                 = 30
         $darkmode.location               = New-Object System.Drawing.Point(3,500)
         $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    } elseif (!(Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme")) {
+    } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
         $lightmode                       = New-Object system.Windows.Forms.Button
         $lightmode.text                  = "Light Mode"
         $lightmode.width                 = 210
@@ -903,19 +903,19 @@ $batchinstall.Add_Click({
 $dis11check.Add_Click({
     Write-Host "Disabling Secure Boot Check.."
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling Secure Boot Check.."
-    reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /V BypassSecureBootCheck /T REG_DWORD /D 1 /F
+    New-ItemProperty -Path "HKLM:\SYSTEM\Setup\LabConfig" -PropertyType "DWord" -Name "BypassSecureBootCheck" -Value "1"
     Start-Sleep -s 1
     Write-Host "Disabling TPM 2.0 Check.."
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling TPM 2.0 Check.."
-    reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /V BypassTPMCheck /T REG_DWORD /D 1 /F
+    New-ItemProperty -Path "HKLM:\SYSTEM\Setup\LabConfig" -PropertyType "DWord" -Name "BypassTPMCheck" -Value "1"
     Start-Sleep -s 1
     Write-Host "Disabling RAM Check.."
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling RAM Check.."
-    reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /V BypassRAMCheck /T REG_DWORD /D 1 /F
+    New-ItemProperty -Path "HKLM:\SYSTEM\Setup\LabConfig" -PropertyType "DWord" -Name "BypassRAMCheck" -Value "1"
     Start-Sleep -s 1
     Write-Host "Disabling Compatible CPU Check.."
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling Compatible CPU Check.."
-    reg.exe add "HKLM\SYSTEM\Setup\MoSetup" /V AllowUpgradesWithUnsupportedTPMOrCPU /T REG_DWORD /D 1 /F
+    New-ItemProperty -Path "HKLM:\SYSTEM\Setup\LabConfig" -PropertyType "DWord" -Name "AllowUpgradesWithUnsupportedTPMOrCPU" -Value "1"
     Start-Sleep -s 1
 
     @(Set-Variable "0=%~f0"^)
@@ -2310,24 +2310,19 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
     # Removes Widgets from the Taskbar
-
-    #CORRECT WAY OF ADDING NEW ENTRIES TO THE REGISTRY BUT IDK IT WORK SO WHY EDIT IT :D
-    #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
-    #New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
-
-    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 0
-    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 0
-    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 0
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarDa" -Value "0"
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -PropertyType "DWord" -Name "AllowNewsAndInterests" -Value "0"
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -PropertyType "DWord" -Name "EnableFeeds" -Value "0"
 
     # Removes Chat from the Taskbar
-    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarMn /t REG_DWORD /d 0
-    reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" /f /v ChatIcon /t REG_DWORD /d 3
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarMn" -Value "0"
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -PropertyType "DWord" -Name "ChatIcon" -Value "3"
 
     # Removes Teams installation aswell
     Get-AppxPackage MicrosoftTeams* | Remove-AppxPackage
 
     # Default StartMenu alignment 0=Left
-    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarAl /t REG_DWORD /d 0
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarAl" -Value "0"
 
     Write-Host "Enabling NumLock after startup..."
     If (!(Test-Path "HKU:")) {
@@ -2704,35 +2699,34 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Hide tray icons..."
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
 
-    Write-Host "Re-Enabling Chat, Widgets, Search and Centering Start Menu..."
+
     $ResultText.text += "`r`n" +"Re-Enabling Chat, Widgets and Centering Start Menu..."
 
     # Restores Widgets to the Taskbar
-    #reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 1
-    #reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 1
-    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 1
-    
-    Write-Host "Showing Taskbar Search box..."
-	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
+    Write-Host "Restoring widgets..."
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarDa" -Value "1"
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -PropertyType "DWord" -Name "AllowNewsAndInterests" -Value "1"
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -PropertyType "DWord" -Name "EnableFeeds" -Value "1"
 
     # Restores Chat to the Taskbar
-    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarMn /t REG_DWORD /d 1
-    reg.exe add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" /f /v ChatIcon /t REG_DWORD /d 2
+    Write-Host "Restoring chat icon on taskbar..."
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarMn" -Value "1"
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -PropertyType "DWord" -Name "ChatIcon" -Value "2"
 
-    # Default StartMenu alignment for Win 11 Center = 1
-    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarAl /t REG_DWORD /d 1
+    # Default StartMenu alignment 1=Left WIN11
+    Write-Host "Restoring default location of start menu..."
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -PropertyType "DWord" -Name "TaskbarAl" -Value "1"
     
     # Recovers search to the Taskbar
-    reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /f /v SearchboxTaskbarMode /t REG_DWORD /d 1
+    Write-Host "Showing Search box..."
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -PropertyType "DWord" -Name "SearchboxTaskbarMode" -Value "2"
 
-    Write-Host "Allowing Background Apps..."
+    <#Write-Host "Allowing Background Apps..."
     $ResultText.text = "`r`n" +"`r`n" + "  Raising UAC level..."
 	Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
 		Remove-ItemProperty -Path $_.PsPath -Name "Disabled" -ErrorAction SilentlyContinue
 		Remove-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -ErrorAction SilentlyContinue
-	}
+	}#>
 
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Cortana..."
      Write-Host "Enabling Cortana..."
@@ -3888,16 +3882,16 @@ $onedrive.Add_Click({
 
 $darkmode.Add_Click({
     Write-Host "Enabling Dark Mode"
-    Add-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0
-    Add-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0"
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value "0"
     Write-Host "Enabled Dark Mode"
     $ResultText.text = "`r`n" +"`r`n" + "  Enabled Dark Mode " + "`r`n" + "  -   Ready for Next Task.."
 })
 
 $lightmode.Add_Click({
     Write-Host "Switching Back to Light Mode"
-    Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 1
-    Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 1
+    Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme"
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
     Write-Host "Switched Back to Light Mode"
     $ResultText.text = "`r`n" +"`r`n" + "  Enabled Light Mode " + "`r`n" + "  -   Ready for Next Task.."
 })
