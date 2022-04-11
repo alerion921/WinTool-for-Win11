@@ -2721,12 +2721,12 @@ $essentialundo.Add_Click({
     Write-Host "Showing Search box..."
     New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -PropertyType "DWord" -Name "SearchboxTaskbarMode" -Value "2"
 
-    <#Write-Host "Allowing Background Apps..."
+    Write-Host "Allowing Background Apps..."
     $ResultText.text = "`r`n" +"`r`n" + "  Raising UAC level..."
 	Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
 		Remove-ItemProperty -Path $_.PsPath -Name "Disabled" -ErrorAction SilentlyContinue
 		Remove-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -ErrorAction SilentlyContinue
-	}#>
+	}
 
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Cortana..."
      Write-Host "Enabling Cortana..."
@@ -2761,10 +2761,10 @@ $essentialundo.Add_Click({
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -ErrorAction SilentlyContinue
 
     Write-Host "Enabling Windows Security Notifications..."
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
+    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
+    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Notifications" -ErrorAction SilentlyContinue
+    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
+    #Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
 
 
     #Restart Explorer so that the taskbar can update and not look break :D
