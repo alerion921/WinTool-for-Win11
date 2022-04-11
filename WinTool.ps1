@@ -1979,7 +1979,7 @@ $everythingsearch.Add_Click({
 })
 
 $sumatrapdf.Add_Click({
-    If (Test-Path "C:\Users\Kristian\AppData\Local\SumatraPDF\SumatraPDF.exe") {
+    If (Test-Path "$env:USERPROFILE\AppData\Local\SumatraPDF\SumatraPDF.exe") {
         Write-Host 'Sumatra PDF Already Installed'
         $ResultText.text = "`r`n" +"`r`n" + "  Sumatra PDF Already Installed" 
     }
@@ -2015,7 +2015,7 @@ $translucenttb.Add_Click({ #Broken link inside winget.run
 })
 
 $etcher.Add_Click({
-    If (Test-Path "C:\Users\Kristian\AppData\Local\Programs\balena-etcher\balenaEtcher.exe") {
+    If (Test-Path "$env:USERPROFILE\AppData\Local\Programs\balena-etcher\balenaEtcher.exe") {
         Write-Host 'Etcher USB Imager Already Installed'
         $ResultText.text = "`r`n" +"`r`n" + "  Etcher USB Imager Already Installed" 
     }
@@ -2029,7 +2029,7 @@ $etcher.Add_Click({
 })
 
 $putty.Add_Click({
-    If (Test-Path "C:\Users\Kristian\AppData\Local\Programs\WinSCP\WinSCP.exe") {
+    If (Test-Path "$env:USERPROFILE\AppData\Local\Programs\WinSCP\WinSCP.exe") {
         Write-Host 'WinSCP Already Installed'
         $ResultText.text = "`r`n" +"`r`n" + "  WinSCP Already Installed" 
     }
@@ -2699,7 +2699,7 @@ $essentialundo.Add_Click({
     #reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 1
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 1
-    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /d -
+    reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 1
     
     Write-Host "Showing Taskbar Search box..."
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
