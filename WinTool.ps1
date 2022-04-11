@@ -43,6 +43,14 @@ $Form.TopMost                    = $false
         $Form.ForeColor                 = [System.Drawing.ColorTranslator]::FromHtml("#333333")
     }
 
+    if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '0') {
+        $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+        $Form.ForeColor                 = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
+    } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '1') {
+        $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
+        $Form.ForeColor                 = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+    }
+
 $Form.AutoScaleDimensions        = '192, 192'
 $Form.AutoScaleMode              = "Dpi"
 $Form.AutoSize                   = $True
@@ -412,20 +420,43 @@ $Label13.height                  = 10
 $Label13.location                = New-Object System.Drawing.Point(60,475)
 $Label13.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
-    $darkmode                        = New-Object system.Windows.Forms.Button
-    $darkmode.text                   = "Dark Mode"
-    $darkmode.width                  = 210
-    $darkmode.height                 = 30
-    $darkmode.location               = New-Object System.Drawing.Point(3,500)
-    $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-} elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
-    $lightmode                       = New-Object system.Windows.Forms.Button
-    $lightmode.text                  = "Light Mode"
-    $lightmode.width                 = 210
-    $lightmode.height                = 30
-    $lightmode.location              = New-Object System.Drawing.Point(3,500)
-    $lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+If($OSName -like "*Windows*10*")
+{
+    if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
+        $darkmode                        = New-Object system.Windows.Forms.Button
+        $darkmode.text                   = "Dark Mode"
+        $darkmode.width                  = 210
+        $darkmode.height                 = 30
+        $darkmode.location               = New-Object System.Drawing.Point(3,500)
+        $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
+        $lightmode                       = New-Object system.Windows.Forms.Button
+        $lightmode.text                  = "Light Mode"
+        $lightmode.width                 = 210
+        $lightmode.height                = 30
+        $lightmode.location              = New-Object System.Drawing.Point(3,500)
+        $lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    }
+    
+}
+
+elseif($OSName -like "*Windows*11*")
+{
+    if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '1') {
+        $darkmode                        = New-Object system.Windows.Forms.Button
+        $darkmode.text                   = "Dark Mode"
+        $darkmode.width                  = 210
+        $darkmode.height                 = 30
+        $darkmode.location               = New-Object System.Drawing.Point(3,500)
+        $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '0') {
+        $lightmode                       = New-Object system.Windows.Forms.Button
+        $lightmode.text                  = "Light Mode"
+        $lightmode.width                 = 210
+        $lightmode.height                = 30
+        $lightmode.location              = New-Object System.Drawing.Point(3,500)
+        $lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    }
 }
 
 if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
@@ -2302,8 +2333,11 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
     # Removes Widgets from the Taskbar
+
+    #CORRECT WAY OF ADDING NEW ENTRIES TO THE REGISTRY BUT IDK IT WORK SO WHY EDIT IT :D
     #New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
     #New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0
+
     reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /f /v TaskbarDa /t REG_DWORD /d 0
     reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /f /v AllowNewsAndInterests /t REG_DWORD /d 0
     reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /f /v EnableFeeds /t REG_DWORD /d 0
@@ -3877,14 +3911,24 @@ $onedrive.Add_Click({
 
 $darkmode.Add_Click({
     Write-Host "Enabling Dark Mode"
+If($OSName -like "*Windows*10*") {
     Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0
+}
+elseif($OSName -like "*Windows*11*") {
+    Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0
+}
     Write-Host "Enabled Dark Mode"
     $ResultText.text = "`r`n" +"`r`n" + "  Enabled Dark Mode " + "`r`n" + "  -   Ready for Next Task.."
 })
 
 $lightmode.Add_Click({
     Write-Host "Switching Back to Light Mode"
-    Remove-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme
+    If($OSName -like "*Windows*10*") {
+        Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 1
+    }
+    elseif($OSName -like "*Windows*11*") {
+        Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 1
+    }
     Write-Host "Switched Back to Light Mode"
     $ResultText.text = "`r`n" +"`r`n" + "  Enabled Light Mode " + "`r`n" + "  -   Ready for Next Task.."
 })
