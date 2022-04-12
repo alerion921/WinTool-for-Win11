@@ -58,6 +58,20 @@ $Form.AutoScroll                 = $True
 $Form.ClientSize                 = '1500, 1500'
 $Form.FormBorderStyle            = 'FixedSingle'
 
+$Refresh = new-object System.Windows.Forms.Button
+$Refresh.Location = new-object System.Drawing.Size(150,100)
+$Refresh.Size = new-object System.Drawing.Size(80,20)
+$Refresh.Text = "Refresh"
+$Refresh.Add_Click({$Form.Controls.remove($cancelbutton); $form.Refresh()})
+
+$CancelButton = New-Object System.Windows.Forms.Button
+$CancelButton.Location = New-Object System.Drawing.Size(100,150)
+$CancelButton.Size = New-Object System.Drawing.Size(80,20)
+$CancelButton.Text = "Cancel"
+$CancelButton.Add_Click({$Form.Close()})
+
+ 
+
 $ResultText                      = New-Object system.Windows.Forms.TextBox
 $ResultText.multiline            = $true
 $ResultText.width                = 440
@@ -2576,7 +2590,6 @@ Write-Host "Disabling Background application access..."
     Start-Sleep -s 5
     Start-Process -name explorer
 
-    $Form.Refresh()
     Write-Host "Refreshing Form"
 
     Write-Host "Essential Tweaks Completed - Please Reboot"
@@ -2810,6 +2823,8 @@ $essentialundo.Add_Click({
     Stop-Process -name explorer
     Start-Sleep -s 5
     Start-Process -name explorer
+
+    Write-Host "Refreshing Form"
 
     Write-Host "Essential Undo Completed"
     $ResultText.text = "`r`n" +"`r`n" + "  Essential Undo Completed " + "`r`n" + "  -   Ready for Next Task.."
