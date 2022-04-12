@@ -3837,7 +3837,7 @@ $onedrive.Add_Click({
 
 $darkmode.Add_Click({
     Write-Host "Enabling Dark Mode"
-    New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0"
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0" -Force
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value "0"
     Write-Host "Enabled Dark Mode"
     $ResultText.text = "`r`n" +"`r`n" + "  Enabled Dark Mode " + "`r`n" + "  -   Ready for Next Task.."
@@ -3845,7 +3845,7 @@ $darkmode.Add_Click({
 
 $lightmode.Add_Click({
     Write-Host "Switching Back to Light Mode"
-    Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme"
+    Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Force
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
     Write-Host "Switched Back to Light Mode"
     $ResultText.text = "`r`n" +"`r`n" + "  Enabled Light Mode " + "`r`n" + "  -   Ready for Next Task.."
