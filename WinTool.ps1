@@ -2,7 +2,7 @@ Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 Function MakeNewForm {
-	$Form.Close() | Out-Null
+	[void]$Form.Close()
 	MakeForm
 }
 
@@ -4133,6 +4133,7 @@ $windowsupdatefix.Add_Click({
 
 })
 
-[void]$Form.ShowDialog()
+$Form.ShowDialog() | Out-Null
+$Form.Dispose() | Out-Null
 }
 MakeForm
