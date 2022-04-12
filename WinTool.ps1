@@ -471,7 +471,7 @@ if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersio
     $snapbackto11.height              = 30
     $snapbackto11.location            = New-Object System.Drawing.Point(3,605)
     $snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-} elseif (!(Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled")) {
+} else {
     $windows10ify11                     = New-Object system.Windows.Forms.Button
     $windows10ify11.text                = "Windows 10 Taskbar"
     $windows10ify11.width               = 210
