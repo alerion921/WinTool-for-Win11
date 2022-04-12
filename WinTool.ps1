@@ -58,19 +58,11 @@ $Form.AutoScroll                 = $True
 $Form.ClientSize                 = '1500, 1500'
 $Form.FormBorderStyle            = 'FixedSingle'
 
-$Refresh = new-object System.Windows.Forms.Button
-$Refresh.Location = new-object System.Drawing.Size(150,100)
-$Refresh.Size = new-object System.Drawing.Size(80,20)
+$Refresh = New-Object system.Windows.Forms.Button
+$Refresh.Location = New-Object System.Drawing.Point(5,10)
+$Refresh.AutoSize              = $True
 $Refresh.Text = "Refresh"
-$Refresh.Add_Click({$Form.Controls.remove($cancelbutton); $form.Refresh()})
-
-$CancelButton = New-Object System.Windows.Forms.Button
-$CancelButton.Location = New-Object System.Drawing.Size(100,150)
-$CancelButton.Size = New-Object System.Drawing.Size(80,20)
-$CancelButton.Text = "Cancel"
-$CancelButton.Add_Click({$Form.Close()})
-
- 
+$Refresh.Add_Click({$Panel1.Refresh();$Panel2.Refresh();$Panel3.Refresh();$Panel4.Refresh();$Panel5.Refresh();})
 
 $ResultText                      = New-Object system.Windows.Forms.TextBox
 $ResultText.multiline            = $true
@@ -860,7 +852,7 @@ $spotify.height                  = 30
 $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11,$Reloadbtn))
+$Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11,$Refresh,$CancelButton))
 $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$unbindstarticons,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$uconnect,$bnet,$eaapp,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$sfcscan,$dismscan,$dismscan2,$dismfix,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
@@ -2590,8 +2582,6 @@ Write-Host "Disabling Background application access..."
     Start-Sleep -s 5
     Start-Process -name explorer
 
-    Write-Host "Refreshing Form"
-
     Write-Host "Essential Tweaks Completed - Please Reboot"
     $ResultText.text =  "`r`n" +"`r`n" + "  Essential Tweaks Done " + "`r`n" + "  -   Ready for Next Task.."
 })
@@ -2823,8 +2813,6 @@ $essentialundo.Add_Click({
     Stop-Process -name explorer
     Start-Sleep -s 5
     Start-Process -name explorer
-
-    Write-Host "Refreshing Form"
 
     Write-Host "Essential Undo Completed"
     $ResultText.text = "`r`n" +"`r`n" + "  Essential Undo Completed " + "`r`n" + "  -   Ready for Next Task.."
