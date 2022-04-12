@@ -1,20 +1,20 @@
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
-Function MakeNewForm {
-	[void]$Form.Close()
-	MakeForm
-}
-
-
-Function MakeForm {
-
 $ErrorActionPreference = 'SilentlyContinue'
 $wshell = New-Object -ComObject Wscript.Shell
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
 	Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
 	Exit
 }
+
+Function MakeNewForm {
+	$Form.Hide()
+    #$Form.Dispose()
+	MakeForm
+}
+
+Function MakeForm {
 
 # GUI Specs
 Write-Host "Checking winget..."
@@ -346,15 +346,6 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $essentialundo.BackColor         = [System.Drawing.ColorTranslator]::FromHtml("#EE6055")  
     $essentialundo.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled") -eq '1') {
-    $essentialtweaks                 = New-Object system.Windows.Forms.Button
-    $essentialtweaks.text            = "Essential Tweaks"
-    $essentialtweaks.width           = 210
-    $essentialtweaks.height          = 65
-    $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
-    $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
-    $essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
-} elseif (!(Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled")){
     $essentialtweaks                 = New-Object system.Windows.Forms.Button
     $essentialtweaks.text            = "Essential Tweaks"
     $essentialtweaks.width           = 210
@@ -4134,6 +4125,5 @@ $windowsupdatefix.Add_Click({
 })
 
 $Form.ShowDialog() | Out-Null
-$Form.Dispose() | Out-Null
 }
 MakeForm
