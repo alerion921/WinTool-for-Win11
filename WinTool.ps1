@@ -464,21 +464,22 @@ $batchinstall.height              = 30
 $batchinstall.location            = New-Object System.Drawing.Point(3,570)
 $batchinstall.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled") -eq '1') {
-    $snapbackto11                     = New-Object system.Windows.Forms.Button
-    $snapbackto11.text                = "Windows 11 Taskbar (Revert)"
-    $snapbackto11.width               = 210
-    $snapbackto11.height              = 30
-    $snapbackto11.location            = New-Object System.Drawing.Point(3,605)
-    $snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-} else {
+
     $windows10ify11                     = New-Object system.Windows.Forms.Button
     $windows10ify11.text                = "Windows 10 Taskbar"
     $windows10ify11.width               = 210
     $windows10ify11.height              = 30
     $windows10ify11.location            = New-Object System.Drawing.Point(3,605)
     $windows10ify11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-}
+
+    if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled") -eq '1') {
+        $snapbackto11                     = New-Object system.Windows.Forms.Button
+        $snapbackto11.text                = "Windows 11 Taskbar (Revert)"
+        $snapbackto11.width               = 210
+        $snapbackto11.height              = 30
+        $snapbackto11.location            = New-Object System.Drawing.Point(3,605)
+        $snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+    }
 
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
