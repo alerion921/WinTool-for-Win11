@@ -461,14 +461,14 @@ $batchinstall.Font                = New-Object System.Drawing.Font('Microsoft Sa
 
 if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled") -eq '1') {
     $snapbackto11                     = New-Object system.Windows.Forms.Button
-    $snapbackto11.text                = "Taskmanager 11"
+    $snapbackto11.text                = "Windows 11 Taskbar (Revert)"
     $snapbackto11.width               = 210
     $snapbackto11.height              = 30
     $snapbackto11.location            = New-Object System.Drawing.Point(3,605)
     $snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 } elseif (!(Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled")) {
     $windows10ify11                     = New-Object system.Windows.Forms.Button
-    $windows10ify11.text                = "Old Taskmanager (Win10)"
+    $windows10ify11.text                = "Windows 10 Taskbar"
     $windows10ify11.width               = 210
     $windows10ify11.height              = 30
     $windows10ify11.location            = New-Object System.Drawing.Point(3,605)
@@ -846,7 +846,7 @@ $spotify.height                  = 30
 $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
+$Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11,$Reloadbtn))
 $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$unbindstarticons,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$uconnect,$bnet,$eaapp,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$sfcscan,$dismscan,$dismscan2,$dismfix,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
@@ -2575,6 +2575,9 @@ Write-Host "Disabling Background application access..."
     Stop-Process -name explorer
     Start-Sleep -s 5
     Start-Process -name explorer
+
+    $Form.Refresh()
+    Write-Host "Refreshing Form"
 
     Write-Host "Essential Tweaks Completed - Please Reboot"
     $ResultText.text =  "`r`n" +"`r`n" + "  Essential Tweaks Done " + "`r`n" + "  -   Ready for Next Task.."
