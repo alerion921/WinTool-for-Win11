@@ -2499,12 +2499,17 @@ Write-Host "Disabling Background application access..."
         Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Type DWord -Value 1
     }
 
-Write-Host "Disabling Action Center..."
+    Write-Host "Disabling Action Center..."
     If (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer")) {
         New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" | Out-Null
     }
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Type DWord -Value 1
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessNotifications" -Type "DWORD" -Value 2 -Force
+    New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userNotificationListener" -Type "String" -Name Value -Value "DENY" -Force
+
+    Write-Host "Disabling Notification Area..."
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Type "DWord" -Name "NoAutoTrayNotify" -Value "1" -Force
 
     Write-Host "Changing default Explorer view to This PC..."
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
@@ -2742,6 +2747,9 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Action Center..."
     Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Type DWord -Value 1
+
+    Write-Host "Disabling Notification Area..."
+    Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" Name "NoAutoTrayNotify" -ErrorAction SilentlyContinue
 
     Write-Host "Changing default Explorer view to Quick Access..."
     $ResultText.text = "`r`n" +"`r`n" + "  Changing default Explorer view to Quick Access..."
