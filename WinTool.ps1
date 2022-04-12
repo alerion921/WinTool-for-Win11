@@ -459,6 +459,22 @@ $batchinstall.height              = 30
 $batchinstall.location            = New-Object System.Drawing.Point(3,570)
 $batchinstall.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled") -eq '1') {
+    $snapbackto11                     = New-Object system.Windows.Forms.Button
+    $snapbackto11.text                = "Taskmanager 11"
+    $snapbackto11.width               = 210
+    $snapbackto11.height              = 30
+    $snapbackto11.location            = New-Object System.Drawing.Point(3,605)
+    $snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+} elseif (!(Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled")) {
+    $windows10ify11                     = New-Object system.Windows.Forms.Button
+    $windows10ify11.text                = "Old Taskmanager (Win10)"
+    $windows10ify11.width               = 210
+    $windows10ify11.height              = 30
+    $windows10ify11.location            = New-Object System.Drawing.Point(3,605)
+    $windows10ify11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+}
+
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
 $defaultwindowsupdate.width      = 210
@@ -835,7 +851,7 @@ $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchro
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$uconnect,$bnet,$eaapp,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$sfcscan,$dismscan,$dismscan2,$dismfix,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$ultimatepower,$restorepower))
-$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches,$batchinstall))
+$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches,$batchinstall, $snapbackto11, $windows10ify11))
 
 $getosinfo.Add_Click({
     $name=(Get-WmiObject Win32_OperatingSystem).caption
@@ -2087,6 +2103,34 @@ $gimp.Add_Click({
         if($?) { Write-Host "Installed Gimp Image Editor" }
         $ResultText.text = "`r`n" + "  Finished Installing Gimp Image Editor" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
+})
+
+$windows10ify11.Add_Click({
+    # Restore the Classic Taskbar in Windows 11
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled" -PropertyType DWord -Value "00000001";
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled" -Value "00000001";
+
+    # Disable Taskbar / Cortana Search Box on Windows 11
+    New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -PropertyType DWord -Value "00000000";
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Value "00000000";
+
+    # Ungroup Taskbar Icons / Enable Text Labels in Windows 11
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -PropertyType DWord -Value "00000001";
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -Value "00000001";
+
+    Stop-Process -name explorer
+    Start-Sleep -s 5
+    Start-Process -name explorer
+})
+
+$snapbackto11.Add_Click({
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled" -Value "00000000"
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Value "00000001";
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -Value "00000000";
+    
+    Stop-Process -name explorer
+    Start-Sleep -s 5
+    Start-Process -name explorer
 })
 
 $unbindstarticons.Add_Click({
