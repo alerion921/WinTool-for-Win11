@@ -1384,7 +1384,7 @@ $steam.Add_Click({
     else {
         Write-Host "Installing Steam"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Steam... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Valve.Steam | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Valve.Steam --force | Out-Host
         if($?) { Write-Host "Installed Steam" }
         $ResultText.text = "`r`n" + "  Finished Installing Steam" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1402,7 +1402,7 @@ $teamviewer.Add_Click({
     else {
         Write-Host "Installing Teamviewer"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Teamviewer... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent TeamViewer.TeamViewer | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent TeamViewer.TeamViewer --force  | Out-Host
         if($?) { Write-Host "Installed Teamviewer" }
         $ResultText.text = "`r`n" + "  Finished Installing Teamviewer" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1416,7 +1416,7 @@ $nvclean.Add_Click({
     else {
         Write-Host "Installing NVCleanstall"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing NVCleanstall... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent TechPowerUp.NVCleanstall | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent TechPowerUp.NVCleanstall --force  | Out-Host
         if($?) { Write-Host "Installed NVCleanstall" }
         $ResultText.text = "`r`n" + "  Finished Installing NVCleanstall" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1430,7 +1430,7 @@ $epicgames.Add_Click({
     else {
         Write-Host "Installing Epic Games Launcher "
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Epic Games Launcher... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent EpicGames.EpicGamesLauncher | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent EpicGames.EpicGamesLauncher --force  | Out-Host
         if($?) { Write-Host "Installed Dropbox" }
         $ResultText.text = "`r`n" + "  Finished Installing Epic Games Launcher" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1444,7 +1444,7 @@ $openoffice.Add_Click({
     else {
         Write-Host "Installing Open Office"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Open Office... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Apache.OpenOffice | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Apache.OpenOffice --force  | Out-Host
         if($?) { Write-Host "Installed Open Office" }
         $ResultText.text = "`r`n" + "  Finished Installing Open Office" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1458,7 +1458,7 @@ $zoom.Add_Click({
     else {
         Write-Host "Installing Zoom"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Zoom... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Zoom.Zoom | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Zoom.Zoom --force  | Out-Host
         if($?) { Write-Host "Installed Zoom" }
         $ResultText.text = "`r`n" + "  Finished Installing Zoom" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1472,7 +1472,7 @@ $spotify.Add_Click({
     else {
         Write-Host "Installing Spotify"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Spotify... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Spotify.Spotify | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Spotify.Spotify --force  | Out-Host
         if($?) { Write-Host "Installed Spotify" }
         $ResultText.text = "`r`n" + "  Finished Installing Spotify" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1486,7 +1486,7 @@ $malwarebytes.Add_Click({
     else {
         Write-Host "Installing Malwarebytes"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Malwarebytes... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Malwarebytes.Malwarebytes | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Malwarebytes.Malwarebytes --force
         if($?) { Write-Host "Installed Malwarebytes" }
         $ResultText.text = "`r`n" + "  Finished Installing Malwarebytes" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1501,7 +1501,7 @@ $dropbox.Add_Click({
     else {
         Write-Host "Installing Dropbox"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Dropbox... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Dropbox.Dropbox | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Dropbox.Dropbox --force  | Out-Host
         if($?) { Write-Host "Installed Dropbox" }
         $ResultText.text = "`r`n" + "  Finished Installing Dropbox" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1515,7 +1515,7 @@ $qbittorent.Add_Click({
     else {
         Write-Host "Installing qBittorent"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing qBittorent... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent qBittorrent.qBittorrent | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent qBittorrent.qBittorrent --force  | Out-Host
         if($?) { Write-Host "Installed qBittorent" }
         $ResultText.text = "`r`n" + "  Finished Installing qBittorent" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1529,7 +1529,7 @@ $brave.Add_Click({
     else {
         Write-Host "Installing Brave Browser"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Brave... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent BraveSoftware.BraveBrowser | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent BraveSoftware.BraveBrowser --force  | Out-Host
         if($?) { Write-Host "Installed Brave Browser" }
         $ResultText.text = "`r`n" + "  Finished Installing Brave" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1543,7 +1543,7 @@ $firefox.Add_Click({
     else {
         Write-Host "Installing Firefox"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Firefox... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Mozilla.Firefox | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Mozilla.Firefox --force  | Out-Host
         if($?) { Write-Host "Installed Firefox" }
         $ResultText.text = "`r`n" + "  Finished Installing Firefox" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1557,7 +1557,7 @@ $gchrome.Add_Click({
     else {
         Write-Host "Installing Google Chrome"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Google Chrome... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Google.Chrome | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Google.Chrome --force  | Out-Host
         if($?) { Write-Host "Installed Google Chrome" }
         $ResultText.text = "`r`n" + "  Finished Installing Google Chrome" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1571,7 +1571,7 @@ $autohotkey.Add_Click({
     else {
         Write-Host "Installing AutoHotkey"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing AutoHotkey... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Lexikos.AutoHotkey | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Lexikos.AutoHotkey --force  | Out-Host
         if($?) { Write-Host "Installed AutoHotkey" }
         $ResultText.text = "`r`n" + "  Finished Installing Autohotkey" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1585,7 +1585,7 @@ $imageglass.Add_Click({
     else {
         Write-Host "Installing Image Glass (Image Viewer)"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Image Glass... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent DuongDieuPhap.ImageGlass | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent DuongDieuPhap.ImageGlass --force  | Out-Host
         if($?) { Write-Host "Installed Image Glass (Image Viewer)" }
         $ResultText.text = "`r`n" + "  Finished Installing Image Glass" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1599,7 +1599,7 @@ $discord.Add_Click({
     else {
         Write-Host "Installing Discord"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Discord... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Discord.Discord | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Discord.Discord --force  | Out-Host
         if($?) { Write-Host "Installed Discord" }
         $ResultText.text = "`r`n" + "  Finished Installing Discord" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1615,7 +1615,7 @@ $adobereader.Add_Click({
         else {
             Write-Host "Installing Adobe Reader DC"
             $ResultText.text = "`r`n" +"`r`n" + "  Installing Adobe Reader DC.. Please Wait"
-            winget install -e --accept-source-agreements --accept-package-agreements --silent Adobe.Acrobat.Reader.32-bit | Out-Host
+            winget install -e --accept-source-agreements --accept-package-agreements --silent Adobe.Acrobat.Reader.32-bit --force  | Out-Host
             if($?) { Write-Host "Installed Adobe Reader DC" }
             $ResultText.text = "`r`n" + "  Finished Installing Adobe Reader DC" + "`r`n" + "`r`n" + "  Ready for Next Task"
         }
@@ -1628,7 +1628,7 @@ $adobereader.Add_Click({
         else {
             Write-Host "Installing Adobe Reader DC"
             $ResultText.text = "`r`n" +"`r`n" + "  Installing Adobe Reader DC.. Please Wait"
-            winget install -e --accept-source-agreements --accept-package-agreements --silent Adobe.Acrobat.Reader.64-bit | Out-Host
+            winget install -e --accept-source-agreements --accept-package-agreements --silent Adobe.Acrobat.Reader.64-bit --force  | Out-Host
             if($?) { Write-Host "Installed Adobe Reader DC" }
             $ResultText.text = "`r`n" + "  Finished Installing Adobe Reader DC" + "`r`n" + "`r`n" + "  Ready for Next Task"
         }
@@ -1643,7 +1643,7 @@ $notepad.Add_Click({
     else {
         Write-Host "Installing Notepad++"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Notepad++... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Notepad++.Notepad++ | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Notepad++.Notepad++ --force  | Out-Host
         if($?) { Write-Host "Installed Notepad++" }
         $ResultText.text = "`r`n" + "  Finished Installing NotePad++" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1657,7 +1657,7 @@ $vlc.Add_Click({
     else {
         Write-Host "Installing VLC Media Player"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing VLC Media Player... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent VideoLAN.VLC | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent VideoLAN.VLC --force  | Out-Host
         if($?) { Write-Host "Installed VLC Media Player" }
         $ResultText.text = "`r`n" + "  Finished Installing VLC Media Player" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1671,7 +1671,7 @@ $mpc.Add_Click({
     else {
         Write-Host "Installing Media Player Classic"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Media Player Classic... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent clsid2.mpc-hc | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent clsid2.mpc-hc --force  | Out-Host
         if($?) { Write-Host "Installed Media Player Classic" }
         $ResultText.text = "`r`n" + "  Finished Installing Media Player Classic" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1685,7 +1685,7 @@ $7zip.Add_Click({
     else {
         Write-Host "Installing 7-Zip Compression Tool"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing 7-Zip Compression Tool... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent 7zip.7zip | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent 7zip.7zip --force  | Out-Host
         if($?) { Write-Host "Installed 7-Zip Compression Tool" }
         $ResultText.text = "`r`n" + "  Finished Installing 7-Zip Compression Tool" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1699,7 +1699,7 @@ $vscode.Add_Click({
     else {
         Write-Host "Installing Visual Studio Code"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Visual Studio Code... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.VisualStudioCode --source winget | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.VisualStudioCode --source winget --force  | Out-Host
         if($?) { Write-Host "Installed Visual Studio Code" }
         $ResultText.text = "`r`n" + "  Finished Installing Visual Studio Code" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1713,7 +1713,7 @@ $vscodium.Add_Click({
     else {
         Write-Host "Installing VS Codium"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing VS Codium... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent VSCodium.VSCodium | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent VSCodium.VSCodium --force  | Out-Host
         if($?) { Write-Host "Installed VS Codium" }
         $ResultText.text = "`r`n" + "  Finished Installing VS Codium" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1728,7 +1728,7 @@ $winterminal.Add_Click({
     else {
         Write-Host "Installing New Windows Terminal"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing New Windows Terminal... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.WindowsTerminal | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.WindowsTerminal --force  | Out-Host
         if($?) { Write-Host "Installed New Windows Terminal" }
         $ResultText.text = "`r`n" + "  Finished Installing New Windows Terminal" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1742,7 +1742,7 @@ $powertoys.Add_Click({
     else {
         Write-Host "Installing Microsoft PowerToys"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Microsoft PowerToys... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.PowerToys | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.PowerToys --force  | Out-Host
         if($?) { Write-Host "Installed Microsoft PowerToys" }
         $ResultText.text = "`r`n" + "  Finished Installing Microsoft PowerToys" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1756,7 +1756,7 @@ $everythingsearch.Add_Click({
     else {
         Write-Host "Installing Voidtools Everything Search"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Voidtools Everything Search... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent voidtools.Everything --source winget | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent voidtools.Everything --source winget --force  | Out-Host
         if($?) { Write-Host "Installed Everything Search" }
         $ResultText.text = "`r`n" + "  Finished Installing Voidtools Everything Search" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1770,7 +1770,7 @@ $sumatrapdf.Add_Click({
     else {
         Write-Host "Installing Sumatra PDF"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Sumatra PDF... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent SumatraPDF.SumatraPDF | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent SumatraPDF.SumatraPDF --force  | Out-Host
         if($?) { Write-Host "Installed Sumatra PDF" }
         $ResultText.text = "`r`n" + "  Finished Installing Sumatra PDF" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1784,7 +1784,7 @@ $githubdesktop.Add_Click({
     else {
         Write-Host "Installing GitHub Desktop"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing GitHub Desktop... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent GitHub.GitHubDesktop | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent GitHub.GitHubDesktop --force  | Out-Host
         if($?) { Write-Host "Installed Github Desktop" }
         $ResultText.text = "`r`n" + "  Finished Installing GitHub Desktop" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1793,7 +1793,7 @@ $githubdesktop.Add_Click({
 $translucenttb.Add_Click({ #Broken link inside winget.run
         Write-Host "Installing Translucent Taskbar"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Translucent Taskbar... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent TranslucentTB.TranslucentTB | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent TranslucentTB.TranslucentTB --force  | Out-Host
         if($?) { Write-Host "Installed Translucent Taskbar" }
         $ResultText.text = "`r`n" + "  Finished Installing Translucent Taskbar" + "`r`n" + "`r`n" + "  Ready for Next Task"
 })
@@ -1806,7 +1806,7 @@ $etcher.Add_Click({
     else {
         Write-Host "Installing Etcher USB Imager"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Etcher USB Imager... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Balena.Etcher | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Balena.Etcher --force  | Out-Host
         if($?) { Write-Host "Installed Etcher USB Imager" }
         $ResultText.text = "`r`n" + "  Finished Installing Etcher USB Imager" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1820,7 +1820,7 @@ $advancedipscanner.Add_Click({
     else {
         Write-Host "Installing Advanced IP Scanner"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Advanced IP Scanner... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Famatech.AdvancedIPScanner | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Famatech.AdvancedIPScanner --force  | Out-Host
         if($?) { Write-Host "Installed Advanced IP Scanner" }
         $ResultText.text = "`r`n" + "  Finished Installing Advanced IP Scanner" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1834,7 +1834,7 @@ $sharex.Add_Click({
     else {
         Write-Host "Installing ShareX Screenshot Tool"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing ShareX Screenshot Tool... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent ShareX.ShareX | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent ShareX.ShareX --force  | Out-Host
         if($?) { Write-Host "Installed ShareX Screenshot Tool" }
         $ResultText.text = "`r`n" + "  Finished Installing ShareX Screenshot Tool" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1848,7 +1848,7 @@ $gimp.Add_Click({
     else {
         Write-Host "Installing Gimp Image Editor"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Gimp Image Editor... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent GIMP.GIMP | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent GIMP.GIMP --force  | Out-Host
         if($?) { Write-Host "Installed Gimp Image Editor" }
         $ResultText.text = "`r`n" + "  Finished Installing Gimp Image Editor" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
