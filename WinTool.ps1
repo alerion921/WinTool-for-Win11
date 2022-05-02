@@ -383,6 +383,13 @@ $spotify.height                  = 30
 $spotify.location                = New-Object System.Drawing.Point(3,500)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$malwarebytes                    = New-Object system.Windows.Forms.Button
+$malwarebytes.text               = "Malwarebytes"
+$malwarebytes.width              = 210
+$malwarebytes.height             = 30
+$malwarebytes.location           = New-Object System.Drawing.Point(3,535)
+$malwarebytes.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 $Label2                          = New-Object system.Windows.Forms.Label
 $Label2.text                     = "Gaming Software"
 $Label2.AutoSize                 = $true
@@ -728,7 +735,7 @@ $openoffice.Font                 = New-Object System.Drawing.Font('Microsoft San
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$installapplications,$Label4,$Panel3,$ResultText,$Label10))
 $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$documenttools,$videoandimagingtools,$webbrowsers,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras))
-$Panel2.controls.AddRange(@($Label2,$utillitysoftware, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify))
+$Panel2.controls.AddRange(@($Label2,$utillitysoftware, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify,$malwarebytes))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$Label14, $ultimatepower,$restorepower))
 $Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
@@ -1468,6 +1475,20 @@ $spotify.Add_Click({
         winget install -e --accept-source-agreements --accept-package-agreements --silent Spotify.Spotify | Out-Host
         if($?) { Write-Host "Installed Spotify" }
         $ResultText.text = "`r`n" + "  Finished Installing Spotify" + "`r`n" + "`r`n" + "  Ready for Next Task"
+    }
+})
+
+$malwarebytes.Add_Click({
+    If (Test-Path "C:\Users\$env:UserName\AppData\Roaming\Malwarebytes") {
+        Write-Host 'Malwarebytes Already Installed'
+        $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Already Installed" 
+    }
+    else {
+        Write-Host "Installing Malwarebytes"
+        $ResultText.text = "`r`n" +"`r`n" + "  Installing Malwarebytes... Please Wait" 
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Malwarebytes.Malwarebytes | Out-Host
+        if($?) { Write-Host "Installed Malwarebytes" }
+        $ResultText.text = "`r`n" + "  Finished Installing Malwarebytes" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
 })
 
