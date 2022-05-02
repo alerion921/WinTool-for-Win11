@@ -336,31 +336,29 @@ $Label21.height                  = 10
 $Label21.location                = New-Object System.Drawing.Point(35,20)
 $Label21.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled") -eq '0') {
-    $essentialundo                   = New-Object system.Windows.Forms.Button
-    $essentialundo.text              = "Undo Essential Tweaks"
-    $essentialundo.width             = 210
-    $essentialundo.height            = 65
-    $essentialundo.location          = New-Object System.Drawing.Point(3,45)
-    $essentialundo.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    $essentialundo.BackColor         = [System.Drawing.ColorTranslator]::FromHtml("#EE6055")  
-    $essentialundo.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
-} elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled") -eq '1') {
-    $essentialtweaks                 = New-Object system.Windows.Forms.Button
-    $essentialtweaks.text            = "Essential Tweaks"
-    $essentialtweaks.width           = 210
-    $essentialtweaks.height          = 65
-    $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
-    $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    $essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
-    $essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
-}
+$essentialtweaks                 = New-Object system.Windows.Forms.Button
+$essentialtweaks.text            = "Essential Tweaks"
+$essentialtweaks.width           = 210
+$essentialtweaks.height          = 65
+$essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
+$essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
+$essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+
+$essentialundo                   = New-Object system.Windows.Forms.Button
+$essentialundo.text              = "Undo Essential Tweaks"
+$essentialundo.width             = 210
+$essentialundo.height            = 65
+$essentialundo.location          = New-Object System.Drawing.Point(3,115)
+$essentialundo.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$essentialundo.BackColor         = [System.Drawing.ColorTranslator]::FromHtml("#EE6055")  
+$essentialundo.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 
 $gamingtweaks                    = New-Object system.Windows.Forms.Button
 $gamingtweaks.text               = "Gaming Tweaks"
 $gamingtweaks.width              = 210
 $gamingtweaks.height             = 65
-$gamingtweaks.location           = New-Object System.Drawing.Point(3,115)
+$gamingtweaks.location           = New-Object System.Drawing.Point(3,185)
 $gamingtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 $gamingtweaks.BackColor          = [System.Drawing.ColorTranslator]::FromHtml("#FFD97D")
 $gamingtweaks.ForeColor          = [System.Drawing.ColorTranslator]::FromHtml("#333333")
@@ -370,7 +368,7 @@ $securitypatches                 = New-Object system.Windows.Forms.Button
 $securitypatches.text            = "Patch Security"
 $securitypatches.width           = 210
 $securitypatches.height          = 65
-$securitypatches.location        = New-Object System.Drawing.Point(3,185)
+$securitypatches.location        = New-Object System.Drawing.Point(3,255)
 $securitypatches.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 $securitypatches.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#7d93ff")
 $securitypatches.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
@@ -379,42 +377,42 @@ $onedrive                        = New-Object system.Windows.Forms.Button
 $onedrive.text                   = "Delete & Disable  OneDrive"
 $onedrive.width                  = 210
 $onedrive.height                 = 30
-$onedrive.location               = New-Object System.Drawing.Point(3,255)
+$onedrive.location               = New-Object System.Drawing.Point(3,290)
 $onedrive.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $InstallOneDrive                 = New-Object system.Windows.Forms.Button
 $InstallOneDrive.text            = "Install & Enable OneDrive"
 $InstallOneDrive.width           = 210
 $InstallOneDrive.height          = 30
-$InstallOneDrive.location        = New-Object System.Drawing.Point(2,290)
+$InstallOneDrive.location        = New-Object System.Drawing.Point(2,325)
 $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $EClipboardHistory               = New-Object system.Windows.Forms.Button
 $EClipboardHistory.text          = "Enable Clipboard History"
 $EClipboardHistory.width         = 210
 $EClipboardHistory.height        = 30
-$EClipboardHistory.location      = New-Object System.Drawing.Point(3,325)
+$EClipboardHistory.location      = New-Object System.Drawing.Point(3,360)
 $EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ELocation                       = New-Object system.Windows.Forms.Button
 $ELocation.text                  = "Enable Location Tracking"
 $ELocation.width                 = 210
 $ELocation.height                = 30
-$ELocation.location              = New-Object System.Drawing.Point(2,360)
+$ELocation.location              = New-Object System.Drawing.Point(2,395)
 $ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$EHibernation                    = New-Object system.Windows.Forms.Button  #I will move this to extras later on
+$EHibernation                    = New-Object system.Windows.Forms.Button
 $EHibernation.text               = "Enable Hibernation"
 $EHibernation.width              = 210
 $EHibernation.height             = 30
-$EHibernation.location           = New-Object System.Drawing.Point(3,395)
+$EHibernation.location           = New-Object System.Drawing.Point(3,430)
 $EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$dualboottime                    = New-Object system.Windows.Forms.Button #I will move this to extras later on
+$dualboottime                    = New-Object system.Windows.Forms.Button
 $dualboottime.text               = "Set Time to UTC"
 $dualboottime.width              = 210
 $dualboottime.height             = 30
-$dualboottime.location           = New-Object System.Drawing.Point(3,430)
+$dualboottime.location           = New-Object System.Drawing.Point(3,475)
 $dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Label13                         = New-Object system.Windows.Forms.Label
@@ -422,38 +420,36 @@ $Label13.text                    = "Visual Tweaks"
 $Label13.AutoSize                = $true
 $Label13.width                   = 25
 $Label13.height                  = 10
-$Label13.location                = New-Object System.Drawing.Point(60,475)
+$Label13.location                = New-Object System.Drawing.Point(60,500)
 $Label13.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-    if (!(Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme")) {
-        $darkmode                        = New-Object system.Windows.Forms.Button
-        $darkmode.text                   = "Dark Mode"
-        $darkmode.width                  = 210
-        $darkmode.height                 = 30
-        $darkmode.location               = New-Object System.Drawing.Point(3,500)
-        $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
-        $lightmode                       = New-Object system.Windows.Forms.Button
-        $lightmode.text                  = "Light Mode"
-        $lightmode.width                 = 210
-        $lightmode.height                = 30
-        $lightmode.location              = New-Object System.Drawing.Point(3,500)
-        $lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    }
+$darkmode                        = New-Object system.Windows.Forms.Button
+$darkmode.text                   = "Dark Mode"
+$darkmode.width                  = 210
+$darkmode.height                 = 30
+$darkmode.location               = New-Object System.Drawing.Point(3,535)
+$darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$lightmode                       = New-Object system.Windows.Forms.Button
+$lightmode.text                  = "Light Mode"
+$lightmode.width                 = 210
+$lightmode.height                = 30
+$lightmode.location              = New-Object System.Drawing.Point(3,570)
+$lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
     $performancefx                   = New-Object system.Windows.Forms.Button
     $performancefx.text              = "Performance Visual FX"
     $performancefx.width             = 210
     $performancefx.height            = 30
-    $performancefx.location          = New-Object System.Drawing.Point(3,535)
+    $performancefx.location          = New-Object System.Drawing.Point(3,605)
     $performancefx.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '0') {
     $appearancefx                    = New-Object system.Windows.Forms.Button
     $appearancefx.text               = "Appearance Visual FX"
     $appearancefx.width              = 210
     $appearancefx.height             = 30
-    $appearancefx.location           = New-Object System.Drawing.Point(3,535)
+    $appearancefx.location           = New-Object System.Drawing.Point(3,605)
     $appearancefx.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
 
@@ -461,25 +457,24 @@ $batchinstall                     = New-Object system.Windows.Forms.Button
 $batchinstall.text                = "Batch Install"
 $batchinstall.width               = 210
 $batchinstall.height              = 30
-$batchinstall.location            = New-Object System.Drawing.Point(3,570)
+$batchinstall.location            = New-Object System.Drawing.Point(3,640)
 $batchinstall.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 
-    $windows10ify11                     = New-Object system.Windows.Forms.Button
-    $windows10ify11.text                = "Windows 10 Taskbar"
-    $windows10ify11.width               = 210
-    $windows10ify11.height              = 30
-    $windows10ify11.location            = New-Object System.Drawing.Point(3,605)
-    $windows10ify11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$windows10ify11                     = New-Object system.Windows.Forms.Button
+$windows10ify11.text                = "Windows 10 Taskbar"
+$windows10ify11.width               = 210
+$windows10ify11.height              = 30
+$windows10ify11.location            = New-Object System.Drawing.Point(3,675)
+$windows10ify11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-    if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled") -eq '1') {
-        $snapbackto11                     = New-Object system.Windows.Forms.Button
-        $snapbackto11.text                = "Windows 11 Taskbar (Revert)"
-        $snapbackto11.width               = 210
-        $snapbackto11.height              = 30
-        $snapbackto11.location            = New-Object System.Drawing.Point(3,605)
-        $snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    }
+$snapbackto11                     = New-Object system.Windows.Forms.Button
+$snapbackto11.text                = "Windows 11 Taskbar (Revert)"
+$snapbackto11.width               = 210
+$snapbackto11.height              = 30
+$snapbackto11.location            = New-Object System.Drawing.Point(3,710)
+$snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
