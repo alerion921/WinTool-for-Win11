@@ -2754,7 +2754,132 @@ if ($NonRemovables -eq "0" ) {
 
 $global:WhiteListedAppsRegex = $global:WhiteListedApps -join '|'
 
+$Bloatware = @(
+    #Unnecessary Windows 10 & 11 apps
+    "Microsoft.3DBuilder"
+    "Microsoft.Microsoft3DViewer"
+    "Microsoft.AppConnector"
+    "Microsoft.BingFinance"
+    "Microsoft.PPIProjection"
+    "Microsoft.BingNews"
+    "Microsoft.BingSports"
+    "Microsoft.BingTranslator"
+    "Microsoft.BingWeather"
+    "Microsoft.BingFoodAndDrink"
+    "Microsoft.BingHealthAndFitness"
+    "Microsoft.BingTravel"
+    "Microsoft.MinecraftUWP"
+    "Microsoft.GamingServices"
+    "Microsoft.GetHelp"
+    "Microsoft.Getstarted"
+    "Microsoft.Messaging"
+    "Microsoft.Microsoft3DViewer"
+    "Microsoft.MicrosoftOfficeHub"
+    "Microsoft.MicrosoftSolitaireCollection"
+    "Microsoft.NetworkSpeedTest"
+    "Microsoft.News"
+    "Microsoft.Office.Lens"
+    "Microsoft.Office.Sway"
+    "Microsoft.News"                                    # Issue 77
+    "Microsoft.Office.Lens"                             # Issue 77
+    "Microsoft.Office.OneNote"
+    "Microsoft.Office.Sway"
+    "Microsoft.OneConnect"
+    "Microsoft.People"
+    "Microsoft.Print3D"
+    "Microsoft.RemoteDesktop"                           # Issue 120
+    "Microsoft.SkypeApp"
+    "Microsoft.Wallet"
+    "Microsoft.Whiteboard"
+    "Microsoft.StorePurchaseApp"
+    "Microsoft.Office.Todo.List"                        # Issue 77
+    "Microsoft.Whiteboard"                              # Issue 77
+    "Microsoft.WindowsAlarms"
+    "microsoft.windowscommunicationsapps"
+    "Microsoft.WindowsFeedbackHub"
+    "Microsoft.WindowsMaps"
+    "Microsoft.WindowsPhone"
+    "Microsoft.WindowsSoundRecorder"
+    "Microsoft.XboxApp"
+    "Microsoft.ConnectivityStore"
+    "Microsoft.CommsPhone"
+    "Microsoft.ScreenSketch"
+    "Microsoft.Xbox.TCUI"
+    "Microsoft.XboxApp"
+    "Microsoft.XboxGameOverlay"
+    "Microsoft.XboxGameCallableUI"
+    "Microsoft.XboxSpeechToTextOverlay"
+    "Microsoft.MixedReality.Portal"
+    "Microsoft.XboxGamingOverlay"
+    "Microsoft.XboxIdentityProvider"
+    "Microsoft.XboxSpeechToTextOverlay"
+    "Microsoft.ZuneMusic"
+    "Microsoft.ZuneVideo"
+    "Microsoft.YourPhone"
+    "Microsoft.Getstarted"
+    "Microsoft.MicrosoftOfficeHub"
+
+    #Sponsored Windows 10 & 11 apps
+    #Add sponsored/featured apps to remove in the "*AppName*" format
+    "*EclipseManager*"
+    "*ActiproSoftwareLLC*"
+    "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
+    "*Duolingo-LearnLanguagesforFree*"
+    "*PandoraMediaInc*"
+    "*CandyCrush*"
+    "*BubbleWitch3Saga*"
+    "*Wunderlist*"
+    "*Flipboard*"
+    "*Twitter*"
+    "*Facebook*"
+    "*Royal Revolt*"
+    "*Sway*"
+    "*Speed Test*"
+    "*Dolby*"
+    "*Viber*"
+    "*ACGMediaPlayer*"
+    "*Netflix*"
+    "*OneCalendar*"
+    "*LinkedInforWindows*"
+    "*HiddenCityMysteryofShadows*"
+    "*Hulu*"
+    "*HiddenCity*"
+    "*AdobePhotoshopExpress*"
+    "*HotspotShieldFreeVPN*"
+    "*BytedancePte*"
+    "*TikTok*"
+    "*Disney*"
+    "*Clipchamp*"
+    "*SpotifyAB*"
+    "*AmazonVideo*"
+    "*Instagram*"
+    "*ToDo*"
+    "*Hidden City*"
+    "*Roblox*"
+    "*Photoshop*"
+
+    #Optional: Typically not removed but you can if you need to for some reason
+    "*Microsoft.Advertising.Xaml*"
+    #"*Microsoft.MSPaint*"
+    #"*Microsoft.MicrosoftStickyNotes*"
+    #"*Microsoft.Windows.Photos*"
+    #"*Microsoft.WindowsCalculator*"
+    #"*Microsoft.WindowsStore*"
+    #"Microsoft.Advertising.Xaml_10.1712.5.0_x64__8wekyb3d8bbwe"
+    #"Microsoft.Advertising.Xaml_10.1712.5.0_x86__8wekyb3d8bbwe"
+    #"Microsoft.BingWeather"
+)
+
 $removebloat.Add_Click({
+
+    foreach ($Bloat in $Bloatware) {
+        Get-AppxPackage -Name $Bloat| Remove-AppxPackage
+        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+        Write-Host "Trying to remove $Bloat."
+        $ResultText.text = "`r`n" +"`r`n" + "  Trying to remove $Bloat."
+    }
+
+
         $ErrorActionPreference = 'SilentlyContinue'
         #This function finds any AppX/AppXProvisioned package and uninstalls it, except for Freshpaint, Windows Calculator, Windows Store, and Windows Photos.
         #Also, to note - This does NOT remove essential system services/software/etc such as .NET framework installations, Cortana, Edge, etc.
