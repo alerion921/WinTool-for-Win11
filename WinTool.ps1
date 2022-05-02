@@ -2783,7 +2783,7 @@ $Bloatware = @(
     "Microsoft.Office.Lens"                             # Issue 77
     "Microsoft.Office.OneNote"
     "Microsoft.Office.Sway"
-    
+
     "Microsoft.OneConnect"
     "Microsoft.People"
     "Microsoft.Print3D"
@@ -2869,14 +2869,12 @@ $Bloatware = @(
 
 $removebloat.Add_Click({
 
-    foreach ($Bloat in $Bloatware) {
-        Get-AppxPackage -Name $Bloat| Remove-AppxPackage
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
-        Write-Host "Trying to remove $Bloat."
-        $ResultText.text = "`r`n" +"`r`n" + "  Trying to remove $Bloat."
-    }
-
-
+        function RemoveMassiveBloat {
+            foreach ($Bloat in $Bloatware) {
+                Get-AppxPackage -Name $Bloat| Remove-AppxPackage
+                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+            }
+        }
         $ErrorActionPreference = 'SilentlyContinue'
         #This function finds any AppX/AppXProvisioned package and uninstalls it, except for Freshpaint, Windows Calculator, Windows Store, and Windows Photos.
         #Also, to note - This does NOT remove essential system services/software/etc such as .NET framework installations, Cortana, Edge, etc.
@@ -3101,6 +3099,7 @@ $START_MENU_LAYOUT = @"
         Write-Host "Initiating Sysprep"
         SystemPrep
         Write-Host "Removing bloatware apps."
+        RemoveMassiveBloat
         DebloatAll
         Write-Host "Removing leftover bloatware registry keys."
         Remove-Keys
