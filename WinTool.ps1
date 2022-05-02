@@ -438,20 +438,33 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $appearancefx.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
 
-$windows10ify11                   = New-Object system.Windows.Forms.Button
-$windows10ify11.text              = "Win 10 Taskbar"
-$windows10ify11.width             = 210
-$windows10ify11.height            = 30
-$windows10ify11.location          = New-Object System.Drawing.Point(3,675)
-$windows10ify11.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$classictaskbar                   = New-Object system.Windows.Forms.Button
+$classictaskbar.text              = "Classic Taskbar"
+$classictaskbar.width             = 210
+$classictaskbar.height            = 30
+$classictaskbar.location          = New-Object System.Drawing.Point(3,675)
+$classictaskbar.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$snapbackto11                     = New-Object system.Windows.Forms.Button
-$snapbackto11.text                = "Win 11 Taskbar"
-$snapbackto11.width               = 210
-$snapbackto11.height              = 30
-$snapbackto11.location            = New-Object System.Drawing.Point(3,710)
-$snapbackto11.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$revertclassictaskbar             = New-Object system.Windows.Forms.Button
+$revertclassictaskbar.text        = "Win11 Taskbar"
+$revertclassictaskbar.width       = 210
+$revertclassictaskbar.height      = 30
+$revertclassictaskbar.location    = New-Object System.Drawing.Point(3,710)
+$revertclassictaskbar.Font        = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$grouptaskbaricons                = New-Object system.Windows.Forms.Button
+$grouptaskbaricons.text           = "Group Taskbar"
+$grouptaskbaricons.width          = 210
+$grouptaskbaricons.height         = 30
+$grouptaskbaricons.location       = New-Object System.Drawing.Point(3,745)
+$grouptaskbaricons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$ungrouptaskbaricons              = New-Object system.Windows.Forms.Button
+$ungrouptaskbaricons.text         = "Ungroup Taskbar"
+$ungrouptaskbaricons.width        = 210
+$ungrouptaskbaricons.height       = 30
+$ungrouptaskbaricons.location     = New-Object System.Drawing.Point(3,780)
+$ungrouptaskbaricons.Font         = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
@@ -777,11 +790,11 @@ $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
+$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$Label22))
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$Label14, $ultimatepower,$restorepower))
-$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches, $snapbackto11, $windows10ify11))
+$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches))
 
 $getosinfo.Add_Click({
     $name=(Get-WmiObject Win32_OperatingSystem).caption
@@ -1902,25 +1915,35 @@ $gimp.Add_Click({
     }
 })
 
-$windows10ify11.Add_Click({
-    # Restore the Classic Taskbar in Windows 11
+$classictaskbar.Add_Click({
     New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled" -PropertyType DWord -Value "00000001";
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled" -Value "00000001";
-
-    # Ungroup Taskbar Icons / Enable Text Labels in Windows 11
-    New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -PropertyType DWord -Value "00000001";
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -Value "00000001";
-
 
     Stop-Process -name explorer
     Start-Sleep -s 5
     Start-Process -name explorer
 })
 
-$snapbackto11.Add_Click({
+$revertclassictaskbar.Add_Click({
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell\Update\Packages" -Name "UndockingDisabled" -Value "00000000"
+
+    Stop-Process -name explorer
+    Start-Sleep -s 5
+    Start-Process -name explorer
+})
+
+$grouptaskbaricons.Add_Click({
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -PropertyType DWord -Value "00000001";
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -Value "00000001";
+
+    Stop-Process -name explorer
+    Start-Sleep -s 5
+    Start-Process -name explorer
+})
+
+$ungrouptaskbaricons.Add_Click({
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoTaskGrouping" -Value "00000000";
-    
+
     Stop-Process -name explorer
     Start-Sleep -s 5
     Start-Process -name explorer
