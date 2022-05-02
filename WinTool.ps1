@@ -545,6 +545,20 @@ $wingetupdate.height             = 30
 $wingetupdate.location           = New-Object System.Drawing.Point(3,605)
 $wingetupdate.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$removeENkeyboard                = New-Object system.Windows.Forms.Button
+$removeENkeyboard.text           = "Del EN Keyboards"
+$removeENkeyboard.width          = 210
+$removeENkeyboard.height         = 30
+$removeENkeyboard.location       = New-Object System.Drawing.Point(3,640)
+$removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$getosinfo                       = New-Object system.Windows.Forms.Button
+$getosinfo.text                  = "OS Info"
+$getosinfo.width                 = 210
+$getosinfo.height                = 30
+$getosinfo.location              = New-Object System.Drawing.Point(3,675)
+$getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 $errorscanner                    = New-Object system.Windows.Forms.Button
 $errorscanner.text               = "Error Scanner"
 $errorscanner.width              = 210
@@ -615,34 +629,6 @@ $oldpower.width                  = 210
 $oldpower.height                 = 30
 $oldpower.location               = New-Object System.Drawing.Point(3,360)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$NFS                             = New-Object system.Windows.Forms.Button
-$NFS.text                        = "Enable NFS"
-$NFS.width                       = 210
-$NFS.height                      = 30
-$NFS.location                    = New-Object System.Drawing.Point(3,640)
-$NFS.Font                        = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$addENkeyboard                   = New-Object system.Windows.Forms.Button
-$addENkeyboard.text              = "Adds NO Keyboard"
-$addENkeyboard.width             = 210
-$addENkeyboard.height            = 30
-$addENkeyboard.location          = New-Object System.Drawing.Point(3,675)
-$addENkeyboard.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$removeENkeyboard                = New-Object system.Windows.Forms.Button
-$removeENkeyboard.text           = "Del EN Keyboards"
-$removeENkeyboard.width          = 210
-$removeENkeyboard.height         = 30
-$removeENkeyboard.location       = New-Object System.Drawing.Point(3,710)
-$removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$getosinfo                       = New-Object system.Windows.Forms.Button
-$getosinfo.text                  = "OS Info"
-$getosinfo.width                 = 210
-$getosinfo.height                = 30
-$getosinfo.location              = New-Object System.Drawing.Point(3,745)
-$getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $OSName=(Get-WmiObject Win32_OperatingSystem).caption
 
@@ -790,7 +776,7 @@ $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$Label22))
+$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$Label22))
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$Label14, $ultimatepower,$restorepower))
@@ -2764,12 +2750,6 @@ $Bloatware = @(
 
 $removebloat.Add_Click({
 
-        function RemoveMassiveBloat {
-            foreach ($Bloat in $Bloatware) {
-                Get-AppxPackage -Name $Bloat| Remove-AppxPackage
-                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
-            }
-        }
         $ErrorActionPreference = 'SilentlyContinue'
         #This function finds any AppX/AppXProvisioned package and uninstalls it, except for Freshpaint, Windows Calculator, Windows Store, and Windows Photos.
         #Also, to note - This does NOT remove essential system services/software/etc such as .NET framework installations, Cortana, Edge, etc.
@@ -2807,6 +2787,13 @@ $removebloat.Add_Click({
             If (Get-Service dmwappushservice | Where-Object { $_.Status -eq "Stopped" }) {
                 Start-Service dmwappushservice
             } 
+        }
+
+        Function RemoveMassiveBloat {
+            foreach ($Bloat in $Bloatware) {
+                Get-AppxPackage -Name $Bloat| Remove-AppxPackage
+                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+            }
         }
 
         Function DebloatAll {
