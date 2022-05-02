@@ -3963,33 +3963,39 @@ $securitypatches.Add_Click({
 })
 
 $onedrive.Add_Click({
-    Write-Host "Disabling OneDrive..."
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
-    Write-Host "Uninstalling OneDrive..."
-    Stop-Process -Name "OneDrive" -ErrorAction SilentlyContinue
-    Start-Sleep -s 2
     $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
-    If (!(Test-Path $onedrive)) {
-        $onedrive = "$env:SYSTEMROOT\System32\OneDriveSetup.exe"
+    if (!(Test-Path $onedrive)) {
+        Write-Host "OneDrive is already gone, no need to do this right now..."
+        $ResultText.text = "`r`n" +"`r`n" + "  OneDrive is already gone, no need to do this right now..." + "`r`n" + "  -   Ready for Next Task.."
+    } elseif (Test-Path $onedrive)  {
+        Write-Host "Disabling OneDrive..."
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
+        Write-Host "Uninstalling OneDrive..."
+        Stop-Process -Name "OneDrive" -ErrorAction SilentlyContinue
+        Start-Sleep -s 2
+        $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
+        If (!(Test-Path $onedrive)) {
+            $onedrive = "$env:SYSTEMROOT\System32\OneDriveSetup.exe"
+        }
+        Start-Process $onedrive "/uninstall" -NoNewWindow -Wait
+        Start-Sleep -s 2
+        Stop-Process -Name "explorer" -ErrorAction SilentlyContinue
+        Start-Sleep -s 2
+        Remove-Item -Path "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:SYSTEMDRIVE\OneDriveTemp" -Force -Recurse -ErrorAction SilentlyContinue
+        If (!(Test-Path "HKCR:")) {
+            New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
+        }
+        Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
+        Write-Host "Deleted and Disabled OneDrive"
+        $ResultText.text = "`r`n" +"`r`n" + "  Deleted and Disabled OneDrive " + "`r`n" + "  -   Ready for Next Task.."
     }
-    Start-Process $onedrive "/uninstall" -NoNewWindow -Wait
-    Start-Sleep -s 2
-    Stop-Process -Name "explorer" -ErrorAction SilentlyContinue
-    Start-Sleep -s 2
-    Remove-Item -Path "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "$env:SYSTEMDRIVE\OneDriveTemp" -Force -Recurse -ErrorAction SilentlyContinue
-    If (!(Test-Path "HKCR:")) {
-        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
-    }
-    Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-    Write-Host "Disabled OneDrive"
-    $ResultText.text = "`r`n" +"`r`n" + "  Deleted and Disabled OneDrive " + "`r`n" + "  -   Ready for Next Task.."
 })
 
 $darkmode.Add_Click({
