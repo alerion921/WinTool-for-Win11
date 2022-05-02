@@ -2771,26 +2771,315 @@ $Bloatware = @(
 )
 
 $removebloat.Add_Click({
-    Write-Host "Removing Bloatware"
+        $ErrorActionPreference = 'SilentlyContinue'
+        #This function finds any AppX/AppXProvisioned package and uninstalls it, except for Freshpaint, Windows Calculator, Windows Store, and Windows Photos.
+        #Also, to note - This does NOT remove essential system services/software/etc such as .NET framework installations, Cortana, Edge, etc.
 
-    foreach ($Bloat in $Bloatware) {
-        Get-AppxPackage -Name $Bloat| Remove-AppxPackage
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
-        Write-Host "Trying to remove $Bloat."
-        $ResultText.text = "`r`n" +"`r`n" + "  Trying to remove $Bloat."
-    }
+        #This is the switch parameter for running this script as a 'silent' script, for use in MDT images or any type of mass deployment without user interaction.
+
+        Function SystemPrep {
+
+            Write-Host "Starting Sysprep Fixes"
+   
+            # Disable Windows Store Automatic Updates
+            Write-Host "Adding Registry key to Disable Windows Store Automatic Updates"
+            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
+            If (!(Test-Path $registryPath)) {
+                Mkdir $registryPath
+                New-ItemProperty $registryPath AutoDownload -Value 2 
+            }
+            Set-ItemProperty $registryPath AutoDownload -Value 2
+
+            #Stop WindowsStore Installer Service and set to Disabled
+            Write-Host "Stopping InstallService"
+            Stop-Service InstallService
+            Write-Host "Setting InstallService Startup to Disabled"
+            Set-Service InstallService -StartupType Disabled
+        }
+        
+        Function CheckDMWService {
+
+            Param([switch]$Debloat)
+  
+            If (Get-Service dmwappushservice | Where-Object { $_.StartType -eq "Disabled" }) {
+                Set-Service dmwappushservice -StartupType Automatic
+            }
+
+            If (Get-Service dmwappushservice | Where-Object { $_.Status -eq "Stopped" }) {
+                Start-Service dmwappushservice
+            } 
+        }
+
+        Function DebloatAll {
+            #Removes AppxPackages
+            Get-AppxPackage | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
+            Get-AppxProvisionedPackage -Online | Where-Object { !($_.DisplayName -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.DisplayName) } | Remove-AppxProvisionedPackage -Online
+            Get-AppxPackage -AllUsers | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
+        }
+  
+        #Creates a PSDrive to be able to access the 'HKCR' tree
+        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
+  
+        Function Remove-Keys {         
+            #These are the registry keys that it will delete.
+          
+            $Keys = @(
+          
+                #Remove Background Tasks
+                "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\46928bounde.EclipseManager_2.2.4.51_neutral__a5h4egax66k6y"
+                "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
+                "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.MicrosoftOfficeHub_17.7909.7600.0_x64__8wekyb3d8bbwe"
+                "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
+                "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
+                "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
+          
+                #Windows File
+                "HKCR:\Extensions\ContractId\Windows.File\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
+          
+                #Registry keys to delete if they aren't uninstalled by RemoveAppXPackage/RemoveAppXProvisionedPackage
+                "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\46928bounde.EclipseManager_2.2.4.51_neutral__a5h4egax66k6y"
+                "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
+                "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
+                "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
+                "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
+          
+                #Scheduled Tasks to delete
+                "HKCR:\Extensions\ContractId\Windows.PreInstalledConfigTask\PackageId\Microsoft.MicrosoftOfficeHub_17.7909.7600.0_x64__8wekyb3d8bbwe"
+          
+                #Windows Protocol Keys
+                "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
+                "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
+                "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
+                "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
+             
+                #Windows Share Target
+                "HKCR:\Extensions\ContractId\Windows.ShareTarget\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
+            )
+      
+            #This writes the output of each key it is removing and also removes the keys listed above.
+            ForEach ($Key in $Keys) {
+                Write-Host "Removing $Key from registry"
+                Remove-Item $Key -Recurse
+            }
+        }
+          
+        Function Protect-Privacy { 
+  
+            #Creates a PSDrive to be able to access the 'HKCR' tree
+            New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
+          
+            #Disables Windows Feedback Experience
+            Write-Host "Disabling Windows Feedback Experience program"
+            $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
+            If (Test-Path $Advertising) {
+                Set-ItemProperty $Advertising Enabled -Value 0
+            }
+            
+            Write-Host "Adding Registry key to prevent bloatware apps from returning"
+            #Prevents bloatware applications from returning
+            $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+            If (!(Test-Path $registryPath)) {
+                Mkdir $registryPath
+                New-ItemProperty $registryPath DisableWindowsConsumerFeatures -Value 1 
+            }          
+      
+            Write-Host "Setting Mixed Reality Portal value to 0 so that you can uninstall it in Settings"
+            $Holo = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic'    
+            If (Test-Path $Holo) {
+                Set-ItemProperty $Holo FirstRunSucceeded -Value 0
+            }
+      
+            #Disables live tiles
+            Write-Host "Disabling live tiles"
+            $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
+            If (!(Test-Path $Live)) {
+                mkdir $Live  
+                New-ItemProperty $Live NoTileApplicationNotification -Value 1
+            }
+      
+            Write-Host "Removing CloudStore from registry if it exists"
+            $CloudStore = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore'
+            If (Test-Path $CloudStore) {
+                Stop-Process Explorer.exe -Force
+                Remove-Item $CloudStore -Recurse -Force
+                Start-Process Explorer.exe -Wait
+            }
+
+  
+            #Loads the registry keys/values below into the NTUSER.DAT file which prevents the apps from redownloading. Credit to a60wattfish
+            reg load HKU\Default_User C:\Users\Default\NTUSER.DAT
+            Set-ItemProperty -Path Registry::HKU\Default_User\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager -Name SystemPaneSuggestionsEnabled -Value 0
+            Set-ItemProperty -Path Registry::HKU\Default_User\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager -Name PreInstalledAppsEnabled -Value 0
+            Set-ItemProperty -Path Registry::HKU\Default_User\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager -Name OemPreInstalledAppsEnabled -Value 0
+            reg unload HKU\Default_User
+      
+            #Disables scheduled tasks that are considered unnecessary 
+            Write-Host "Disabling scheduled tasks"
+            #Get-ScheduledTask -TaskName XblGameSaveTaskLogon | Disable-ScheduledTask
+            Get-ScheduledTask -TaskName XblGameSaveTask | Disable-ScheduledTask
+            Get-ScheduledTask -TaskName Consolidator | Disable-ScheduledTask
+            Get-ScheduledTask -TaskName UsbCeip | Disable-ScheduledTask
+            Get-ScheduledTask -TaskName DmClient | Disable-ScheduledTask
+            Get-ScheduledTask -TaskName DmClientOnScenarioDownload | Disable-ScheduledTask
+        }
+
+        Function UnpinStart {
+            # https://superuser.com/a/1442733
+            # Requires -RunAsAdministrator
+
+$START_MENU_LAYOUT = @"
+<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
+    <LayoutOptions StartTileGroupCellWidth="6" />
+    <DefaultLayoutOverride>
+        <StartLayoutCollection>
+            <defaultlayout:StartLayout GroupCellWidth="6" />
+        </StartLayoutCollection>
+    </DefaultLayoutOverride>
+</LayoutModificationTemplate>
+"@
+
+            $layoutFile="C:\Windows\StartMenuLayout.xml"
+
+            #Delete layout file if it already exists
+            If(Test-Path $layoutFile)
+            {
+                Remove-Item $layoutFile
+            }
+
+            #Creates the blank layout file
+            $START_MENU_LAYOUT | Out-File $layoutFile -Encoding ASCII
+
+            $regAliases = @("HKLM", "HKCU")
+
+            #Assign the start layout and force it to apply with "LockedStartLayout" at both the machine and user level
+            foreach ($regAlias in $regAliases){
+                $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+                $keyPath = $basePath + "\Explorer" 
+                IF(!(Test-Path -Path $keyPath)) { 
+                    New-Item -Path $basePath -Name "Explorer"
+                }
+                Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 1
+                Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
+            }
+
+            #Restart Explorer, open the start menu (necessary to load the new layout), and give it a few seconds to process
+            Stop-Process -name explorer
+            Start-Sleep -s 5
+            $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
+            Start-Sleep -s 5
+
+            #Enable the ability to pin items again by disabling "LockedStartLayout"
+            foreach ($regAlias in $regAliases){
+                $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+                $keyPath = $basePath + "\Explorer" 
+                Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
+            }
+
+            #Restart Explorer and delete the layout file
+            Stop-Process -name explorer
+
+            # Uncomment the next line to make clean start menu default for all new users
+            #Import-StartLayout -LayoutPath $layoutFile -MountPath $env:SystemDrive\
+
+            Remove-Item $layoutFile
+        }
+        
+        Function CheckInstallService {
+  
+            If (Get-Service InstallService | Where-Object { $_.Status -eq "Stopped" }) {  
+                Start-Service InstallService
+                Set-Service InstallService -StartupType Automatic 
+            }
+        }
+  
+        Write-Host "Initiating Sysprep"
+        SystemPrep
+        Write-Host "Removing bloatware apps."
+        DebloatAll
+        Write-Host "Removing leftover bloatware registry keys."
+        Remove-Keys
+        Write-Host "Checking to see if any Allowlisted Apps were removed, and if so re-adding them."
+        FixWhitelistedApps
+        Write-Host "Disabling unneccessary scheduled tasks, and preventing bloatware from returning."
+        Protect-Privacy
+        Write-Host "Unpinning tiles from the Start Menu."
+        UnpinStart
+        Write-Host "Setting the 'InstallService' Windows service back to 'Started' and the Startup Type 'Automatic'."
+        CheckDMWService
+        CheckInstallService
+        Write-Host "Finished all tasks. `n"
 
     Write-Host "Finished Removing Bloatware Apps"
     $ResultText.text = "`r`n" +"`r`n" + "  Finished Removing Bloatware Apps " + "`r`n" + "  -   Ready for Next Task.."
 })
 
 $reinstallbloat.Add_Click({
-    Write-Host "Reinstalling Bloatware"
+    $ErrorActionPreference = 'SilentlyContinue'
+    #This function will revert the changes you made when running the Start-Debloat function.
+    
+    #This line reinstalls all of the bloatware that was removed
+    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
-    foreach ($app in $Bloatware) {
-        Write-Host "Trying to add $app"
-        $ResultText.text = "`r`n" +"`r`n" + "  Trying to add $app"
-        Add-AppxPackage -DisableDevelopmentMode -Register "$($(Get-AppxPackage -AllUsers $app).InstallLocation)\AppXManifest.xml"
+    #Tells Windows to enable your advertising information.    
+    Write-Host "Re-enabling key to show advertisement information"
+    $Advertising = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"
+    If (Test-Path $Advertising) {
+        Set-ItemProperty $Advertising  Enabled -Value 1
+    }
+
+    #Enables bloatware applications               
+    Write-Host "Adding Registry key to allow bloatware apps to return"
+    $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+    If (!(Test-Path $registryPath)) {
+        New-Item $registryPath 
+    }
+    Set-ItemProperty $registryPath  DisableWindowsConsumerFeatures -Value 0 
+    
+    #Changes Mixed Reality Portal Key 'FirstRunSucceeded' to 1
+    Write-Host "Setting Mixed Reality Portal value to 1"
+    $Holo = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic"
+    If (Test-Path $Holo) {
+        Set-ItemProperty $Holo  FirstRunSucceeded -Value 1 
+    }
+    
+    #Re-enables live tiles
+    Write-Host "Enabling live tiles"
+    $Live = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
+    If (!(Test-Path $Live)) {
+        New-Item $Live 
+    }
+    Set-ItemProperty $Live  NoTileApplicationNotification -Value 0 
+   
+
+    #Re-enables scheduled tasks that were disabled when running the Debloat switch
+    Write-Host "Enabling scheduled tasks that were disabled"
+    Get-ScheduledTask XblGameSaveTaskLogon | Enable-ScheduledTask 
+    Get-ScheduledTask  XblGameSaveTask | Enable-ScheduledTask 
+    Get-ScheduledTask  Consolidator | Enable-ScheduledTask 
+    Get-ScheduledTask  UsbCeip | Enable-ScheduledTask 
+    Get-ScheduledTask  DmClient | Enable-ScheduledTask 
+    Get-ScheduledTask  DmClientOnScenarioDownload | Enable-ScheduledTask 
+
+    Write-Host "Re-enabling and starting WAP Push Service"
+    #Enable and start WAP Push Service
+    Set-Service "dmwappushservice" -StartupType Automatic
+    Start-Service "dmwappushservice"
+
+    Write-Host "Re-enabling and starting the Diagnostics Tracking Service"
+    #Enabling the Diagnostics Tracking Service
+    Set-Service "DiagTrack" -StartupType Automatic
+    Start-Service "DiagTrack"
+    Write-Host "Done reverting changes!"
+
+    #
+    Write-Output "Restoring 3D Objects from Explorer 'My Computer' submenu"
+    $Objects32 = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
+    $Objects64 = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
+    If (!(Test-Path $Objects32)) {
+        New-Item $Objects32
+    }
+    If (!(Test-Path $Objects64)) {
+        New-Item $Objects64
     }
 
     Write-Host "Finished Reinstalling Bloatware Apps"
