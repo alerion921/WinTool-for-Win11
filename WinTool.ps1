@@ -359,14 +359,14 @@ $securitypatches.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#
 $securitypatches.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
 
 $onedrive                        = New-Object system.Windows.Forms.Button
-$onedrive.text                   = "Delete & Disable  OneDrive"
+$onedrive.text                   = "Removing OneDrive"
 $onedrive.width                  = 210
 $onedrive.height                 = 30
 $onedrive.location               = New-Object System.Drawing.Point(3,325)
 $onedrive.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $InstallOneDrive                 = New-Object system.Windows.Forms.Button
-$InstallOneDrive.text            = "Install & Enable OneDrive"
+$InstallOneDrive.text            = "Restoring OneDrive"
 $InstallOneDrive.width           = 210
 $InstallOneDrive.height          = 30
 $InstallOneDrive.location        = New-Object System.Drawing.Point(2,360)
@@ -919,7 +919,7 @@ $errorscanner.Add_Click({
 
 $ultimateclean.Add_Click({
 	
-    $ResultText.text = "`r`n" +"`r`n" + "  This process will take some time, requires some user input and the input can only be entered through the command line. Please switch window accordingly.." 
+    $ResultText.text = "`r`n" +"`r`n" + "  Cleaning initiated.." 
 
     $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
     if ($regcachclean -eq 'Y') {
@@ -2749,7 +2749,6 @@ $Bloatware = @(
 )
 
 $removebloat.Add_Click({
-
         $ErrorActionPreference = 'SilentlyContinue'
         #This function finds any AppX/AppXProvisioned package and uninstalls it, except for Freshpaint, Windows Calculator, Windows Store, and Windows Photos.
         #Also, to note - This does NOT remove essential system services/software/etc such as .NET framework installations, Cortana, Edge, etc.
