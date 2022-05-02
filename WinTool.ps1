@@ -643,13 +643,6 @@ If($OSName -like "*Windows*10*")
     $dis11check.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
 
-    $unbindstarticons                = New-Object system.Windows.Forms.Button
-    $unbindstarticons.text           = "Unpin Start Tiles"
-    $unbindstarticons.width          = 210
-    $unbindstarticons.height         = 30
-    $unbindstarticons.location       = New-Object System.Drawing.Point(3,815)
-    $unbindstarticons.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
 $steam                           = New-Object system.Windows.Forms.Button
 $steam.text                      = "Steam"
 $steam.width                     = 210
@@ -784,7 +777,7 @@ $spotify.location                = New-Object System.Drawing.Point(3,710)
 $spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$unbindstarticons,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
+$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$NFS,$wingetupdate,$dis11check,$removeENkeyboard, $addENkeyboard,$getosinfo,$Label22))
 $Panel2.controls.AddRange(@($Label2,$Label12, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$Label14, $ultimatepower,$restorepower))
@@ -1933,127 +1926,6 @@ $snapbackto11.Add_Click({
     Start-Process -name explorer
 })
 
-$unbindstarticons.Add_Click({
-    Write-Host "Removing items from the start menu..."
-
-    $START_MENU_LAYOUT = @"
-<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
-<LayoutOptions StartTileGroupCellWidth="6" />
-<DefaultLayoutOverride>
-    <StartLayoutCollection>
-        <defaultlayout:StartLayout GroupCellWidth="6" />
-    </StartLayoutCollection>
-</DefaultLayoutOverride>
-</LayoutModificationTemplate>
-"@
-
-        $layoutFile="C:\Windows\StartMenuLayout.xml"
-
-        #Delete layout file if it already exists
-        If(Test-Path $layoutFile)
-        {
-            Remove-Item $layoutFile
-        }
-
-        #Creates the blank layout file
-        $START_MENU_LAYOUT | Out-File $layoutFile -Encoding ASCII
-
-        $regAliases = @("HKLM", "HKCU")
-
-        #Assign the start layout and force it to apply with "LockedStartLayout" at both the machine and user level
-        foreach ($regAlias in $regAliases){
-            $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-            $keyPath = $basePath + "\Explorer" 
-            IF(!(Test-Path -Path $keyPath)) { 
-                New-Item -Path $basePath -Name "Explorer"
-            }
-            Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 1
-            Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
-        }
-
-        #Restart Explorer, open the start menu (necessary to load the new layout), and give it a few seconds to process
-        Stop-Process -name explorer
-        Start-Sleep -s 5
-        $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
-        Start-Sleep -s 5
-
-        #Enable the ability to pin items again by disabling "LockedStartLayout"
-        foreach ($regAlias in $regAliases){
-            $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-            $keyPath = $basePath + "\Explorer" 
-            Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
-        }
-
-        #Restart Explorer and delete the layout file
-        Stop-Process -name explorer
-
-        # Uncomment the next line to make clean start menu default for all new users
-        #Import-StartLayout -LayoutPath $layoutFile -MountPath $env:SystemDrive\
-
-        Remove-Item $layoutFile
-        <#
-#Fetch original Layout from Microsoft (Windows 10 startmenu layout)
-	$START_MENU_LAYOUT = @"
-<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
-    <LayoutOptions StartTileGroupCellWidth="6" />
-    <DefaultLayoutOverride>
-        <StartLayoutCollection>
-            <defaultlayout:StartLayout GroupCellWidth="6" />
-        </StartLayoutCollection>
-    </DefaultLayoutOverride>
-</LayoutModificationTemplate>
-"@
-
-    $layoutFile="C:\Windows\StartMenuLayout.xml"
-
-    #Delete layout file if it already exists
-    If(Test-Path $layoutFile)
-    {
-        Remove-Item $layoutFile
-    }
-
-    #Creates the blank layout file
-    $START_MENU_LAYOUT | Out-File $layoutFile -Encoding ASCII
-
-    $regAliases = @("HKLM", "HKCU")
-
-    #Assign the start layout and force it to apply with "LockedStartLayout" at both the machine and user level
-    foreach ($regAlias in $regAliases){
-        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
-        IF(!(Test-Path -Path $keyPath)) { 
-            New-Item -Path $basePath -Name "Explorer"
-        }
-        Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 1
-        Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
-    }
-
-    #Restart Explorer, open the start menu (necessary to load the new layout), and give it a few seconds to process
-    Stop-Process -name explorer
-    Start-Sleep -s 5
-    $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
-    Start-Sleep -s 5
-
-    #Enable the ability to pin items again by disabling "LockedStartLayout"
-    foreach ($regAlias in $regAliases){
-        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
-        Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
-    }
-
-    #Restart Explorer and delete the layout file
-    Stop-Process -name explorer
-
-    # Uncomment the next line to make clean start menu default for all new users
-    Import-StartLayout -LayoutPath $layoutFile -MountPath $env:SystemDrive\
-
-    Remove-Item $layoutFile
-#>
-    Write-Host "Start Menu has been reset, all items removed..."
-    $ResultText.text =  "`r`n" +"`r`n" + "  Start Menu has been reset, all items removed " + "`r`n" + "  -   Ready for Next Task.."
-
-})
-
 $essentialtweaks.Add_Click({
     Write-Host "Creating Restore Point incase something bad happens"
     $ResultText.text = "`r`n" +"`r`n" + "  Activating Essential Tweaks... Please Wait" 
@@ -3096,25 +2968,37 @@ $START_MENU_LAYOUT = @"
             }
         }
   
-        Write-Host "Initiating Sysprep"
-        SystemPrep
-        Write-Host "Removing bloatware apps."
-        RemoveMassiveBloat
-        DebloatAll
-        Write-Host "Removing leftover bloatware registry keys."
-        Remove-Keys
-        Write-Host "Checking to see if any Allowlisted Apps were removed, and if so re-adding them."
-        FixWhitelistedApps
-        Write-Host "Disabling unneccessary scheduled tasks, and preventing bloatware from returning."
-        Protect-Privacy
-        Write-Host "Unpinning tiles from the Start Menu."
-        UnpinStart
-        Write-Host "Setting the 'InstallService' Windows service back to 'Started' and the Startup Type 'Automatic'."
-        CheckDMWService
-        CheckInstallService
-        Write-Host "Finished all tasks. `n"
+    Write-Host "Initiating Sysprep.."
+    $ResultText.text = "`r`n" +"`r`n" + "  Initiating Sysprep.."
+    SystemPrep
 
-    Write-Host "Finished Removing Bloatware Apps"
+    Write-Host "Removing bloatware apps."
+    $ResultText.text = "`r`n" +"`r`n" + "  Removing bloatware apps."
+    RemoveMassiveBloat
+    DebloatAll
+
+    Write-Host "Removing leftover bloatware registry keys."
+    $ResultText.text = "`r`n" +"`r`n" + "  Removing leftover bloatware registry keys."
+    Remove-Keys
+
+    Write-Host "Checking to see if any Allowlisted Apps were removed, and if so re-adding them."
+    $ResultText.text = "`r`n" +"`r`n" + "  Checking to see if any Allowlisted Apps were removed, and if so re-adding them."
+    FixWhitelistedApps
+
+    Write-Host "Disabling unneccessary scheduled tasks, and preventing bloatware from returning."
+    $ResultText.text = "`r`n" +"`r`n" + "  Disabling unneccessary scheduled tasks, and preventing bloatware from returning."
+    Protect-Privacy
+
+    Write-Host "Unpinning tiles from the Start Menu."
+    $ResultText.text = "`r`n" +"`r`n" + "  Unpinning tiles from the Start Menu."
+    UnpinStart
+
+    Write-Host "Setting the 'InstallService' Windows service back to 'Started' and the Startup Type 'Automatic'."
+    $ResultText.text = "`r`n" +"`r`n" + "  Setting the 'InstallService' Windows service back to 'Started' and the Startup Type 'Automatic'."
+    CheckDMWService
+    CheckInstallService
+
+    Write-Host "Finished Removing all Bloatware Apps"
     $ResultText.text = "`r`n" +"`r`n" + "  Finished Removing Bloatware Apps " + "`r`n" + "  -   Ready for Next Task.."
 })
 
