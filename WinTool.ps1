@@ -9,7 +9,7 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 Function MakeNewForm {
-	$Form.Hide()
+	#$Form.Hide()
     #$Form.Dispose()
 	MakeForm
 }
@@ -151,21 +151,83 @@ $Label10.height                  = 10
 $Label10.location                = New-Object System.Drawing.Point(580,575)
 $Label10.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
-$Label11                         = New-Object system.Windows.Forms.Label
-$Label11.text                    = "Useful Links"
-$Label11.AutoSize                = $true
-$Label11.width                   = 25
-$Label11.height                  = 10
-$Label11.location                = New-Object System.Drawing.Point(730,670)
-$Label11.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
 $Label12                         = New-Object system.Windows.Forms.Label
 $Label12.text                    = "Utility Software"
 $Label12.AutoSize                = $true
 $Label12.width                   = 25
 $Label12.height                  = 10
-$Label12.location                = New-Object System.Drawing.Point(60,195)
+$Label12.location                = New-Object System.Drawing.Point(60,160)
 $Label12.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$7zip                            = New-Object system.Windows.Forms.Button
+$7zip.text                       = "7-Zip"
+$7zip.width                      = 210
+$7zip.height                     = 30
+$7zip.location                   = New-Object System.Drawing.Point(3,185)
+$7zip.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$githubdesktop                   = New-Object system.Windows.Forms.Button
+$githubdesktop.text              = "Github Desktop"
+$githubdesktop.width             = 210
+$githubdesktop.height            = 30
+$githubdesktop.location          = New-Object System.Drawing.Point(3,220)
+$githubdesktop.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$etcher                          = New-Object system.Windows.Forms.Button
+$etcher.text                     = "Etcher USB Creator"
+$etcher.width                    = 210
+$etcher.height                   = 30
+$etcher.location                 = New-Object System.Drawing.Point(3,255)
+$etcher.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$advancedipscanner               = New-Object system.Windows.Forms.Button
+$advancedipscanner.text          = "Advanced IP Scanner"
+$advancedipscanner.width         = 210
+$advancedipscanner.height        = 30
+$advancedipscanner.location      = New-Object System.Drawing.Point(3,290)
+$advancedipscanner.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$everythingsearch                = New-Object system.Windows.Forms.Button
+$everythingsearch.text           = "Everything Search"
+$everythingsearch.width          = 210
+$everythingsearch.height         = 30
+$everythingsearch.location       = New-Object System.Drawing.Point(3,325)
+$everythingsearch.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$qbittorent                      = New-Object system.Windows.Forms.Button
+$qbittorent.text                 = "qBittorrent"
+$qbittorent.width                = 210
+$qbittorent.height               = 30
+$qbittorent.location             = New-Object System.Drawing.Point(3,360)
+$qbittorent.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$teamviewer                      = New-Object system.Windows.Forms.Button
+$teamviewer.text                 = "Teamviewer"
+$teamviewer.width                = 210
+$teamviewer.height               = 30
+$teamviewer.location             = New-Object System.Drawing.Point(3,395)
+$teamviewer.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$nvclean                         = New-Object system.Windows.Forms.Button
+$nvclean.text                    = "NvClean Install"
+$nvclean.width                   = 210
+$nvclean.height                  = 30
+$nvclean.location                = New-Object System.Drawing.Point(3,430)
+$nvclean.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$dropbox                         = New-Object system.Windows.Forms.Button
+$dropbox.text                    = "Dropbox"
+$dropbox.width                   = 210
+$dropbox.height                  = 30
+$dropbox.location                = New-Object System.Drawing.Point(3,465)
+$dropbox.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$spotify                         = New-Object system.Windows.Forms.Button
+$spotify.text                    = "Spotify"
+$spotify.width                   = 210
+$spotify.height                  = 30
+$spotify.location                = New-Object System.Drawing.Point(3,500)
+$spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Label15                         = New-Object system.Windows.Forms.Label
 $Label15.text                    = "Tweaking"
@@ -279,13 +341,6 @@ $Label7.height                   = 10
 $Label7.location                 = New-Object System.Drawing.Point(60,370)
 $Label7.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-$vscodium                        = New-Object system.Windows.Forms.Button
-$vscodium.text                   = "VS Codium"
-$vscodium.width                  = 210
-$vscodium.height                 = 30
-$vscodium.location               = New-Object System.Drawing.Point(3,395)
-$vscodium.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
 $vscode                          = New-Object system.Windows.Forms.Button
 $vscode.text                     = "VS Code"
 $vscode.width                    = 210
@@ -366,60 +421,32 @@ $onedrive.location               = New-Object System.Drawing.Point(3,325)
 $onedrive.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $InstallOneDrive                 = New-Object system.Windows.Forms.Button
-$InstallOneDrive.text            = "Restoring OneDrive"
+$InstallOneDrive.text            = "Restore OneDrive"
 $InstallOneDrive.width           = 210
 $InstallOneDrive.height          = 30
 $InstallOneDrive.location        = New-Object System.Drawing.Point(2,360)
 $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$EClipboardHistory               = New-Object system.Windows.Forms.Button
-$EClipboardHistory.text          = "Enable Clipboard History"
-$EClipboardHistory.width         = 210
-$EClipboardHistory.height        = 30
-$EClipboardHistory.location      = New-Object System.Drawing.Point(3,395)
-$EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$ELocation                       = New-Object system.Windows.Forms.Button
-$ELocation.text                  = "Enable Location Tracking"
-$ELocation.width                 = 210
-$ELocation.height                = 30
-$ELocation.location              = New-Object System.Drawing.Point(2,430)
-$ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$EHibernation                    = New-Object system.Windows.Forms.Button
-$EHibernation.text               = "Enable Hibernation"
-$EHibernation.width              = 210
-$EHibernation.height             = 30
-$EHibernation.location           = New-Object System.Drawing.Point(3,465)
-$EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$dualboottime                    = New-Object system.Windows.Forms.Button
-$dualboottime.text               = "Set Time to UTC"
-$dualboottime.width              = 210
-$dualboottime.height             = 30
-$dualboottime.location           = New-Object System.Drawing.Point(3,500)
-$dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $Label13                         = New-Object system.Windows.Forms.Label
 $Label13.text                    = "Visual Tweaks"
 $Label13.AutoSize                = $true
 $Label13.width                   = 25
 $Label13.height                  = 10
-$Label13.location                = New-Object System.Drawing.Point(60,545)
+$Label13.location                = New-Object System.Drawing.Point(60,405)
 $Label13.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $darkmode                        = New-Object system.Windows.Forms.Button
 $darkmode.text                   = "Dark Mode"
 $darkmode.width                  = 210
 $darkmode.height                 = 30
-$darkmode.location               = New-Object System.Drawing.Point(3,570)
+$darkmode.location               = New-Object System.Drawing.Point(3,430)
 $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $lightmode                       = New-Object system.Windows.Forms.Button
 $lightmode.text                  = "Light Mode"
 $lightmode.width                 = 210
 $lightmode.height                = 30
-$lightmode.location              = New-Object System.Drawing.Point(3,605)
+$lightmode.location              = New-Object System.Drawing.Point(3,465)
 $lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
@@ -427,14 +454,14 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $performancefx.text           = "Optimize Performance"
     $performancefx.width          = 210
     $performancefx.height         = 30
-    $performancefx.location       = New-Object System.Drawing.Point(3,640)
+    $performancefx.location       = New-Object System.Drawing.Point(3,500)
     $performancefx.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '0') {
     $appearancefx                 = New-Object system.Windows.Forms.Button
     $appearancefx.text            = "Optimize Apperance"
     $appearancefx.width           = 210
     $appearancefx.height          = 30
-    $appearancefx.location        = New-Object System.Drawing.Point(3,640)
+    $appearancefx.location        = New-Object System.Drawing.Point(3,500)
     $appearancefx.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
 
@@ -559,6 +586,34 @@ $getosinfo.height                = 30
 $getosinfo.location              = New-Object System.Drawing.Point(3,675)
 $getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$EClipboardHistory               = New-Object system.Windows.Forms.Button
+$EClipboardHistory.text          = "Enable Clipboard History"
+$EClipboardHistory.width         = 210
+$EClipboardHistory.height        = 30
+$EClipboardHistory.location      = New-Object System.Drawing.Point(3,710)
+$EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$ELocation                       = New-Object system.Windows.Forms.Button
+$ELocation.text                  = "Enable Location Tracking"
+$ELocation.width                 = 210
+$ELocation.height                = 30
+$ELocation.location              = New-Object System.Drawing.Point(3,745)
+$ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$EHibernation                    = New-Object system.Windows.Forms.Button
+$EHibernation.text               = "Enable Hibernation"
+$EHibernation.width              = 210
+$EHibernation.height             = 30
+$EHibernation.location           = New-Object System.Drawing.Point(3,780)
+$EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$dualboottime                    = New-Object system.Windows.Forms.Button
+$dualboottime.text               = "Set Time to UTC"
+$dualboottime.width              = 210
+$dualboottime.height             = 30
+$dualboottime.location           = New-Object System.Drawing.Point(3,815)
+$dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
 $errorscanner                    = New-Object system.Windows.Forms.Button
 $errorscanner.text               = "Error Scanner"
 $errorscanner.width              = 210
@@ -663,124 +718,20 @@ $discord.height                  = 30
 $discord.location                = New-Object System.Drawing.Point(3,115)
 $discord.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$autohotkey                      = New-Object system.Windows.Forms.Button
-$autohotkey.text                 = "AutoHotkey"
-$autohotkey.width                = 210
-$autohotkey.height               = 30
-$autohotkey.location             = New-Object System.Drawing.Point(3,150)
-$autohotkey.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$7zip                            = New-Object system.Windows.Forms.Button
-$7zip.text                       = "7-Zip"
-$7zip.width                      = 210
-$7zip.height                     = 30
-$7zip.location                   = New-Object System.Drawing.Point(3,220)
-$7zip.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$powertoys                       = New-Object system.Windows.Forms.Button
-$powertoys.text                  = "PowerToys"
-$powertoys.width                 = 210
-$powertoys.height                = 30
-$powertoys.location              = New-Object System.Drawing.Point(3,255)
-$powertoys.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$winterminal                     = New-Object system.Windows.Forms.Button
-$winterminal.text                = "Windows Terminal"
-$winterminal.width               = 210
-$winterminal.height              = 30
-$winterminal.location            = New-Object System.Drawing.Point(3,290)
-$winterminal.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$githubdesktop                   = New-Object system.Windows.Forms.Button
-$githubdesktop.text              = "Github Desktop"
-$githubdesktop.width             = 210
-$githubdesktop.height            = 30
-$githubdesktop.location          = New-Object System.Drawing.Point(3,325)
-$githubdesktop.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$etcher                          = New-Object system.Windows.Forms.Button
-$etcher.text                     = "Etcher USB Creator"
-$etcher.width                    = 210
-$etcher.height                   = 30
-$etcher.location                 = New-Object System.Drawing.Point(3,360)
-$etcher.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$putty                           = New-Object system.Windows.Forms.Button
-$putty.text                      = "PuTTY and WinSCP"
-$putty.width                     = 210
-$putty.height                    = 30
-$putty.location                  = New-Object System.Drawing.Point(3,395)
-$putty.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$advancedipscanner               = New-Object system.Windows.Forms.Button
-$advancedipscanner.text          = "Advanced IP Scanner"
-$advancedipscanner.width         = 210
-$advancedipscanner.height        = 30
-$advancedipscanner.location      = New-Object System.Drawing.Point(3,430)
-$advancedipscanner.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$everythingsearch                = New-Object system.Windows.Forms.Button
-$everythingsearch.text           = "Everything Search"
-$everythingsearch.width          = 210
-$everythingsearch.height         = 30
-$everythingsearch.location       = New-Object System.Drawing.Point(3,465)
-$everythingsearch.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$qbittorent                      = New-Object system.Windows.Forms.Button
-$qbittorent.text                 = "qBittorrent"
-$qbittorent.width                = 210
-$qbittorent.height               = 30
-$qbittorent.location             = New-Object System.Drawing.Point(3,500)
-$qbittorent.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$teamviewer                      = New-Object system.Windows.Forms.Button
-$teamviewer.text                 = "Teamviewer"
-$teamviewer.width                = 210
-$teamviewer.height               = 30
-$teamviewer.location             = New-Object System.Drawing.Point(3,535)
-$teamviewer.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$nvclean                         = New-Object system.Windows.Forms.Button
-$nvclean.text                    = "NvClean Install"
-$nvclean.width                   = 210
-$nvclean.height                  = 30
-$nvclean.location                = New-Object System.Drawing.Point(3,570)
-$nvclean.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$dropbox                         = New-Object system.Windows.Forms.Button
-$dropbox.text                    = "Dropbox"
-$dropbox.width                   = 210
-$dropbox.height                  = 30
-$dropbox.location                = New-Object System.Drawing.Point(3,605)
-$dropbox.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
 $openoffice                      = New-Object system.Windows.Forms.Button
 $openoffice.text                 = "Open Office"
 $openoffice.width                = 210
 $openoffice.height               = 30
-$openoffice.location             = New-Object System.Drawing.Point(3,640)
+$openoffice.location             = New-Object System.Drawing.Point(3,395)
 $openoffice.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$zoom                            = New-Object system.Windows.Forms.Button
-$zoom.text                       = "Zoom"
-$zoom.width                      = 210
-$zoom.height                     = 30
-$zoom.location                   = New-Object System.Drawing.Point(3,675)
-$zoom.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$spotify                         = New-Object system.Windows.Forms.Button
-$spotify.text                    = "Spotify"
-$spotify.width                   = 210
-$spotify.height                  = 30
-$spotify.location                = New-Object System.Drawing.Point(3,710)
-$spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10,$Label11))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$vscodium,$imageglass,$gimp,$Label7,$Label8,$Label9,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$Label22))
-$Panel2.controls.AddRange(@($Label2,$Label12, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$putty,$etcher,$translucenttb,$githubdesktop,$discord,$autohotkey,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$openoffice,$zoom,$spotify))
+$Form.controls.AddRange(@($Panel1,$Panel2,$Label15,$Panel4,$Panel5,$Label1,$Label4,$Panel3,$ResultText,$Label10))
+$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$Label7,$Label8,$Label9,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$Label22))
+$Panel2.controls.AddRange(@($Label2,$Label12, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify))
 $Panel3.controls.AddRange(@($Label6,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$Label18,$yourphonefix, $resetnetwork,$laptopnumlock))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$Label16,$Label17,$Label19,$ultimateclean,$Label14, $ultimatepower,$restorepower))
-$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$EClipboardHistory,$ELocation,$InstallOneDrive,$appearancefx,$EHibernation,$dualboottime,$gamingtweaks,$securitypatches))
+$Panel5.controls.AddRange(@($Label21,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
 
 $getosinfo.Add_Click({
     $name=(Get-WmiObject Win32_OperatingSystem).caption
@@ -1426,7 +1377,7 @@ $steam.Add_Click({
     else {
         Write-Host "Installing Steam"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Steam... Please Wait" 
-        winget install -e Valve.Steam | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Valve.Steam | Out-Host
         if($?) { Write-Host "Installed Steam" }
         $ResultText.text = "`r`n" + "  Finished Installing Steam" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1444,7 +1395,7 @@ $teamviewer.Add_Click({
     else {
         Write-Host "Installing Teamviewer"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Teamviewer... Please Wait" 
-        winget install -e TeamViewer.TeamViewer | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent TeamViewer.TeamViewer | Out-Host
         if($?) { Write-Host "Installed Teamviewer" }
         $ResultText.text = "`r`n" + "  Finished Installing Teamviewer" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1458,7 +1409,7 @@ $nvclean.Add_Click({
     else {
         Write-Host "Installing NVCleanstall"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing NVCleanstall... Please Wait" 
-        winget install -e TechPowerUp.NVCleanstall | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent TechPowerUp.NVCleanstall | Out-Host
         if($?) { Write-Host "Installed NVCleanstall" }
         $ResultText.text = "`r`n" + "  Finished Installing NVCleanstall" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1472,7 +1423,7 @@ $epicgames.Add_Click({
     else {
         Write-Host "Installing Epic Games Launcher "
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Epic Games Launcher... Please Wait" 
-        winget install -e EpicGames.EpicGamesLauncher | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent EpicGames.EpicGamesLauncher | Out-Host
         if($?) { Write-Host "Installed Dropbox" }
         $ResultText.text = "`r`n" + "  Finished Installing Epic Games Launcher" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1486,7 +1437,7 @@ $openoffice.Add_Click({
     else {
         Write-Host "Installing Open Office"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Open Office... Please Wait" 
-        winget install -e Apache.OpenOffice | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Apache.OpenOffice | Out-Host
         if($?) { Write-Host "Installed Open Office" }
         $ResultText.text = "`r`n" + "  Finished Installing Open Office" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1500,7 +1451,7 @@ $zoom.Add_Click({
     else {
         Write-Host "Installing Zoom"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Zoom... Please Wait" 
-        winget install -e Zoom.Zoom | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Zoom.Zoom | Out-Host
         if($?) { Write-Host "Installed Zoom" }
         $ResultText.text = "`r`n" + "  Finished Installing Zoom" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1514,7 +1465,7 @@ $spotify.Add_Click({
     else {
         Write-Host "Installing Spotify"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Spotify... Please Wait" 
-        winget install -e Spotify.Spotify | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Spotify.Spotify | Out-Host
         if($?) { Write-Host "Installed Spotify" }
         $ResultText.text = "`r`n" + "  Finished Installing Spotify" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1529,7 +1480,7 @@ $dropbox.Add_Click({
     else {
         Write-Host "Installing Dropbox"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Dropbox... Please Wait" 
-        winget install -e Dropbox.Dropbox | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Dropbox.Dropbox | Out-Host
         if($?) { Write-Host "Installed Dropbox" }
         $ResultText.text = "`r`n" + "  Finished Installing Dropbox" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1543,7 +1494,7 @@ $qbittorent.Add_Click({
     else {
         Write-Host "Installing qBittorent"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing qBittorent... Please Wait" 
-        winget install -e qBittorrent.qBittorrent | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent qBittorrent.qBittorrent | Out-Host
         if($?) { Write-Host "Installed qBittorent" }
         $ResultText.text = "`r`n" + "  Finished Installing qBittorent" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1557,7 +1508,7 @@ $brave.Add_Click({
     else {
         Write-Host "Installing Brave Browser"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Brave... Please Wait" 
-        winget install -e BraveSoftware.BraveBrowser | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent BraveSoftware.BraveBrowser | Out-Host
         if($?) { Write-Host "Installed Brave Browser" }
         $ResultText.text = "`r`n" + "  Finished Installing Brave" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1571,7 +1522,7 @@ $firefox.Add_Click({
     else {
         Write-Host "Installing Firefox"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Firefox... Please Wait" 
-        winget install -e Mozilla.Firefox | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Mozilla.Firefox | Out-Host
         if($?) { Write-Host "Installed Firefox" }
         $ResultText.text = "`r`n" + "  Finished Installing Firefox" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1585,7 +1536,7 @@ $gchrome.Add_Click({
     else {
         Write-Host "Installing Google Chrome"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Google Chrome... Please Wait" 
-        winget install -e Google.Chrome | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Google.Chrome | Out-Host
         if($?) { Write-Host "Installed Google Chrome" }
         $ResultText.text = "`r`n" + "  Finished Installing Google Chrome" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1599,7 +1550,7 @@ $autohotkey.Add_Click({
     else {
         Write-Host "Installing AutoHotkey"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing AutoHotkey... Please Wait" 
-        winget install -e Lexikos.AutoHotkey | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Lexikos.AutoHotkey | Out-Host
         if($?) { Write-Host "Installed AutoHotkey" }
         $ResultText.text = "`r`n" + "  Finished Installing Autohotkey" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1613,7 +1564,7 @@ $imageglass.Add_Click({
     else {
         Write-Host "Installing Image Glass (Image Viewer)"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Image Glass... Please Wait" 
-        winget install -e DuongDieuPhap.ImageGlass | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent DuongDieuPhap.ImageGlass | Out-Host
         if($?) { Write-Host "Installed Image Glass (Image Viewer)" }
         $ResultText.text = "`r`n" + "  Finished Installing Image Glass" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1627,7 +1578,7 @@ $discord.Add_Click({
     else {
         Write-Host "Installing Discord"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Discord... Please Wait" 
-        winget install -e Discord.Discord | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Discord.Discord | Out-Host
         if($?) { Write-Host "Installed Discord" }
         $ResultText.text = "`r`n" + "  Finished Installing Discord" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1643,7 +1594,7 @@ $adobereader.Add_Click({
         else {
             Write-Host "Installing Adobe Reader DC"
             $ResultText.text = "`r`n" +"`r`n" + "  Installing Adobe Reader DC.. Please Wait"
-            winget install -e Adobe.Acrobat.Reader.32-bit | Out-Host
+            winget install -e --accept-source-agreements --accept-package-agreements --silent Adobe.Acrobat.Reader.32-bit | Out-Host
             if($?) { Write-Host "Installed Adobe Reader DC" }
             $ResultText.text = "`r`n" + "  Finished Installing Adobe Reader DC" + "`r`n" + "`r`n" + "  Ready for Next Task"
         }
@@ -1656,7 +1607,7 @@ $adobereader.Add_Click({
         else {
             Write-Host "Installing Adobe Reader DC"
             $ResultText.text = "`r`n" +"`r`n" + "  Installing Adobe Reader DC.. Please Wait"
-            winget install -e Adobe.Acrobat.Reader.64-bit | Out-Host
+            winget install -e --accept-source-agreements --accept-package-agreements --silent Adobe.Acrobat.Reader.64-bit | Out-Host
             if($?) { Write-Host "Installed Adobe Reader DC" }
             $ResultText.text = "`r`n" + "  Finished Installing Adobe Reader DC" + "`r`n" + "`r`n" + "  Ready for Next Task"
         }
@@ -1671,7 +1622,7 @@ $notepad.Add_Click({
     else {
         Write-Host "Installing Notepad++"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Notepad++... Please Wait" 
-        winget install -e Notepad++.Notepad++ | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Notepad++.Notepad++ | Out-Host
         if($?) { Write-Host "Installed Notepad++" }
         $ResultText.text = "`r`n" + "  Finished Installing NotePad++" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1685,7 +1636,7 @@ $vlc.Add_Click({
     else {
         Write-Host "Installing VLC Media Player"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing VLC Media Player... Please Wait" 
-        winget install -e VideoLAN.VLC | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent VideoLAN.VLC | Out-Host
         if($?) { Write-Host "Installed VLC Media Player" }
         $ResultText.text = "`r`n" + "  Finished Installing VLC Media Player" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1699,7 +1650,7 @@ $mpc.Add_Click({
     else {
         Write-Host "Installing Media Player Classic"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Media Player Classic... Please Wait" 
-        winget install -e clsid2.mpc-hc | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent clsid2.mpc-hc | Out-Host
         if($?) { Write-Host "Installed Media Player Classic" }
         $ResultText.text = "`r`n" + "  Finished Installing Media Player Classic" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1713,7 +1664,7 @@ $7zip.Add_Click({
     else {
         Write-Host "Installing 7-Zip Compression Tool"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing 7-Zip Compression Tool... Please Wait" 
-        winget install -e 7zip.7zip | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent 7zip.7zip | Out-Host
         if($?) { Write-Host "Installed 7-Zip Compression Tool" }
         $ResultText.text = "`r`n" + "  Finished Installing 7-Zip Compression Tool" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1727,7 +1678,7 @@ $vscode.Add_Click({
     else {
         Write-Host "Installing Visual Studio Code"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Visual Studio Code... Please Wait" 
-        winget install -e Microsoft.VisualStudioCode --source winget | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.VisualStudioCode --source winget | Out-Host
         if($?) { Write-Host "Installed Visual Studio Code" }
         $ResultText.text = "`r`n" + "  Finished Installing Visual Studio Code" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1741,7 +1692,7 @@ $vscodium.Add_Click({
     else {
         Write-Host "Installing VS Codium"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing VS Codium... Please Wait" 
-        winget install -e VSCodium.VSCodium | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent VSCodium.VSCodium | Out-Host
         if($?) { Write-Host "Installed VS Codium" }
         $ResultText.text = "`r`n" + "  Finished Installing VS Codium" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1756,7 +1707,7 @@ $winterminal.Add_Click({
     else {
         Write-Host "Installing New Windows Terminal"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing New Windows Terminal... Please Wait" 
-        winget install -e Microsoft.WindowsTerminal | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.WindowsTerminal | Out-Host
         if($?) { Write-Host "Installed New Windows Terminal" }
         $ResultText.text = "`r`n" + "  Finished Installing New Windows Terminal" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1770,7 +1721,7 @@ $powertoys.Add_Click({
     else {
         Write-Host "Installing Microsoft PowerToys"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Microsoft PowerToys... Please Wait" 
-        winget install -e Microsoft.PowerToys | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.PowerToys | Out-Host
         if($?) { Write-Host "Installed Microsoft PowerToys" }
         $ResultText.text = "`r`n" + "  Finished Installing Microsoft PowerToys" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1784,7 +1735,7 @@ $everythingsearch.Add_Click({
     else {
         Write-Host "Installing Voidtools Everything Search"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Voidtools Everything Search... Please Wait" 
-        winget install -e voidtools.Everything --source winget | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent voidtools.Everything --source winget | Out-Host
         if($?) { Write-Host "Installed Everything Search" }
         $ResultText.text = "`r`n" + "  Finished Installing Voidtools Everything Search" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1798,7 +1749,7 @@ $sumatrapdf.Add_Click({
     else {
         Write-Host "Installing Sumatra PDF"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Sumatra PDF... Please Wait" 
-        winget install -e SumatraPDF.SumatraPDF | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent SumatraPDF.SumatraPDF | Out-Host
         if($?) { Write-Host "Installed Sumatra PDF" }
         $ResultText.text = "`r`n" + "  Finished Installing Sumatra PDF" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1812,7 +1763,7 @@ $githubdesktop.Add_Click({
     else {
         Write-Host "Installing GitHub Desktop"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing GitHub Desktop... Please Wait" 
-        winget install -e GitHub.GitHubDesktop | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent GitHub.GitHubDesktop | Out-Host
         if($?) { Write-Host "Installed Github Desktop" }
         $ResultText.text = "`r`n" + "  Finished Installing GitHub Desktop" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1821,7 +1772,7 @@ $githubdesktop.Add_Click({
 $translucenttb.Add_Click({ #Broken link inside winget.run
         Write-Host "Installing Translucent Taskbar"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Translucent Taskbar... Please Wait" 
-        winget install -e TranslucentTB.TranslucentTB | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent TranslucentTB.TranslucentTB | Out-Host
         if($?) { Write-Host "Installed Translucent Taskbar" }
         $ResultText.text = "`r`n" + "  Finished Installing Translucent Taskbar" + "`r`n" + "`r`n" + "  Ready for Next Task"
 })
@@ -1834,28 +1785,9 @@ $etcher.Add_Click({
     else {
         Write-Host "Installing Etcher USB Imager"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Etcher USB Imager... Please Wait" 
-        winget install -e Balena.Etcher | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Balena.Etcher | Out-Host
         if($?) { Write-Host "Installed Etcher USB Imager" }
         $ResultText.text = "`r`n" + "  Finished Installing Etcher USB Imager" + "`r`n" + "`r`n" + "  Ready for Next Task"
-    }
-})
-
-$putty.Add_Click({
-    If (Test-Path "$env:USERPROFILE\AppData\Local\Programs\WinSCP\WinSCP.exe") {
-        Write-Host 'WinSCP Already Installed'
-        $ResultText.text = "`r`n" +"`r`n" + "  WinSCP Already Installed" 
-    }
-    elseif (Test-Path "C:\Program Files\PuTTY\putty.exe") {
-        Write-Host 'Putty Already Installed'
-        $ResultText.text = "`r`n" +"`r`n" + "  Putty Already Installed" 
-    }
-    else {
-        Write-Host "Installing PuTTY and WinSCP"
-        $ResultText.text = "`r`n" +"`r`n" + "  Installing PuTTY and WinSCP... Please Wait" 
-        winget install -e PuTTY.PuTTY | Out-Host
-        winget install -e WinSCP.WinSCP | Out-Host
-        if($?) { Write-Host "Installed PuTTY and WinSCP" }
-        $ResultText.text = "`r`n" + "  Finished Installing PuTTY and WinSCP" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
 })
 
@@ -1867,7 +1799,7 @@ $advancedipscanner.Add_Click({
     else {
         Write-Host "Installing Advanced IP Scanner"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Advanced IP Scanner... Please Wait" 
-        winget install -e Famatech.AdvancedIPScanner | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Famatech.AdvancedIPScanner | Out-Host
         if($?) { Write-Host "Installed Advanced IP Scanner" }
         $ResultText.text = "`r`n" + "  Finished Installing Advanced IP Scanner" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1881,7 +1813,7 @@ $sharex.Add_Click({
     else {
         Write-Host "Installing ShareX Screenshot Tool"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing ShareX Screenshot Tool... Please Wait" 
-        winget install -e ShareX.ShareX | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent ShareX.ShareX | Out-Host
         if($?) { Write-Host "Installed ShareX Screenshot Tool" }
         $ResultText.text = "`r`n" + "  Finished Installing ShareX Screenshot Tool" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -1895,7 +1827,7 @@ $gimp.Add_Click({
     else {
         Write-Host "Installing Gimp Image Editor"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Gimp Image Editor... Please Wait" 
-        winget install -e GIMP.GIMP | Out-Host
+        winget install -e --accept-source-agreements --accept-package-agreements --silent GIMP.GIMP | Out-Host
         if($?) { Write-Host "Installed Gimp Image Editor" }
         $ResultText.text = "`r`n" + "  Finished Installing Gimp Image Editor" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
@@ -2356,7 +2288,7 @@ $essentialundo.Add_Click({
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338389Enabled" -Type DWord -Value 1
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -Type DWord -Value 1
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -Type DWord -Value 1
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
+    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
         Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 0
@@ -2369,7 +2301,7 @@ $essentialundo.Add_Click({
 
     Write-Host "Enable Location Tracking..."
     $ResultText.text = "`r`n" +"`r`n" + "  Enable Location Tracking..."
-    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location")) {
+    If (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location") {
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Recurse -ErrorAction SilentlyContinue
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Allow"
@@ -2382,7 +2314,7 @@ $essentialundo.Add_Click({
 
     Write-Host "Enabling Feedback..."
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Feedback..."
-    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules")) {
+    If (Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules") {
         Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Recurse -ErrorAction SilentlyContinue
     }
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0
@@ -2390,14 +2322,14 @@ $essentialundo.Add_Click({
 
     Write-Host "Enabling Tailored Experiences..."
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Tailored Experiences..."
-    If (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
+    If (Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
         Remove-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
     }
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 0
 
     Write-Host "Disabling Advertising ID..."
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling Advertising ID..."
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo")) {
+    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo") {
         Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Recurse -ErrorAction SilentlyContinue
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 0
@@ -2444,7 +2376,7 @@ $essentialundo.Add_Click({
 
     Write-Host "Hiding file operations details..."
     $ResultText.text = "`r`n" +"`r`n" + "  Hiding file operations details..."
-    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager")) {
+    If (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager") {
         Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Recurse -ErrorAction SilentlyContinue
     }
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 0
@@ -4199,11 +4131,11 @@ $oldpower.Add_Click({
 })
 
 $restorepower.Add_Click({
-    powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a
-    powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e
-    powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-    Write-Host "Restored all power plans: Balanced, High Performance, and Power Saver"
-    $ResultText.text = "`r`n" +"`r`n" + "Restored all power plans: Balanced, High Performance, and Power Saver"
+    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")){powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a}
+    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")){powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e}
+    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")){powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61}
+    Write-Host "Restored all power plans: Power Saver, Balanced, and Ultimate Performance"
+    $ResultText.text = "`r`n" +"`r`n" + "Restored all power plans: Power Saver, Balanced, and Ultimate Performance"
 })
 
 $NFS.Add_Click({
