@@ -1486,7 +1486,7 @@ $malwarebytes.Add_Click({
     else {
         Write-Host "Installing Malwarebytes"
         $ResultText.text = "`r`n" +"`r`n" + "  Installing Malwarebytes... Please Wait" 
-        winget install -e --accept-source-agreements --accept-package-agreements --silent Malwarebytes.Malwarebytes --force
+        winget install -e --accept-source-agreements --accept-package-agreements --silent Malwarebytes.Malwarebytes --force | Out-Host
         if($?) { Write-Host "Installed Malwarebytes" }
         $ResultText.text = "`r`n" + "  Finished Installing Malwarebytes" + "`r`n" + "`r`n" + "  Ready for Next Task"
     }
