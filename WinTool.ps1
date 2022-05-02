@@ -1479,7 +1479,7 @@ $spotify.Add_Click({
 })
 
 $malwarebytes.Add_Click({
-    If (Test-Path "C:\Users\$env:UserName\AppData\Roaming\Malwarebytes") {
+    If (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
         Write-Host 'Malwarebytes Already Installed'
         $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Already Installed" 
     }
