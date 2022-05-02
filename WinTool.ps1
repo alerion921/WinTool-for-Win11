@@ -2668,107 +2668,91 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Essential Undo Completed " + "`r`n" + "  -   Ready for Next Task.."
 })
 
-$Bloatware = @(
-    #Unnecessary Windows 10 & 11 apps
-    "Microsoft.3DBuilder"
-    "Microsoft.Microsoft3DViewer"
-    "Microsoft.AppConnector"
-    "Microsoft.BingFinance"
-    "Microsoft.BingNews"
-    "Microsoft.BingSports"
-    "Microsoft.BingTranslator"
-    "Microsoft.BingWeather"
-    "Microsoft.BingFoodAndDrink"
-    "Microsoft.BingHealthAndFitness"
-    "Microsoft.BingTravel"
-    "Microsoft.MinecraftUWP"
-    "Microsoft.GamingServices"
-    # "Microsoft.WindowsReadingList"
-    "Microsoft.GetHelp"
-    "Microsoft.Getstarted"
-    "Microsoft.Messaging"
-    "Microsoft.Microsoft3DViewer"
-    "Microsoft.MicrosoftSolitaireCollection"
-    "Microsoft.NetworkSpeedTest"
-    "Microsoft.News"
-    "Microsoft.Office.Lens"
-    "Microsoft.Office.Sway"
-    "Microsoft.Office.OneNote"
-    "Microsoft.OneConnect"
-    "Microsoft.People"
-    "Microsoft.Print3D"
-    "Microsoft.SkypeApp"
-    "Microsoft.Wallet"
-    "Microsoft.Whiteboard"
-    "Microsoft.WindowsAlarms"
-    "microsoft.windowscommunicationsapps"
-    "Microsoft.WindowsFeedbackHub"
-    "Microsoft.WindowsMaps"
-    "Microsoft.WindowsPhone"
-    "Microsoft.WindowsSoundRecorder"
+#Valuable Windows 10 AppX apps that most people want to keep. Protected from DeBloat All.
+#Credit to /u/GavinEke for a modified version of my whitelist code
+$global:WhiteListedApps = @(
+    "Microsoft.WindowsCalculator"               # Microsoft removed legacy calculator
+    "Microsoft.WindowsStore"                    # Issue 1
+    "Microsoft.Windows.Photos"                  # Microsoft disabled/hid legacy photo viewer
+    "CanonicalGroupLimited.UbuntuonWindows"     # Issue 10
+    "Microsoft.Xbox.TCUI"                       # Issue 25, 91  Many home users want to play games
     "Microsoft.XboxApp"
-    "Microsoft.ConnectivityStore"
-    "Microsoft.CommsPhone"
-    "Microsoft.ScreenSketch"
-    "Microsoft.Xbox.TCUI"
     "Microsoft.XboxGameOverlay"
-    "Microsoft.XboxGameCallableUI"
+    "Microsoft.XboxGamingOverlay"               # Issue 25, 91  Many home users want to play games
+    "Microsoft.XboxIdentityProvider"            # Issue 25, 91  Many home users want to play games
     "Microsoft.XboxSpeechToTextOverlay"
-    "Microsoft.MixedReality.Portal"
-    "Microsoft.XboxIdentityProvider"
-    "Microsoft.ZuneMusic"
-    "Microsoft.ZuneVideo"
-    "Microsoft.YourPhone"
-    "Microsoft.Getstarted"
-    "Microsoft.MicrosoftOfficeHub"
-
-    #Sponsored Windows 10 & 11 apps
-    #Add sponsored/featured apps to remove in the "*AppName*" format
-    "*EclipseManager*"
-    "*ActiproSoftwareLLC*"
-    "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
-    "*Duolingo-LearnLanguagesforFree*"
-    "*PandoraMediaInc*"
-    "*CandyCrush*"
-    "*BubbleWitch3Saga*"
-    "*Wunderlist*"
-    "*Flipboard*"
-    "*Twitter*"
-    "*Facebook*"
-    "*Royal Revolt*"
-    "*Sway*"
-    "*Speed Test*"
-    "*Dolby*"
-    "*Viber*"
-    "*ACGMediaPlayer*"
-    "*Netflix*"
-    "*OneCalendar*"
-    "*LinkedInforWindows*"
-    "*HiddenCityMysteryofShadows*"
-    "*Hulu*"
-    "*HiddenCity*"
-    "*AdobePhotoshopExpress*"
-    "*HotspotShieldFreeVPN*"
-    "*BytedancePte*"
-    "*TikTok*"
-    "*Disney*"
-    "*Clipchamp*"
-    "*SpotifyAB*"
-    "*AmazonVideo*"
-    "*Instagram*"
-    "*ToDo*"
-    "*Hidden City*"
-    "*Roblox*"
-    "*Photoshop*"
-
-    #Optional: Typically not removed but you can if you need to for some reason
-    "*Microsoft.Advertising.Xaml*"
-    #"*Microsoft.MSPaint*"
-    #"*Microsoft.MicrosoftStickyNotes*"
-    #"*Microsoft.Windows.Photos*"
-    #"*Microsoft.WindowsCalculator*"
-    #"*Microsoft.WindowsStore*"
+    "Microsoft.MicrosoftStickyNotes"            # Issue 33  New functionality.
+    "Microsoft.MSPaint"                         # Issue 32  This is Paint3D, legacy paint still exists in Windows 10
+    "Microsoft.WindowsCamera"                   # Issue 65  New functionality.
+    "\.NET"
+    "Microsoft.HEIFImageExtension"              # Issue 68
+    "Microsoft.ScreenSketch"                    # Issue 55: Looks like Microsoft will be axing snipping tool and using Snip & Sketch going forward
+    "Microsoft.StorePurchaseApp"                # Issue 68
+    "Microsoft.VP9VideoExtensions"              # Issue 68
+    "Microsoft.WebMediaExtensions"              # Issue 68
+    "Microsoft.WebpImageExtension"              # Issue 68
+    "Microsoft.DesktopAppInstaller"             # Issue 68
+    "WindSynthBerry"                            # Issue 68
+    "MIDIBerry"                                 # Issue 68
+    "Slack"                                     # Issue 83
+    "*Nvidia*"                                  # Issue 198
+    "Microsoft.MixedReality.Portal"             # Issue 195
 )
+
+#NonRemovable Apps that where getting attempted and the system would reject the uninstall, speeds up debloat and prevents 'initalizing' overlay when removing apps
+$NonRemovables = Get-AppxPackage -AllUsers | Where-Object { $_.NonRemovable -eq $true } | ForEach-Object { $_.Name }
+$NonRemovables += Get-AppxPackage | Where-Object { $_.NonRemovable -eq $true } | ForEach-Object { $_.Name }
+$NonRemovables += Get-AppxProvisionedPackage -Online | Where-Object { $_.NonRemovable -eq $true } | ForEach-Object { $_.DisplayName }
+$NonRemovables = $NonRemovables | Sort-Object -Unique
+
+if ($NonRemovables -eq "0" ) {
+    # the .NonRemovable property doesn't exist until version 18xx. Use a hard-coded list instead.
+    #WARNING: only use exact names here - no short names or wildcards
+    $NonRemovables = @(
+        "1527c705-839a-4832-9118-54d4Bd6a0c89"
+        "c5e2524a-ea46-4f67-841f-6a9465d9d515"
+        "E2A4F912-2574-4A75-9BB0-0D023378592B"
+        "F46D4000-FD22-4DB4-AC8E-4E1DDDE828FE"
+        "InputApp"
+        "Microsoft.AAD.BrokerPlugin"
+        "Microsoft.AccountsControl"
+        "Microsoft.BioEnrollment"
+        "Microsoft.CredDialogHost"
+        "Microsoft.ECApp"
+        "Microsoft.LockApp"
+        "Microsoft.MicrosoftEdgeDevToolsClient"
+        "Microsoft.MicrosoftEdge"
+        "Microsoft.PPIProjection"
+        "Microsoft.Win32WebViewHost"
+        "Microsoft.Windows.Apprep.ChxApp"
+        "Microsoft.Windows.AssignedAccessLockApp"
+        "Microsoft.Windows.CapturePicker"
+        "Microsoft.Windows.CloudExperienceHost"
+        "Microsoft.Windows.ContentDeliveryManager"
+        "Microsoft.Windows.Cortana"
+        "Microsoft.Windows.HolographicFirstRun"         # Added 1709
+        "Microsoft.Windows.NarratorQuickStart"
+        "Microsoft.Windows.OOBENetworkCaptivePortal"    # Added 1709
+        "Microsoft.Windows.OOBENetworkConnectionFlow"   # Added 1709
+        "Microsoft.Windows.ParentalControls"
+        "Microsoft.Windows.PeopleExperienceHost"
+        "Microsoft.Windows.PinningConfirmationDialog"
+        "Microsoft.Windows.SecHealthUI"                 # Issue 117 Windows Defender
+        "Microsoft.Windows.SecondaryTileExperience"     # Added 1709
+        "Microsoft.Windows.SecureAssessmentBrowser"
+        "Microsoft.Windows.ShellExperienceHost"
+        "Microsoft.Windows.XGpuEjectDialog"
+        "Microsoft.XboxGameCallableUI"                  # Issue 91
+        "Windows.CBSPreview"
+        "windows.immersivecontrolpanel"
+        "Windows.PrintDialog"
+        "Microsoft.VCLibs.140.00"
+        "Microsoft.Services.Store.Engagement"
+        "Microsoft.UI.Xaml.2.0"
+    )
+}
+
+$global:WhiteListedAppsRegex = $global:WhiteListedApps -join '|'
 
 $removebloat.Add_Click({
         $ErrorActionPreference = 'SilentlyContinue'
