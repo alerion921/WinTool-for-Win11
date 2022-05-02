@@ -2773,20 +2773,21 @@ $Bloatware = @(
     "Microsoft.GetHelp"
     "Microsoft.Getstarted"
     "Microsoft.Messaging"
-    "Microsoft.Microsoft3DViewer"
     "Microsoft.MicrosoftOfficeHub"
     "Microsoft.MicrosoftSolitaireCollection"
     "Microsoft.NetworkSpeedTest"
-    "Microsoft.News"
+    "Microsoft.News"    
+
     "Microsoft.Office.Lens"
     "Microsoft.Office.Sway"
-    "Microsoft.News"                                    # Issue 77
     "Microsoft.Office.Lens"                             # Issue 77
     "Microsoft.Office.OneNote"
     "Microsoft.Office.Sway"
+    
     "Microsoft.OneConnect"
     "Microsoft.People"
     "Microsoft.Print3D"
+    "Microsoft.Paint"
     "Microsoft.RemoteDesktop"                           # Issue 120
     "Microsoft.SkypeApp"
     "Microsoft.Wallet"
@@ -2800,24 +2801,31 @@ $Bloatware = @(
     "Microsoft.WindowsMaps"
     "Microsoft.WindowsPhone"
     "Microsoft.WindowsSoundRecorder"
-    "Microsoft.XboxApp"
     "Microsoft.ConnectivityStore"
     "Microsoft.CommsPhone"
     "Microsoft.ScreenSketch"
+    "Microsoft.MixedReality.Portal"
+
+    #xbox apps might be needed if you are a gamer so keep them disabled then
     "Microsoft.Xbox.TCUI"
     "Microsoft.XboxApp"
     "Microsoft.XboxGameOverlay"
     "Microsoft.XboxGameCallableUI"
     "Microsoft.XboxSpeechToTextOverlay"
-    "Microsoft.MixedReality.Portal"
     "Microsoft.XboxGamingOverlay"
     "Microsoft.XboxIdentityProvider"
     "Microsoft.XboxSpeechToTextOverlay"
+
     "Microsoft.ZuneMusic"
     "Microsoft.ZuneVideo"
     "Microsoft.YourPhone"
     "Microsoft.Getstarted"
     "Microsoft.MicrosoftOfficeHub"
+
+    "*Microsoft.Advertising.Xaml*"
+    "*Microsoft.MicrosoftStickyNotes*"
+    "Microsoft.Advertising.Xaml_10.1712.5.0_x64__8wekyb3d8bbwe"
+    "Microsoft.Advertising.Xaml_10.1712.5.0_x86__8wekyb3d8bbwe"
 
     #Sponsored Windows 10 & 11 apps
     #Add sponsored/featured apps to remove in the "*AppName*" format
@@ -2857,17 +2865,6 @@ $Bloatware = @(
     "*Hidden City*"
     "*Roblox*"
     "*Photoshop*"
-
-    #Optional: Typically not removed but you can if you need to for some reason
-    "*Microsoft.Advertising.Xaml*"
-    #"*Microsoft.MSPaint*"
-    #"*Microsoft.MicrosoftStickyNotes*"
-    #"*Microsoft.Windows.Photos*"
-    #"*Microsoft.WindowsCalculator*"
-    #"*Microsoft.WindowsStore*"
-    #"Microsoft.Advertising.Xaml_10.1712.5.0_x64__8wekyb3d8bbwe"
-    #"Microsoft.Advertising.Xaml_10.1712.5.0_x86__8wekyb3d8bbwe"
-    #"Microsoft.BingWeather"
 )
 
 $removebloat.Add_Click({
