@@ -959,10 +959,10 @@ $ultimateclean.Add_Click({
             Write-Host -ForegroundColor Green "Clearing Brave Browser Cache`n"
             taskkill /F /IM brave.exe
             Foreach ($user in $Users) {
-                if (Test-Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\") {
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Code Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Service Worker\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                if (Test-Path "$env:LocalAppData\BraveSoftware\Brave-Browser\User Data\") {
+                    Remove-Item -Path "$env:LocalAppData\BraveSoftware\Brave-Browser\User Data\Default\Cache\Cache_Data\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\BraveSoftware\Brave-Browser\User Data\Default\Code Cache\js\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\BraveSoftware\Brave-Browser\User Data\Default\GrShaderCache\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
                 Write-Host -ForegroundColor Yellow "Done...`n"
             }
@@ -978,14 +978,14 @@ $ultimateclean.Add_Click({
             # Clear Firefox Cache
             Write-Host -ForegroundColor Green "Clearing Firefox Cache`n"
             Foreach ($user in $Users) {
-                if (Test-Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles") {
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\thumbnails\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\cookies.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\webappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\chromeappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Mozilla\Firefox\Profiles\*\OfflineCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                if (Test-Path "$env:LocalAppData\Mozilla\Firefox\Profiles") {
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\thumbnails\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\cookies.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\webappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\chromeappsstore.sqlite" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Mozilla\Firefox\Profiles\*\OfflineCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
                 Write-Host -ForegroundColor Yellow "Done...`n"
             }
@@ -1001,25 +1001,25 @@ $ultimateclean.Add_Click({
             # Clear Google Chrome
             Write-Host -ForegroundColor Green "Clearing Google Chrome Cache`n"
             Foreach ($user in $Users) {
-                if (Test-Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data") {
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\Default\ChromeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                if (Test-Path "$env:LocalAppData\Google\Chrome\User Data") {
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\Default\ChromeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
                     # Check Chrome Profiles. It looks as though when creating profiles, it just numbers them Profile 1, Profile 2 etc.
-                    $Profiles = Get-ChildItem -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
+                    $Profiles = Get-ChildItem -Path "$env:LocalAppData\Google\Chrome\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
                     foreach ($Account in $Profiles) {
                         $Account = $Account.Name 
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Google\Chrome\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
+                        Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Remove-Item -Path "$env:LocalAppData\Google\Chrome\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                     }
                 }
                 Write-Host -ForegroundColor Yellow "Done...`n"
@@ -1032,9 +1032,9 @@ $ultimateclean.Add_Click({
         # Clear Internet Explorer & Edge
         Write-Host -ForegroundColor Yellow "Clearing Internet Explorer & Old Edge Cache`n"
         Foreach ($user in $Users) {
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\Temporary Internet Files\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\INetCache\* " -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Windows\WebCache\* " -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Temporary Internet Files\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\INetCache\* " -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\WebCache\* " -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         }
         Write-Host -ForegroundColor Yellow "Done...`n"
     }   
@@ -1046,25 +1046,25 @@ $ultimateclean.Add_Click({
         Write-Host -ForegroundColor Yellow "Clearing Edge Chromium Cache`n"
         taskkill /F /IM msedge.exe
         Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\Default\EdgeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            if (Test-Path "$env:LocalAppData\Microsoft\Edge\User Data") {
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\Default\EdgeDWriteFontCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             
                 # Check Edge Profiles. It looks as though when creating profiles, it just numbers them Profile 1, Profile 2 etc.
-                $Profiles = Get-ChildItem -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
+                $Profiles = Get-ChildItem -Path "$env:LocalAppData\Microsoft\Edge\User Data" | Select-Object Name | Where-Object Name -Like "Profile*"
                 foreach ($Account in $Profiles) {
                     $Account = $Account.Name 
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Edge\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\$Account\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\$Account\Cache2\entries\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
+                    Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\$Account\Cookies" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\$Account\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\$Account\Cookies-Journal" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                    Remove-Item -Path "$env:LocalAppData\Microsoft\Edge\User Data\$Account\JumpListIconsOld" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
             }
             Write-Host -ForegroundColor Yellow "Done...`n" 
@@ -1076,18 +1076,18 @@ $ultimateclean.Add_Click({
         # Clear Chromium
         Write-Host -ForegroundColor Yellow "Clearing Chromium Cache`n"
         Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\Chromium") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Chromium\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Chromium\User Data\Default\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Chromium\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Chromium\User Data\Default\Pepper Data" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Chromium\User Data\Default\Application Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            if (Test-Path "$env:LocalAppData\Chromium") {
+                Remove-Item -Path "$env:LocalAppData\Chromium\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Chromium\User Data\Default\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Chromium\User Data\Default\Media Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Chromium\User Data\Default\Pepper Data" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Chromium\User Data\Default\Application Cache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             }
             Write-Host -ForegroundColor Yellow "Done...`n" 
         }
     }
   
-    if (!(Test-Path "C:\Users\$user\AppData\Local\Programs\Opera")){
+    if (!(Test-Path "$env:LocalAppData\Programs\Opera")){
         Write-Host "Opera is not installed & Folders can't be found.. Skipping clean..."
     }  
     else {
@@ -1096,8 +1096,8 @@ $ultimateclean.Add_Click({
             # Clear Opera
             Write-Host -ForegroundColor Yellow "Clearing Opera Cache`n"
             Foreach ($user in $Users) {
-                if (Test-Path "C:\Users\$user\AppData\Local\Opera Software") {
-                    Remove-Item -Path "C:\Users\$user\AppData\Local\Opera Software\Opera Stable\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                if (Test-Path "$env:LocalAppData\Opera Software") {
+                    Remove-Item -Path "$env:LocalAppData\Opera Software\Opera Stable\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 } 
                 Write-Host -ForegroundColor Yellow "Done...`n"
             }
@@ -1108,12 +1108,12 @@ $ultimateclean.Add_Click({
     if (Test-Path "$env:LocalAppData\Yandex") {
         Write-Host -ForegroundColor Yellow "Clearing Yandex Cache`n"
         Foreach ($user in $Users) {
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\Media Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\Pepper Data\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\User Data\Default\Application Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-            Remove-Item -Path "C:\Users\$user\AppData\Local\Yandex\YandexBrowser\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Yandex\YandexBrowser\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Yandex\YandexBrowser\User Data\Default\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Yandex\YandexBrowser\User Data\Default\Media Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Yandex\YandexBrowser\User Data\Default\Pepper Data\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Yandex\YandexBrowser\User Data\Default\Application Cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            Remove-Item -Path "$env:LocalAppData\Yandex\YandexBrowser\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         } 
         Write-Host -ForegroundColor Yellow "Done...`n"
     }
@@ -1133,9 +1133,9 @@ $ultimateclean.Add_Click({
         # Delete Microsoft Teams Previous Version files
         Write-Host -ForegroundColor Yellow "Clearing Teams Previous version`n"
         Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Teams\") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "$env:LocalAppData\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             } 
         }
         Write-Host -ForegroundColor Yellow "Done...`n"
@@ -1145,8 +1145,8 @@ $ultimateclean.Add_Click({
         # Delete SnagIt Crash Dump files
         Write-Host -ForegroundColor Yellow "Clearing SnagIt Crash Dumps`n"
         Foreach ($user in $Users) {
-            if (Test-Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt") {
-                Remove-Item -Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+            if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
+                Remove-Item -Path "$env:LocalAppData\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             } 
         }
         Write-Host -ForegroundColor Yellow "Done...`n"
@@ -1204,7 +1204,7 @@ $ultimateclean.Add_Click({
         # Delete files from Office Cache Folder
         Write-Host -ForegroundColor Yellow "Clearing Office Cache Folder`n"
         Foreach ($user in $Users) {
-            $officecache = "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache"
+            $officecache = "$env:LocalAppData\Microsoft\Office\16.0\GrooveFileCache"
             if (Test-Path $officecache) {
                 $OldFiles = Get-ChildItem -Path "$officecache\" -Recurse -File -ErrorAction SilentlyContinue
                 foreach ($file in $OldFiles) {
