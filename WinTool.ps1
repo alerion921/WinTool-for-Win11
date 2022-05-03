@@ -253,35 +253,49 @@ $getosinfo                       = New-Object system.Windows.Forms.Button
 $getosinfo.text                  = "OS Info"
 $getosinfo.width                 = 210
 $getosinfo.height                = 30
-$getosinfo.location              = New-Object System.Drawing.Point(3,675)
+$getosinfo.location              = New-Object System.Drawing.Point(3,640)
 $getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $EClipboardHistory               = New-Object system.Windows.Forms.Button
 $EClipboardHistory.text          = "Enable Clipboard History"
 $EClipboardHistory.width         = 210
 $EClipboardHistory.height        = 30
-$EClipboardHistory.location      = New-Object System.Drawing.Point(3,710)
+$EClipboardHistory.location      = New-Object System.Drawing.Point(3,675)
 $EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ELocation                       = New-Object system.Windows.Forms.Button
 $ELocation.text                  = "Enable Location Tracking"
 $ELocation.width                 = 210
 $ELocation.height                = 30
-$ELocation.location              = New-Object System.Drawing.Point(3,745)
+$ELocation.location              = New-Object System.Drawing.Point(3,710)
 $ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $EHibernation                    = New-Object system.Windows.Forms.Button
 $EHibernation.text               = "Enable Hibernation"
 $EHibernation.width              = 210
 $EHibernation.height             = 30
-$EHibernation.location           = New-Object System.Drawing.Point(3,780)
+$EHibernation.location           = New-Object System.Drawing.Point(3,745)
 $EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$EActionCenter                   = New-Object system.Windows.Forms.Button
+$EActionCenter.text              = "Enable Action Center"
+$EActionCenter.width             = 205
+$EActionCenter.height            = 30
+$EActionCenter.location          = New-Object System.Drawing.Point(3,780)
+$EActionCenter.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$ECortana                        = New-Object system.Windows.Forms.Button
+$ECortana.text                   = "Enable Cortana"
+$ECortana.width                  = 205
+$ECortana.height                 = 30
+$ECortana.location               = New-Object System.Drawing.Point(3,815)
+$ECortana.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $dualboottime                    = New-Object system.Windows.Forms.Button
 $dualboottime.text               = "Set Time to UTC"
 $dualboottime.width              = 210
 $dualboottime.height             = 30
-$dualboottime.location           = New-Object System.Drawing.Point(3,815)
+$dualboottime.location           = New-Object System.Drawing.Point(3,850)
 $dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $steam                           = New-Object system.Windows.Forms.Button
@@ -512,13 +526,13 @@ $InstallOneDrive.height          = 30
 $InstallOneDrive.location        = New-Object System.Drawing.Point(2,360)
 $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$Label13                         = New-Object system.Windows.Forms.Label
-$Label13.text                    = "Visual Tweaks"
-$Label13.AutoSize                = $true
-$Label13.width                   = 25
-$Label13.height                  = 10
-$Label13.location                = New-Object System.Drawing.Point(60,405)
-$Label13.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$visualtweaks                    = New-Object system.Windows.Forms.Label
+$visualtweaks.text               = "Visual Tweaks"
+$visualtweaks.AutoSize           = $true
+$visualtweaks.width              = 25
+$visualtweaks.height             = 10
+$visualtweaks.location           = New-Object System.Drawing.Point(60,405)
+$visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $darkmode                        = New-Object system.Windows.Forms.Button
 $darkmode.text                   = "Dark Mode"
@@ -549,34 +563,6 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $appearancefx.location       = New-Object System.Drawing.Point(3,500)
     $appearancefx.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
-
-$classictaskbar                  = New-Object system.Windows.Forms.Button
-$classictaskbar.text             = "Classic Taskbar"
-$classictaskbar.width            = 210
-$classictaskbar.height           = 30
-$classictaskbar.location         = New-Object System.Drawing.Point(3,675)
-$classictaskbar.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$revertclassictaskbar            = New-Object system.Windows.Forms.Button
-$revertclassictaskbar.text       = "Win11 Taskbar"
-$revertclassictaskbar.width      = 210
-$revertclassictaskbar.height     = 30
-$revertclassictaskbar.location   = New-Object System.Drawing.Point(3,710)
-$revertclassictaskbar.Font       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$grouptaskbaricons               = New-Object system.Windows.Forms.Button
-$grouptaskbaricons.text          = "Group Taskbar"
-$grouptaskbaricons.width         = 210
-$grouptaskbaricons.height        = 30
-$grouptaskbaricons.location      = New-Object System.Drawing.Point(3,745)
-$grouptaskbaricons.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$ungrouptaskbaricons             = New-Object system.Windows.Forms.Button
-$ungrouptaskbaricons.text        = "Ungroup Taskbar"
-$ungrouptaskbaricons.width       = 210
-$ungrouptaskbaricons.height      = 30
-$ungrouptaskbaricons.location    = New-Object System.Drawing.Point(3,780)
-$ungrouptaskbaricons.Font        = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
@@ -722,8 +708,7 @@ $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft San
 
 $OSName=(Get-WmiObject Win32_OperatingSystem).caption
 
-If($OSName -like "*Windows*10*")
-{
+If($OSName -like "*Windows*10*") {
     $dis11check                  = New-Object system.Windows.Forms.Button
     $dis11check.text             = "No Win11 Checks"
     $dis11check.width            = 210
@@ -738,7 +723,39 @@ $Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchro
 $Panel2.controls.AddRange(@($Label2,$utillitysoftware, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify,$malwarebytes))
 $Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
-$Panel5.controls.AddRange(@($performancetweaks,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
+$Panel5.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
+
+$EActionCenter.Add_Click({
+    Write-Host "Enabling Action Center..."
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -ErrorAction SilentlyContinue
+	Write-Host "Done - Reverted to Stock Settings"
+    $ResultText.text = "`r`n" +"`r`n" + "Enabled Action Center"
+})
+
+$ECortana.Add_Click({
+    Write-Host "Enabling Cortana..."
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
+	If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
+		New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
+	}
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 0
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 0
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -ErrorAction SilentlyContinue
+	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -ErrorAction SilentlyContinue
+	Write-Host "Restoring Windows Search..."
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Type DWord -Value "1"
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -ErrorAction SilentlyContinue
+	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "DisableWebSearch" -ErrorAction SilentlyContinue
+	Write-Host "Restore and Starting Windows Search Service..."
+    Set-Service "WSearch" -StartupType Automatic
+    Start-Service "WSearch" -WarningAction SilentlyContinue
+    Write-Host "Restore Windows Search Icon..."
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 1
+	Write-Host "Done - Reverted to Stock Settings"
+    $ResultText.text = "`r`n" +"`r`n" + "Enabled Cortana and Restored Search"
+})
+
 
 $getosinfo.Add_Click({
     $name=(Get-WmiObject Win32_OperatingSystem).caption
