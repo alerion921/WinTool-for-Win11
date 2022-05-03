@@ -657,7 +657,7 @@ $laptopnumlock.location          = New-Object System.Drawing.Point(3,150)
 $laptopnumlock.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $removeENkeyboard                = New-Object system.Windows.Forms.Button
-$removeENkeyboard.text           = "Fix EN keyboard"
+$removeENkeyboard.text           = "Force NOR Keyboard"
 $removeENkeyboard.width          = 210
 $removeENkeyboard.height         = 30
 $removeENkeyboard.location       = New-Object System.Drawing.Point(3,185)
@@ -949,7 +949,7 @@ $ultimateclean.Add_Click({
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
     $users = $Users.Name 
 
-    if (!(Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") -xor !(Test-Path "$env:LocalAppData\BraveSoftware\Brave-Browser\Application")) {
+    if (    (!(Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")) -and (!(Test-Path "$env:LocalAppData\BraveSoftware\Brave-Browser\Application"))    ) {
         Write-Host "Brave Browser is not installed in... Skipping cleaning for it..."
     }  
     else {
@@ -1938,6 +1938,10 @@ $essentialtweaks.Add_Click({
     $ResultText.text += "`r`n" +"Disabling UAC..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
+
+    Write-Host "Disabling Sticky Keys..."
+    $ResultText.text += "`r`n" +"Disabling Sticky Keys..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
     
     Write-Host "Disabling Telemetry..."
     $ResultText.text += "`r`n" +"Disabling Telemetry..."
@@ -2320,6 +2324,10 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Raising UAC level..."
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
+
+    Write-Host "Enabling Sticky Keys..."
+    $ResultText.text += "`r`n" +"Enabling Sticky Keys..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 510
 
     Write-Host "Enabling Telemetry..."
     $ResultText.text = "`r`n" +"`r`n" + "  Enabling Telemetry..."
