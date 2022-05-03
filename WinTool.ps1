@@ -670,12 +670,11 @@ $laptopnumlock.height            = 30
 $laptopnumlock.location          = New-Object System.Drawing.Point(3,150)
 $laptopnumlock.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-
 $removeENkeyboard                = New-Object system.Windows.Forms.Button
 $removeENkeyboard.text           = "Fix EN keyboard"
 $removeENkeyboard.width          = 210
 $removeENkeyboard.height         = 30
-$removeENkeyboard.location       = New-Object System.Drawing.Point(3,640)
+$removeENkeyboard.location       = New-Object System.Drawing.Point(3,185)
 $removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $oldmenu                         = New-Object system.Windows.Forms.Label
@@ -683,42 +682,42 @@ $oldmenu.text                    = "Old Menus"
 $oldmenu.AutoSize                = $true
 $oldmenu.width                   = 25
 $oldmenu.height                  = 10
-$oldmenu.location                = New-Object System.Drawing.Point(75,195)
+$oldmenu.location                = New-Object System.Drawing.Point(75,230)
 $oldmenu.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $ncpa                            = New-Object system.Windows.Forms.Button
 $ncpa.text                       = "Old Network Panel"
 $ncpa.width                      = 210
 $ncpa.height                     = 30
-$ncpa.location                   = New-Object System.Drawing.Point(3,220)
+$ncpa.location                   = New-Object System.Drawing.Point(3,255)
 $ncpa.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $oldcontrolpanel                 = New-Object system.Windows.Forms.Button
 $oldcontrolpanel.text            = "Old Control Panel"
 $oldcontrolpanel.width           = 210
 $oldcontrolpanel.height          = 30
-$oldcontrolpanel.location        = New-Object System.Drawing.Point(3,255)
+$oldcontrolpanel.location        = New-Object System.Drawing.Point(3,290)
 $oldcontrolpanel.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $oldsoundpanel                   = New-Object system.Windows.Forms.Button
 $oldsoundpanel.text              = "Old Sound Panel"
 $oldsoundpanel.width             = 210
 $oldsoundpanel.height            = 30
-$oldsoundpanel.location          = New-Object System.Drawing.Point(3,290)
+$oldsoundpanel.location          = New-Object System.Drawing.Point(3,325)
 $oldsoundpanel.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $oldsystempanel                  = New-Object system.Windows.Forms.Button
 $oldsystempanel.text             = "Old System Panel"
 $oldsystempanel.width            = 210
 $oldsystempanel.height           = 30
-$oldsystempanel.location         = New-Object System.Drawing.Point(3,325)
+$oldsystempanel.location         = New-Object System.Drawing.Point(3,360)
 $oldsystempanel.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $oldpower                        = New-Object system.Windows.Forms.Button
 $oldpower.text                   = "Old Power Panel"
 $oldpower.width                  = 210
 $oldpower.height                 = 30
-$oldpower.location               = New-Object System.Drawing.Point(3,360)
+$oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $OSName=(Get-WmiObject Win32_OperatingSystem).caption
@@ -735,9 +734,9 @@ If($OSName -like "*Windows*10*")
 
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$tweaking,$Panel4,$Panel5,$installapplications,$troubleshoot,$Panel3,$ResultText,$currentstatus))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$documenttools,$videoandimagingtools,$webbrowsers,$wingetupdate,$dis11check,$removeENkeyboard,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras))
+$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$documenttools,$videoandimagingtools,$webbrowsers,$wingetupdate,$dis11check,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras))
 $Panel2.controls.AddRange(@($Label2,$utillitysoftware, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify,$malwarebytes))
-$Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock))
+$Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
 $Panel5.controls.AddRange(@($performancetweaks,$essentialtweaks,$Label13,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
 
