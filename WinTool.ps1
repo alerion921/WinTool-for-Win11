@@ -279,14 +279,14 @@ $EHibernation.Font               = New-Object System.Drawing.Font('Microsoft San
 
 $EActionCenter                   = New-Object system.Windows.Forms.Button
 $EActionCenter.text              = "Enable Action Center"
-$EActionCenter.width             = 205
+$EActionCenter.width             = 210
 $EActionCenter.height            = 30
 $EActionCenter.location          = New-Object System.Drawing.Point(3,780)
 $EActionCenter.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ECortana                        = New-Object system.Windows.Forms.Button
 $ECortana.text                   = "Enable Cortana"
-$ECortana.width                  = 205
+$ECortana.width                  = 210
 $ECortana.height                 = 30
 $ECortana.location               = New-Object System.Drawing.Point(3,815)
 $ECortana.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
