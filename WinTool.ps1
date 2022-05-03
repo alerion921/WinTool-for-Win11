@@ -950,8 +950,11 @@ $ultimateclean.Add_Click({
     $users = $Users.Name 
 
     if (!(Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")){
-        Write-Host "Brave Browser is not installed & Folders can't be found.. Skipping clean..."
+        Write-Host "Brave Browser is not installed in Programfiles... Checking next location.."
     }  
+    elseif (!(Test-Path "$env:LocalAppData\BraveSoftware\Brave-Browser\Application")){
+        Write-Host "Brave Browser is not installed in Appdata Local eighter.. Skipping clean..."
+    }
     else {
         $braveclean = Read-Host "Clear Brave Browser Cache? (Y/N)"
         if ($braveclean -eq 'Y') {
