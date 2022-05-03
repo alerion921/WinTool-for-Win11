@@ -867,8 +867,8 @@ $wingetupdate.Add_Click({
        }
        
     Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $UpgradeScript" 
-    if($?) { Write-Host "Finished Updating Winget Applets" }
-    $ResultText.text = "`r`n" + "  Finished Updating Winget Applets" + "`r`n" + "`r`n" + "  Ready for Next Task"
+    if($?) { Write-Host "Winget will now continue to upgrade all needed apps in a separate window, please allow the window to be in the background for all apps to upgrade smoothtly.." }
+    $ResultText.text = "`r`n" + "  Winget will now continue to upgrade all needed apps in a separate window, please allow the window to be in the background for all apps to upgrade smoothtly" + "`r`n" + "`r`n" + "  Ready for Next Task"
 })
     
 $errorscanner.Add_Click({
@@ -888,10 +888,10 @@ $errorscanner.Add_Click({
             Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $sfcscan"
         }
 
-        $dismscansinit = Read-Host "Initiate DISM Scans? (Y/N)"
+        $dismscansinit = Read-Host "Initiate DISM Scans (may take a while)? (Y/N)"
         if ($dismscansinit -eq 'Y') { 
             $dismscan = {
-                $name='Error Scanner DISM - Offload Process'
+                $name='DISM Error Scanner - Offload Process'
                 $host.ui.RawUI.WindowTitle = $name
                 cmd /c DISM /Online /Cleanup-Image /ScanHealth
                 cmd /c DISM /Online /Cleanup-Image /CheckHealth
