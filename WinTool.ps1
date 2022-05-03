@@ -719,7 +719,7 @@ If($OSName -like "*Windows*10*") {
 
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$tweaking,$Panel4,$Panel5,$installapplications,$troubleshoot,$Panel3,$ResultText,$currentstatus))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$documenttools,$videoandimagingtools,$webbrowsers,$wingetupdate,$dis11check,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras))
+$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$documenttools,$videoandimagingtools,$webbrowsers,$wingetupdate,$dis11check,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
 $Panel2.controls.AddRange(@($Label2,$utillitysoftware, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify,$malwarebytes))
 $Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
@@ -727,14 +727,27 @@ $Panel5.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$d
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
+
+    Stop-Process -ProcessName explorer -Force	
+    taskkill /F /IM explorer.exe
+    Start-Sleep -Seconds 3
+
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -ErrorAction SilentlyContinue
+
+    Start-Process explorer.exe	
+
 	Write-Host "Done - Reverted to Stock Settings"
     $ResultText.text = "`r`n" +"`r`n" + "Enabled Action Center"
 })
 
 $ECortana.Add_Click({
     Write-Host "Enabling Cortana..."
+
+    Stop-Process -ProcessName explorer -Force	
+    taskkill /F /IM explorer.exe
+    Start-Sleep -Seconds 3
+
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
 	If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
 		New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
@@ -752,6 +765,9 @@ $ECortana.Add_Click({
     Start-Service "WSearch" -WarningAction SilentlyContinue
     Write-Host "Restore Windows Search Icon..."
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 1
+    
+    Start-Process explorer.exe	
+
 	Write-Host "Done - Reverted to Stock Settings"
     $ResultText.text = "`r`n" +"`r`n" + "Enabled Cortana and Restored Search"
 })
