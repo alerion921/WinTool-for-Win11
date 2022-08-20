@@ -446,7 +446,8 @@ $Form.controls.AddRange(@(
     $tweaking, 
     $troubleshoot, 
     $currentstatus, 
-    $ResultText))
+    $ResultText
+))
 
 $Panel1.controls.AddRange(@(
     $performancetweaks, #header for the bellow selection
@@ -460,7 +461,7 @@ $Panel1.controls.AddRange(@(
     $lightmode,
     $visualtweaks,#header for the bellow selection
     $performancefx,
-    $appearancefx,
+    $appearancefx
 ))
 
 $Panel2.controls.AddRange(@(
