@@ -90,20 +90,12 @@ $tweaking.height                 = 10
 $tweaking.location               = New-Object System.Drawing.Point(95,11)
 $tweaking.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
-$performancetweaks               = New-Object system.Windows.Forms.Label
-$performancetweaks.text          = "Performance Tweaks"
-$performancetweaks.AutoSize      = $true
-$performancetweaks.width         = 25
-$performancetweaks.height        = 10
-$performancetweaks.location      = New-Object System.Drawing.Point(35,20)
-$performancetweaks.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
 $troubleshoot                    = New-Object system.Windows.Forms.Label
 $troubleshoot.text               = "Troubleshoot/Misc"
 $troubleshoot.AutoSize           = $true
 $troubleshoot.width              = 210
 $troubleshoot.height             = 25
-$troubleshoot.location           = New-Object System.Drawing.Point(300,11)
+$troubleshoot.location           = New-Object System.Drawing.Point(200,11)
 $troubleshoot.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
 $extras                          = New-Object system.Windows.Forms.Label
@@ -205,7 +197,13 @@ $cleaning.height                 = 10
 $cleaning.location               = New-Object System.Drawing.Point(70,265)
 $cleaning.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-
+$performancetweaks               = New-Object system.Windows.Forms.Label
+$performancetweaks.text          = "Performance Tweaks"
+$performancetweaks.AutoSize      = $true
+$performancetweaks.width         = 25
+$performancetweaks.height        = 10
+$performancetweaks.location      = New-Object System.Drawing.Point(35,20)
+$performancetweaks.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $essentialtweaks                 = New-Object system.Windows.Forms.Button
 $essentialtweaks.text            = "Essential Tweaks"
@@ -438,16 +436,7 @@ $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 
-$Form.controls.AddRange(@(
-    $Panel1, 
-    $Panel2, 
-    $Panel3, 
-    $Panel4, 
-    $tweaking, 
-    $troubleshoot, 
-    $currentstatus, 
-    $ResultText
-))
+$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3, $tweaking, $troubleshoot, $currentstatus, $ResultText))
 
 $Panel1.controls.AddRange(@(
     $performancetweaks, #header for the bellow selection
@@ -461,39 +450,7 @@ $Panel1.controls.AddRange(@(
     $lightmode,
     $visualtweaks,#header for the bellow selection
     $performancefx,
-    $appearancefx
-))
-
-$Panel2.controls.AddRange(@(
-    $fixes,
-    $ncpa,
-    $oldcontrolpanel,
-    $oldsoundpanel,
-    $oldsystempanel,
-    $oldpower,
-    $errorscanner,
-    $oldmenu,
-    $yourphonefix, 
-    $resetnetwork,
-    $laptopnumlock,
-    $removeENkeyboard
-))
-$Panel3.controls.AddRange(@(
-    $defaultwindowsupdate,
-    $securitywindowsupdate,
-    $windowsupdatefix,
-    $removebloat,
-    $reinstallbloat,
-    $windowsupdate,
-    $microsoftstore,
-    $cleaning,
-    $ultimateclean,
-    $poweroptions, 
-    $ultimatepower,
-    $restorepower
-))
-
-$Panel4.controls.AddRange(@(
+    $appearancefx,
     $extras,#header for the bellow selection
     $getosinfo,
     $EClipboardHistory,
@@ -503,6 +460,9 @@ $Panel4.controls.AddRange(@(
     $EActionCenter,
     $ECortana
 ))
+
+$Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
+$Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
