@@ -438,7 +438,15 @@ $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 
-$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3, $tweaking, $troubleshoot, $currentstatus, $ResultText))
+$Form.controls.AddRange(@(
+    $Panel1, 
+    $Panel2, 
+    $Panel3, 
+    $Panel4, 
+    $tweaking, 
+    $troubleshoot, 
+    $currentstatus, 
+    $ResultText))
 
 $Panel1.controls.AddRange(@(
     $performancetweaks, #header for the bellow selection
