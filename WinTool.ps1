@@ -82,102 +82,9 @@ $Panel4.height                   = 440
 $Panel4.width                    = 220
 $Panel4.location                 = New-Object System.Drawing.Point(700,10)
 
-$extras                          = New-Object system.Windows.Forms.Label
-$extras.text                     = "Extras"
-$extras.AutoSize                 = $true
-$extras.width                    = 25
-$extras.height                   = 10
-$extras.location                 = New-Object System.Drawing.Point(80,20)
-$extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$getosinfo                       = New-Object system.Windows.Forms.Button
-$getosinfo.text                  = "OS Info"
-$getosinfo.width                 = 210
-$getosinfo.height                = 30
-$getosinfo.location              = New-Object System.Drawing.Point(3,45)
-$getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$EClipboardHistory               = New-Object system.Windows.Forms.Button
-$EClipboardHistory.text          = "Enable Clipboard History"
-$EClipboardHistory.width         = 210
-$EClipboardHistory.height        = 30
-$EClipboardHistory.location      = New-Object System.Drawing.Point(3,80)
-$EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$ELocation                       = New-Object system.Windows.Forms.Button
-$ELocation.text                  = "Enable Location Tracking"
-$ELocation.width                 = 210
-$ELocation.height                = 30
-$ELocation.location              = New-Object System.Drawing.Point(3,115)
-$ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$EHibernation                    = New-Object system.Windows.Forms.Button
-$EHibernation.text               = "Enable Hibernation"
-$EHibernation.width              = 210
-$EHibernation.height             = 30
-$EHibernation.location           = New-Object System.Drawing.Point(3,150)
-$EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$EActionCenter                   = New-Object system.Windows.Forms.Button
-$EActionCenter.text              = "Enable Action Center"
-$EActionCenter.width             = 210
-$EActionCenter.height            = 30
-$EActionCenter.location          = New-Object System.Drawing.Point(3,185)
-$EActionCenter.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$ECortana                        = New-Object system.Windows.Forms.Button
-$ECortana.text                   = "Enable Cortana"
-$ECortana.width                  = 210
-$ECortana.height                 = 30
-$ECortana.location               = New-Object System.Drawing.Point(3,220)
-$ECortana.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$dualboottime                    = New-Object system.Windows.Forms.Button
-$dualboottime.text               = "Set Time to UTC"
-$dualboottime.width              = 210
-$dualboottime.height             = 30
-$dualboottime.location           = New-Object System.Drawing.Point(3,255)
-$dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$fixes                           = New-Object system.Windows.Forms.Label
-$fixes.text                      = "Fixes"
-$fixes.AutoSize                  = $true
-$fixes.width                     = 25
-$fixes.height                    = 10
-$fixes.location                  = New-Object System.Drawing.Point(85,20)
-$fixes.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$currentstatus                   = New-Object system.Windows.Forms.Label
-$currentstatus.text              = "* Current Status *"
-$currentstatus.AutoSize          = $true
-$currentstatus.width             = 25
-$currentstatus.height            = 10
-$currentstatus.location          = New-Object System.Drawing.Point(350,455)
-$currentstatus.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
-
-$windowsupdate                   = New-Object system.Windows.Forms.Label
-$windowsupdate.text              = "Windows Update"
-$windowsupdate.AutoSize          = $true
-$windowsupdate.width             = 25
-$windowsupdate.height            = 10
-$windowsupdate.location          = New-Object System.Drawing.Point(50,20)
-$windowsupdate.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$microsoftstore                  = New-Object system.Windows.Forms.Label
-$microsoftstore.text             = "Microsoft Store"
-$microsoftstore.AutoSize         = $true
-$microsoftstore.width            = 25
-$microsoftstore.height           = 10
-$microsoftstore.location         = New-Object System.Drawing.Point(50,160)
-$microsoftstore.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$cleaning                        = New-Object system.Windows.Forms.Label
-$cleaning.text                   = "Cleaning"
-$cleaning.AutoSize               = $true
-$cleaning.width                  = 25
-$cleaning.height                 = 10
-$cleaning.location               = New-Object System.Drawing.Point(70,265)
-$cleaning.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+#######################################################################################################
+# Tweaks starts here
+#######################################################################################################
 
 $performancetweaks               = New-Object system.Windows.Forms.Label
 $performancetweaks.text          = "Performance Tweaks"
@@ -237,107 +144,19 @@ $InstallOneDrive.height          = 45
 $InstallOneDrive.location        = New-Object System.Drawing.Point(2,380)
 $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$visualtweaks                    = New-Object system.Windows.Forms.Label
-$visualtweaks.text               = "Visual Tweaks"
-$visualtweaks.AutoSize           = $true
-$visualtweaks.width              = 25
-$visualtweaks.height             = 10
-$visualtweaks.location           = New-Object System.Drawing.Point(60,300)
-$visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+#######################################################################################################
+# Tweaks ends here
+#######################################################################################################
+# Fixes starts here
+#######################################################################################################
 
-$darkmode                        = New-Object system.Windows.Forms.Button
-$darkmode.text                   = "Dark Mode"
-$darkmode.width                  = 210
-$darkmode.height                 = 30
-$darkmode.location               = New-Object System.Drawing.Point(3,325)
-$darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$lightmode                       = New-Object system.Windows.Forms.Button
-$lightmode.text                  = "Light Mode"
-$lightmode.width                 = 210
-$lightmode.height                = 30
-$lightmode.location              = New-Object System.Drawing.Point(3,360)
-$lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
-    $performancefx               = New-Object system.Windows.Forms.Button
-    $performancefx.text          = "Optimize Performance"
-    $performancefx.width         = 210
-    $performancefx.height        = 30
-    $performancefx.location      = New-Object System.Drawing.Point(3,395)
-    $performancefx.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-} elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '0') {
-    $appearancefx                = New-Object system.Windows.Forms.Button
-    $appearancefx.text           = "Optimize Apperance"
-    $appearancefx.width          = 210
-    $appearancefx.height         = 30
-    $appearancefx.location       = New-Object System.Drawing.Point(3,395)
-    $appearancefx.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-}
-
-$defaultwindowsupdate            = New-Object system.Windows.Forms.Button
-$defaultwindowsupdate.text       = "Default Settings"
-$defaultwindowsupdate.width      = 210
-$defaultwindowsupdate.height     = 30
-$defaultwindowsupdate.location   = New-Object System.Drawing.Point(3,45)
-$defaultwindowsupdate.Font       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$securitywindowsupdate           = New-Object system.Windows.Forms.Button
-$securitywindowsupdate.text      = "Security Updates Only"
-$securitywindowsupdate.width     = 210
-$securitywindowsupdate.height    = 30
-$securitywindowsupdate.location  = New-Object System.Drawing.Point(3,80)
-$securitywindowsupdate.Font      = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$windowsupdatefix                = New-Object system.Windows.Forms.Button
-$windowsupdatefix.text           = "Windows Update Reset"
-$windowsupdatefix.width          = 210
-$windowsupdatefix.height         = 30
-$windowsupdatefix.location       = New-Object System.Drawing.Point(3,115)
-$windowsupdatefix.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$removebloat                     = New-Object system.Windows.Forms.Button
-$removebloat.text                = "Remove MS Store Apps"
-$removebloat.width               = 210
-$removebloat.height              = 30
-$removebloat.location            = New-Object System.Drawing.Point(3,185)
-$removebloat.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$reinstallbloat                  = New-Object system.Windows.Forms.Button
-$reinstallbloat.text             = "Reinstall MS Store Apps"
-$reinstallbloat.width            = 210
-$reinstallbloat.height           = 30
-$reinstallbloat.location         = New-Object System.Drawing.Point(3,220)
-$reinstallbloat.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$ultimateclean                   = New-Object system.Windows.Forms.Button
-$ultimateclean.text              = "Ultimate Cleaning"
-$ultimateclean.width             = 210
-$ultimateclean.height            = 30
-$ultimateclean.location          = New-Object System.Drawing.Point(3,290)
-$ultimateclean.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$poweroptions                    = New-Object system.Windows.Forms.Label
-$poweroptions.text               = "Power Options"
-$poweroptions.AutoSize           = $true
-$poweroptions.width              = 25
-$poweroptions.height             = 10
-$poweroptions.location           = New-Object System.Drawing.Point(50,335)
-$poweroptions.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$ultimatepower                   = New-Object system.Windows.Forms.Button
-$ultimatepower.text              = "Ultimate Power Plan"
-$ultimatepower.width             = 210
-$ultimatepower.height            = 30
-$ultimatepower.location          = New-Object System.Drawing.Point(3,360)
-$ultimatepower.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$restorepower                    = New-Object system.Windows.Forms.Button
-$restorepower.text               = "Restore Power Options"
-$restorepower.width              = 210
-$restorepower.height             = 30
-$restorepower.location           = New-Object System.Drawing.Point(3,395)
-$restorepower.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$fixes                           = New-Object system.Windows.Forms.Label
+$fixes.text                      = "Fixes"
+$fixes.AutoSize                  = $true
+$fixes.width                     = 25
+$fixes.height                    = 10
+$fixes.location                  = New-Object System.Drawing.Point(85,20)
+$fixes.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $errorscanner                    = New-Object system.Windows.Forms.Button
 $errorscanner.text               = "Error Scanner"
@@ -373,6 +192,12 @@ $removeENkeyboard.width          = 210
 $removeENkeyboard.height         = 30
 $removeENkeyboard.location       = New-Object System.Drawing.Point(3,185)
 $removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+#######################################################################################################
+# Fixes ends here
+#######################################################################################################
+# Old menus starts here
+#######################################################################################################
 
 $oldmenu                         = New-Object system.Windows.Forms.Label
 $oldmenu.text                    = "Old Menus"
@@ -417,8 +242,245 @@ $oldpower.height                 = 30
 $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+#######################################################################################################
+# Old menus ends here
+#######################################################################################################
+# Windows update starts here
+#######################################################################################################
 
-$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3, $Panel4, $ResultText, $currentstatus))
+$windowsupdate                   = New-Object system.Windows.Forms.Label
+$windowsupdate.text              = "Windows Update"
+$windowsupdate.AutoSize          = $true
+$windowsupdate.width             = 25
+$windowsupdate.height            = 10
+$windowsupdate.location          = New-Object System.Drawing.Point(50,20)
+$windowsupdate.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$defaultwindowsupdate            = New-Object system.Windows.Forms.Button
+$defaultwindowsupdate.text       = "Default Settings"
+$defaultwindowsupdate.width      = 210
+$defaultwindowsupdate.height     = 30
+$defaultwindowsupdate.location   = New-Object System.Drawing.Point(3,45)
+$defaultwindowsupdate.Font       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$securitywindowsupdate           = New-Object system.Windows.Forms.Button
+$securitywindowsupdate.text      = "Security Updates Only"
+$securitywindowsupdate.width     = 210
+$securitywindowsupdate.height    = 30
+$securitywindowsupdate.location  = New-Object System.Drawing.Point(3,80)
+$securitywindowsupdate.Font      = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$windowsupdatefix                = New-Object system.Windows.Forms.Button
+$windowsupdatefix.text           = "Windows Update Reset"
+$windowsupdatefix.width          = 210
+$windowsupdatefix.height         = 30
+$windowsupdatefix.location       = New-Object System.Drawing.Point(3,115)
+$windowsupdatefix.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+#######################################################################################################
+# Windows update ends here
+#######################################################################################################
+# Microsoft store starts here
+#######################################################################################################
+
+$microsoftstore                  = New-Object system.Windows.Forms.Label
+$microsoftstore.text             = "Microsoft Store"
+$microsoftstore.AutoSize         = $true
+$microsoftstore.width            = 25
+$microsoftstore.height           = 10
+$microsoftstore.location         = New-Object System.Drawing.Point(50,160)
+$microsoftstore.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$removebloat                     = New-Object system.Windows.Forms.Button
+$removebloat.text                = "Remove MS Store Apps"
+$removebloat.width               = 210
+$removebloat.height              = 30
+$removebloat.location            = New-Object System.Drawing.Point(3,185)
+$removebloat.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$reinstallbloat                  = New-Object system.Windows.Forms.Button
+$reinstallbloat.text             = "Reinstall MS Store Apps"
+$reinstallbloat.width            = 210
+$reinstallbloat.height           = 30
+$reinstallbloat.location         = New-Object System.Drawing.Point(3,220)
+$reinstallbloat.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+#######################################################################################################
+# Microsoft store ends here
+#######################################################################################################
+# Cleaning starts here
+#######################################################################################################
+
+$cleaning                        = New-Object system.Windows.Forms.Label
+$cleaning.text                   = "Cleaning"
+$cleaning.AutoSize               = $true
+$cleaning.width                  = 25
+$cleaning.height                 = 10
+$cleaning.location               = New-Object System.Drawing.Point(70,265)
+$cleaning.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$ultimateclean                   = New-Object system.Windows.Forms.Button
+$ultimateclean.text              = "Ultimate Cleaning"
+$ultimateclean.width             = 210
+$ultimateclean.height            = 30
+$ultimateclean.location          = New-Object System.Drawing.Point(3,290)
+$ultimateclean.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+#######################################################################################################
+# Cleaning ends here
+#######################################################################################################
+# Power options starts here
+#######################################################################################################
+
+$poweroptions                    = New-Object system.Windows.Forms.Label
+$poweroptions.text               = "Power Options"
+$poweroptions.AutoSize           = $true
+$poweroptions.width              = 25
+$poweroptions.height             = 10
+$poweroptions.location           = New-Object System.Drawing.Point(50,335)
+$poweroptions.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$ultimatepower                   = New-Object system.Windows.Forms.Button
+$ultimatepower.text              = "Ultimate Power Plan"
+$ultimatepower.width             = 210
+$ultimatepower.height            = 30
+$ultimatepower.location          = New-Object System.Drawing.Point(3,360)
+$ultimatepower.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$restorepower                    = New-Object system.Windows.Forms.Button
+$restorepower.text               = "Restore Power Options"
+$restorepower.width              = 210
+$restorepower.height             = 30
+$restorepower.location           = New-Object System.Drawing.Point(3,395)
+$restorepower.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+#######################################################################################################
+# Power options ends here
+#######################################################################################################
+# Extras starts here
+#######################################################################################################
+
+$extras                          = New-Object system.Windows.Forms.Label
+$extras.text                     = "Extras"
+$extras.AutoSize                 = $true
+$extras.width                    = 25
+$extras.height                   = 10
+$extras.location                 = New-Object System.Drawing.Point(80,20)
+$extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$getosinfo                       = New-Object system.Windows.Forms.Button
+$getosinfo.text                  = "OS Info"
+$getosinfo.width                 = 210
+$getosinfo.height                = 30
+$getosinfo.location              = New-Object System.Drawing.Point(3,45)
+$getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$EClipboardHistory               = New-Object system.Windows.Forms.Button
+$EClipboardHistory.text          = "Enable Clipboard History"
+$EClipboardHistory.width         = 210
+$EClipboardHistory.height        = 30
+$EClipboardHistory.location      = New-Object System.Drawing.Point(3,80)
+$EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$ELocation                       = New-Object system.Windows.Forms.Button
+$ELocation.text                  = "Enable Location Tracking"
+$ELocation.width                 = 210
+$ELocation.height                = 30
+$ELocation.location              = New-Object System.Drawing.Point(3,115)
+$ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$EHibernation                    = New-Object system.Windows.Forms.Button
+$EHibernation.text               = "Enable Hibernation"
+$EHibernation.width              = 210
+$EHibernation.height             = 30
+$EHibernation.location           = New-Object System.Drawing.Point(3,150)
+$EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$EActionCenter                   = New-Object system.Windows.Forms.Button
+$EActionCenter.text              = "Enable Action Center"
+$EActionCenter.width             = 210
+$EActionCenter.height            = 30
+$EActionCenter.location          = New-Object System.Drawing.Point(3,185)
+$EActionCenter.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$ECortana                        = New-Object system.Windows.Forms.Button
+$ECortana.text                   = "Enable Cortana"
+$ECortana.width                  = 210
+$ECortana.height                 = 30
+$ECortana.location               = New-Object System.Drawing.Point(3,220)
+$ECortana.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$dualboottime                    = New-Object system.Windows.Forms.Button
+$dualboottime.text               = "Set Time to UTC"
+$dualboottime.width              = 210
+$dualboottime.height             = 30
+$dualboottime.location           = New-Object System.Drawing.Point(3,255)
+$dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+#######################################################################################################
+# Extras ends here
+#######################################################################################################
+# Visual tweaks starts here
+#######################################################################################################
+
+$visualtweaks                    = New-Object system.Windows.Forms.Label
+$visualtweaks.text               = "Visual Tweaks"
+$visualtweaks.AutoSize           = $true
+$visualtweaks.width              = 25
+$visualtweaks.height             = 10
+$visualtweaks.location           = New-Object System.Drawing.Point(60,300)
+$visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+
+$darkmode                        = New-Object system.Windows.Forms.Button
+$darkmode.text                   = "Dark Mode"
+$darkmode.width                  = 210
+$darkmode.height                 = 30
+$darkmode.location               = New-Object System.Drawing.Point(3,325)
+$darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$lightmode                       = New-Object system.Windows.Forms.Button
+$lightmode.text                  = "Light Mode"
+$lightmode.width                 = 210
+$lightmode.height                = 30
+$lightmode.location              = New-Object System.Drawing.Point(3,360)
+$lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
+    $performancefx               = New-Object system.Windows.Forms.Button
+    $performancefx.text          = "Optimize Performance"
+    $performancefx.width         = 210
+    $performancefx.height        = 30
+    $performancefx.location      = New-Object System.Drawing.Point(3,395)
+    $performancefx.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+} elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '0') {
+    $appearancefx                = New-Object system.Windows.Forms.Button
+    $appearancefx.text           = "Optimize Apperance"
+    $appearancefx.width          = 210
+    $appearancefx.height         = 30
+    $appearancefx.location       = New-Object System.Drawing.Point(3,395)
+    $appearancefx.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+}
+
+#######################################################################################################
+# Visual tweaks ends here
+#######################################################################################################
+
+$currentstatus                   = New-Object system.Windows.Forms.Label
+$currentstatus.text              = "* Current Status *"
+$currentstatus.AutoSize          = $true
+$currentstatus.width             = 25
+$currentstatus.height            = 10
+$currentstatus.location          = New-Object System.Drawing.Point(350,455)
+$currentstatus.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
+
+$Form.controls.AddRange(@(
+    $Panel1, 
+    $Panel2, 
+    $Panel3, 
+    $Panel4, 
+    $ResultText,
+    $currentstatus
+))
 
 $Panel1.controls.AddRange(@(
     $performancetweaks, #header for the bellow selection
@@ -430,8 +492,35 @@ $Panel1.controls.AddRange(@(
     $InstallOneDrive
 ))
 
-$Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
-$Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
+$Panel2.controls.AddRange(@(
+    $fixes,
+    $ncpa,
+    $oldcontrolpanel,
+    $oldsoundpanel,
+    $oldsystempanel,
+    $oldpower,
+    $errorscanner,
+    $oldmenu,
+    $yourphonefix, 
+    $resetnetwork,
+    $laptopnumlock,
+    $removeENkeyboard
+))
+
+$Panel3.controls.AddRange(@(
+    $defaultwindowsupdate,
+    $securitywindowsupdate,
+    $windowsupdatefix,
+    $removebloat,
+    $reinstallbloat,
+    $windowsupdate,
+    $microsoftstore,
+    $cleaning,
+    $ultimateclean,
+    $poweroptions, 
+    $ultimatepower,
+    $restorepower
+))
 
 $Panel4.controls.AddRange(@(
     $extras,#header for the bellow selection
