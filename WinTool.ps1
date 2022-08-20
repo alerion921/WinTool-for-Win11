@@ -8,31 +8,7 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	Exit
 }
 
-Function MakeNewForm {
-	#$Form.Hide()
-    #$Form.Dispose()
-	MakeForm
-}
-
 Function MakeForm {
-
-# GUI Specs
-Write-Host "Checking winget..."
-
-# Check if winget is installed
-if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe){
-    'Winget is Already Installed'
-}  
-else{
-    # Installing winget from the Microsoft Store
-	Write-Host "Winget not found, installing it now."
-    $ResultText.text = "`r`n" +"`r`n" + "  Installing Winget... Please Wait"
-	Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-	$nid = (Get-Process AppInstaller).Id
-	Wait-Process -Id $nid
-	Write-Host "Winget Installed!"
-    $ResultText.text = "`r`n" +"`r`n" + "  Winget Installed " + "`r`n" + "  -   Ready for Next Task"
-}
 
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
@@ -111,129 +87,6 @@ $Panel5.height                   = 940
 $Panel5.width                    = 220
 $Panel5.location                 = New-Object System.Drawing.Point(930,60)
 
-$installapplications             = New-Object system.Windows.Forms.Label
-$installapplications.text        = "Install Applications"
-$installapplications.AutoSize    = $true
-$installapplications.width       = 210
-$installapplications.height      = 25
-$installapplications.location    = New-Object System.Drawing.Point(95,11)
-$installapplications.Font        = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
-
-$webbrowsers                     = New-Object system.Windows.Forms.Label
-$webbrowsers.text                = "Web Browsers"
-$webbrowsers.AutoSize            = $true
-$webbrowsers.width               = 25
-$webbrowsers.height              = 10
-$webbrowsers.location            = New-Object System.Drawing.Point(65,20)
-$webbrowsers.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$brave                           = New-Object system.Windows.Forms.Button
-$brave.text                      = "Brave Browser"
-$brave.width                     = 210
-$brave.height                    = 30
-$brave.location                  = New-Object System.Drawing.Point(3,45)
-$brave.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$firefox                         = New-Object system.Windows.Forms.Button
-$firefox.text                    = "Firefox"
-$firefox.width                   = 210
-$firefox.height                  = 30
-$firefox.location                = New-Object System.Drawing.Point(3,80)
-$firefox.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$gchrome                         = New-Object system.Windows.Forms.Button
-$gchrome.text                    = "Google Chrome"
-$gchrome.width                   = 210
-$gchrome.height                  = 30
-$gchrome.location                = New-Object System.Drawing.Point(3,115)
-$gchrome.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$videoandimagingtools            = New-Object system.Windows.Forms.Label
-$videoandimagingtools.text       = "Video and Image Tools"
-$videoandimagingtools.AutoSize   = $true
-$videoandimagingtools.width      = 25
-$videoandimagingtools.height     = 10
-$videoandimagingtools.location   = New-Object System.Drawing.Point(39,160)
-$videoandimagingtools.Font       = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$sharex                          = New-Object system.Windows.Forms.Button
-$sharex.text                     = "ShareX"
-$sharex.width                    = 210
-$sharex.height                   = 30
-$sharex.location                 = New-Object System.Drawing.Point(3,185)
-$sharex.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$imageglass                      = New-Object system.Windows.Forms.Button
-$imageglass.text                 = "ImageGlass (Viewer)"
-$imageglass.width                = 210
-$imageglass.height               = 30
-$imageglass.location             = New-Object System.Drawing.Point(3,220)
-$imageglass.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$gimp                            = New-Object system.Windows.Forms.Button
-$gimp.text                       = "GIMP (Editor)"
-$gimp.width                      = 210
-$gimp.height                     = 30
-$gimp.location                   = New-Object System.Drawing.Point(3,255)
-$gimp.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$vlc                             = New-Object system.Windows.Forms.Button
-$vlc.text                        = "VLC"
-$vlc.width                       = 210
-$vlc.height                      = 30
-$vlc.location                    = New-Object System.Drawing.Point(3,290)
-$vlc.Font                        = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$mpc                             = New-Object system.Windows.Forms.Button
-$mpc.text                        = "Media Player Classic"
-$mpc.width                       = 210
-$mpc.height                      = 30
-$mpc.location                    = New-Object System.Drawing.Point(3,325)
-$mpc.Font                        = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$documenttools                   = New-Object system.Windows.Forms.Label
-$documenttools.text              = "Document Tools"
-$documenttools.AutoSize          = $true
-$documenttools.width             = 25
-$documenttools.height            = 10
-$documenttools.location          = New-Object System.Drawing.Point(57,370)
-$documenttools.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$openoffice                      = New-Object system.Windows.Forms.Button
-$openoffice.text                 = "Open Office"
-$openoffice.width                = 210
-$openoffice.height               = 30
-$openoffice.location             = New-Object System.Drawing.Point(3,395)
-$openoffice.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$vscode                          = New-Object system.Windows.Forms.Button
-$vscode.text                     = "VS Code"
-$vscode.width                    = 210
-$vscode.height                   = 30
-$vscode.location                 = New-Object System.Drawing.Point(3,430)
-$vscode.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$notepad                         = New-Object system.Windows.Forms.Button
-$notepad.text                    = "Notepad++"
-$notepad.width                   = 210
-$notepad.height                  = 30
-$notepad.location                = New-Object System.Drawing.Point(3,465)
-$notepad.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$adobereader                     = New-Object system.Windows.Forms.Button
-$adobereader.text                = "Adobe Reader DC"
-$adobereader.width               = 210
-$adobereader.height              = 30
-$adobereader.location            = New-Object System.Drawing.Point(3,500)
-$adobereader.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$sumatrapdf                      = New-Object system.Windows.Forms.Button
-$sumatrapdf.text                 = "Sumatra PDF"
-$sumatrapdf.width                = 210
-$sumatrapdf.height               = 30
-$sumatrapdf.location             = New-Object System.Drawing.Point(3,535)
-$sumatrapdf.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
 $extras                          = New-Object system.Windows.Forms.Label
 $extras.text                     = "Extras"
 $extras.AutoSize                 = $true
@@ -241,13 +94,6 @@ $extras.width                    = 25
 $extras.height                   = 10
 $extras.location                 = New-Object System.Drawing.Point(85,580)
 $extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$wingetupdate                    = New-Object system.Windows.Forms.Button
-$wingetupdate.text               = "Winget Updater"
-$wingetupdate.width              = 210
-$wingetupdate.height             = 30
-$wingetupdate.location           = New-Object System.Drawing.Point(3,605)
-$wingetupdate.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $getosinfo                       = New-Object system.Windows.Forms.Button
 $getosinfo.text                  = "OS Info"
@@ -297,120 +143,6 @@ $dualboottime.width              = 210
 $dualboottime.height             = 30
 $dualboottime.location           = New-Object System.Drawing.Point(3,850)
 $dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$steam                           = New-Object system.Windows.Forms.Button
-$steam.text                      = "Steam"
-$steam.width                     = 210
-$steam.height                    = 30
-$steam.location                  = New-Object System.Drawing.Point(3,45)
-$steam.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$epicgames                       = New-Object system.Windows.Forms.Button
-$epicgames.text                  = "Epic Games Launcher"
-$epicgames.width                 = 210
-$epicgames.height                = 30
-$epicgames.location              = New-Object System.Drawing.Point(3,80)
-$epicgames.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$discord                         = New-Object system.Windows.Forms.Button
-$discord.text                    = "Discord"
-$discord.width                   = 210
-$discord.height                  = 30
-$discord.location                = New-Object System.Drawing.Point(3,115)
-$discord.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$utillitysoftware                = New-Object system.Windows.Forms.Label
-$utillitysoftware.text           = "Utility Software"
-$utillitysoftware.AutoSize       = $true
-$utillitysoftware.width          = 25
-$utillitysoftware.height         = 10
-$utillitysoftware.location       = New-Object System.Drawing.Point(60,160)
-$utillitysoftware.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-
-$7zip                            = New-Object system.Windows.Forms.Button
-$7zip.text                       = "7-Zip"
-$7zip.width                      = 210
-$7zip.height                     = 30
-$7zip.location                   = New-Object System.Drawing.Point(3,185)
-$7zip.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$githubdesktop                   = New-Object system.Windows.Forms.Button
-$githubdesktop.text              = "Github Desktop"
-$githubdesktop.width             = 210
-$githubdesktop.height            = 30
-$githubdesktop.location          = New-Object System.Drawing.Point(3,220)
-$githubdesktop.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$etcher                          = New-Object system.Windows.Forms.Button
-$etcher.text                     = "Etcher USB Creator"
-$etcher.width                    = 210
-$etcher.height                   = 30
-$etcher.location                 = New-Object System.Drawing.Point(3,255)
-$etcher.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$advancedipscanner               = New-Object system.Windows.Forms.Button
-$advancedipscanner.text          = "Advanced IP Scanner"
-$advancedipscanner.width         = 210
-$advancedipscanner.height        = 30
-$advancedipscanner.location      = New-Object System.Drawing.Point(3,290)
-$advancedipscanner.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$everythingsearch                = New-Object system.Windows.Forms.Button
-$everythingsearch.text           = "Everything Search"
-$everythingsearch.width          = 210
-$everythingsearch.height         = 30
-$everythingsearch.location       = New-Object System.Drawing.Point(3,325)
-$everythingsearch.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$qbittorent                      = New-Object system.Windows.Forms.Button
-$qbittorent.text                 = "qBittorrent"
-$qbittorent.width                = 210
-$qbittorent.height               = 30
-$qbittorent.location             = New-Object System.Drawing.Point(3,360)
-$qbittorent.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$teamviewer                      = New-Object system.Windows.Forms.Button
-$teamviewer.text                 = "Teamviewer"
-$teamviewer.width                = 210
-$teamviewer.height               = 30
-$teamviewer.location             = New-Object System.Drawing.Point(3,395)
-$teamviewer.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$nvclean                         = New-Object system.Windows.Forms.Button
-$nvclean.text                    = "NvClean Install"
-$nvclean.width                   = 210
-$nvclean.height                  = 30
-$nvclean.location                = New-Object System.Drawing.Point(3,430)
-$nvclean.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$dropbox                         = New-Object system.Windows.Forms.Button
-$dropbox.text                    = "Dropbox"
-$dropbox.width                   = 210
-$dropbox.height                  = 30
-$dropbox.location                = New-Object System.Drawing.Point(3,465)
-$dropbox.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$spotify                         = New-Object system.Windows.Forms.Button
-$spotify.text                    = "Spotify"
-$spotify.width                   = 210
-$spotify.height                  = 30
-$spotify.location                = New-Object System.Drawing.Point(3,500)
-$spotify.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$malwarebytes                    = New-Object system.Windows.Forms.Button
-$malwarebytes.text               = "Malwarebytes"
-$malwarebytes.width              = 210
-$malwarebytes.height             = 30
-$malwarebytes.location           = New-Object System.Drawing.Point(3,535)
-$malwarebytes.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$Label2                          = New-Object system.Windows.Forms.Label
-$Label2.text                     = "Gaming Software"
-$Label2.AutoSize                 = $true
-$Label2.width                    = 25
-$Label2.height                   = 10
-$Label2.location                 = New-Object System.Drawing.Point(50,20)
-$Label2.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $troubleshoot                    = New-Object system.Windows.Forms.Label
 $troubleshoot.text               = "Troubleshoot/Misc"
@@ -719,8 +451,8 @@ If($OSName -like "*Windows*10*") {
 
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$tweaking,$Panel4,$Panel5,$installapplications,$troubleshoot,$Panel3,$ResultText,$currentstatus))
-$Panel1.controls.AddRange(@($brave,$firefox,$sharex,$adobereader,$notepad,$gchrome,$mpc,$vlc,$vscode,$sumatrapdf,$openoffice,$imageglass,$gimp,$documenttools,$videoandimagingtools,$webbrowsers,$wingetupdate,$dis11check,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
-$Panel2.controls.AddRange(@($Label2,$utillitysoftware, $steam,$qbittorent,$teamviewer,$7zip,$powertoys,$winterminal,$everythingsearch,$advancedipscanner,$etcher,$githubdesktop,$discord,$teamviewer,$qbittorent,$nvclean,$dropbox,$epicgames,$spotify,$malwarebytes))
+$Panel1.controls.AddRange(@($dis11check,$getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
+$Panel2.controls.AddRange(@())
 $Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
 $Panel5.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
