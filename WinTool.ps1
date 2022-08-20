@@ -455,8 +455,34 @@ $Panel1.controls.AddRange(@(
     $appearancefx,
 ))
 
-$Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
-$Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
+$Panel2.controls.AddRange(@(
+    $fixes,
+    $ncpa,
+    $oldcontrolpanel,
+    $oldsoundpanel,
+    $oldsystempanel,
+    $oldpower,
+    $errorscanner,
+    $oldmenu,
+    $yourphonefix, 
+    $resetnetwork,
+    $laptopnumlock,
+    $removeENkeyboard
+))
+$Panel3.controls.AddRange(@(
+    $defaultwindowsupdate,
+    $securitywindowsupdate,
+    $windowsupdatefix,
+    $removebloat,
+    $reinstallbloat,
+    $windowsupdate,
+    $microsoftstore,
+    $cleaning,
+    $ultimateclean,
+    $poweroptions, 
+    $ultimatepower,
+    $restorepower
+))
 
 $Panel4.controls.AddRange(@(
     $extras,#header for the bellow selection
