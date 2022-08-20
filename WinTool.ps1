@@ -77,16 +77,6 @@ $Panel3.height                   = 500
 $Panel3.width                    = 220
 $Panel3.location                 = New-Object System.Drawing.Point(470,60)
 
-$Panel4                          = New-Object system.Windows.Forms.Panel
-$Panel4.height                   = 500
-$Panel4.width                    = 220
-$Panel4.location                 = New-Object System.Drawing.Point(700,60)
-
-$Panel5                          = New-Object system.Windows.Forms.Panel
-$Panel5.height                   = 940
-$Panel5.width                    = 220
-$Panel5.location                 = New-Object System.Drawing.Point(930,60)
-
 $extras                          = New-Object system.Windows.Forms.Label
 $extras.text                     = "Extras"
 $extras.AutoSize                 = $true
@@ -149,7 +139,7 @@ $troubleshoot.text               = "Troubleshoot/Misc"
 $troubleshoot.AutoSize           = $true
 $troubleshoot.width              = 210
 $troubleshoot.height             = 25
-$troubleshoot.location           = New-Object System.Drawing.Point(550,11)
+$troubleshoot.location           = New-Object System.Drawing.Point(85,580)
 $troubleshoot.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
 $fixes                           = New-Object system.Windows.Forms.Label
@@ -439,12 +429,33 @@ $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 
-$Form.controls.AddRange(@($Panel1,$Panel2,$tweaking,$Panel4,$Panel5,$installapplications,$troubleshoot,$Panel3,$ResultText,$currentstatus))
-$Panel1.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches, $getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
+$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3, $tweaking, $troubleshoot, $currentstatus, $ResultText))
+
+$Panel1.controls.AddRange(@(
+    $performancetweaks, #header for the bellow selection
+    $essentialtweaks,
+    $essentialundo,
+    $gamingtweaks,
+    $securitypatches, 
+    $onedrive,
+    $InstallOneDrive,
+    $darkmode,
+    $lightmode,
+    $visualtweaks,#header for the bellow selection
+    $performancefx,
+    $appearancefx,
+    $extras,#header for the bellow selection
+    $getosinfo,
+    $EClipboardHistory,
+    $ELocation,
+    $EHibernation,
+    $dualboottime,
+    $EActionCenter,
+    $ECortana
+))
+
 $Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
-$Panel4.controls.AddRange(@())
-$Panel5.controls.AddRange(@())
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
