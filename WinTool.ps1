@@ -440,10 +440,10 @@ $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft San
 
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$tweaking,$Panel4,$Panel5,$installapplications,$troubleshoot,$Panel3,$ResultText,$currentstatus))
-$Panel1.controls.AddRange(@($getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
-$Panel2.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
-$Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
-$Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
+$Panel1.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches, $getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
+$Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
+$Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
+$Panel4.controls.AddRange(@())
 $Panel5.controls.AddRange(@())
 
 $EActionCenter.Add_Click({
