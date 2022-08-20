@@ -173,7 +173,7 @@ $tweaking.text                   = "Tweaking"
 $tweaking.AutoSize               = $true
 $tweaking.width                  = 25
 $tweaking.height                 = 10
-$tweaking.location               = New-Object System.Drawing.Point(960,11)
+$tweaking.location               = New-Object System.Drawing.Point(95,11)
 $tweaking.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
 $windowsupdate                   = New-Object system.Windows.Forms.Label
@@ -441,10 +441,10 @@ $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft San
 
 $Form.controls.AddRange(@($Panel1,$Panel2,$tweaking,$Panel4,$Panel5,$installapplications,$troubleshoot,$Panel3,$ResultText,$currentstatus))
 $Panel1.controls.AddRange(@($getosinfo,$EClipboardHistory,$ELocation,$EHibernation,$dualboottime,$extras,$EActionCenter,$ECortana))
-$Panel2.controls.AddRange(@())
+$Panel2.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
 $Panel3.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel4.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
-$Panel5.controls.AddRange(@($performancetweaks,$essentialtweaks,$visualtweaks,$darkmode,$performancefx,$onedrive,$lightmode,$essentialundo,$InstallOneDrive,$appearancefx,$gamingtweaks,$securitypatches))
+$Panel5.controls.AddRange(@())
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
