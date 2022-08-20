@@ -77,27 +77,6 @@ $Panel3.height                   = 500
 $Panel3.width                    = 220
 $Panel3.location                 = New-Object System.Drawing.Point(470,60)
 
-$Panel4                          = New-Object system.Windows.Forms.Panel
-$Panel4.height                   = 500
-$Panel4.width                    = 220
-$Panel4.location                 = New-Object System.Drawing.Point(700,60)
-
-$tweaking                        = New-Object system.Windows.Forms.Label
-$tweaking.text                   = "Tweaking"
-$tweaking.AutoSize               = $true
-$tweaking.width                  = 25
-$tweaking.height                 = 10
-$tweaking.location               = New-Object System.Drawing.Point(95,11)
-$tweaking.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
-
-$troubleshoot                    = New-Object system.Windows.Forms.Label
-$troubleshoot.text               = "Troubleshoot/Misc"
-$troubleshoot.AutoSize           = $true
-$troubleshoot.width              = 210
-$troubleshoot.height             = 25
-$troubleshoot.location           = New-Object System.Drawing.Point(200,11)
-$troubleshoot.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
-
 $extras                          = New-Object system.Windows.Forms.Label
 $extras.text                     = "Extras"
 $extras.AutoSize                 = $true
@@ -155,6 +134,14 @@ $dualboottime.height             = 30
 $dualboottime.location           = New-Object System.Drawing.Point(3,850)
 $dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
+$troubleshoot                    = New-Object system.Windows.Forms.Label
+$troubleshoot.text               = "Troubleshoot/Misc"
+$troubleshoot.AutoSize           = $true
+$troubleshoot.width              = 210
+$troubleshoot.height             = 25
+$troubleshoot.location           = New-Object System.Drawing.Point(85,580)
+$troubleshoot.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
+
 $fixes                           = New-Object system.Windows.Forms.Label
 $fixes.text                      = "Fixes"
 $fixes.AutoSize                  = $true
@@ -171,7 +158,13 @@ $currentstatus.height            = 10
 $currentstatus.location          = New-Object System.Drawing.Point(580,575)
 $currentstatus.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
-
+$tweaking                        = New-Object system.Windows.Forms.Label
+$tweaking.text                   = "Tweaking"
+$tweaking.AutoSize               = $true
+$tweaking.width                  = 25
+$tweaking.height                 = 10
+$tweaking.location               = New-Object System.Drawing.Point(95,11)
+$tweaking.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
 $windowsupdate                   = New-Object system.Windows.Forms.Label
 $windowsupdate.text              = "Windows Update"
