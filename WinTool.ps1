@@ -14,7 +14,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInfor
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
 $Form                            = New-Object system.Windows.Forms.Form
-$Form.ClientSize                 = New-Object System.Drawing.Point(1050,1000)
+$Form.ClientSize                 = New-Object System.Drawing.Point(1050,1200) #panels define this width i think
 $Form.text                       = "WinTool by Alerion"
 $Form.StartPosition              = "CenterScreen"
 $Form.TopMost                    = $false
@@ -45,11 +45,11 @@ $Form.FormBorderStyle            = 'FixedSingle'
 $ResultText                      = New-Object system.Windows.Forms.TextBox
 $ResultText.multiline            = $true
 $ResultText.width                = 440
-$ResultText.height               = 203
-$ResultText.location             = New-Object System.Drawing.Point(474,625)
+$ResultText.height               = 200
+$ResultText.location             = New-Object System.Drawing.Point(265,495)
 $ResultText.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 $ResultText.FlatAppearance.BorderSize=0
-$ResultText.FormBorderStyle         = 'None'
+$ResultText.FormBorderStyle      = 'None'
 $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
 $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#333333") 
 
@@ -63,89 +63,81 @@ $Form.Width                      = $objImage.Width
 $Form.Height                     = $objImage.Height
 
 $Panel1                          = New-Object system.Windows.Forms.Panel
-$Panel1.height                   = 940
+$Panel1.height                   = 700
 $Panel1.width                    = 220
-$Panel1.location                 = New-Object System.Drawing.Point(10,60)
+$Panel1.location                 = New-Object System.Drawing.Point(10,10)
 
 $Panel2                          = New-Object system.Windows.Forms.Panel
-$Panel2.height                   = 940
+$Panel2.height                   = 440
 $Panel2.width                    = 220
-$Panel2.location                 = New-Object System.Drawing.Point(240,60)
+$Panel2.location                 = New-Object System.Drawing.Point(240,10)
 
 $Panel3                          = New-Object system.Windows.Forms.Panel
-$Panel3.height                   = 500
+$Panel3.height                   = 440
 $Panel3.width                    = 220
-$Panel3.location                 = New-Object System.Drawing.Point(470,60)
+$Panel3.location                 = New-Object System.Drawing.Point(470,10)
 
 $Panel4                          = New-Object system.Windows.Forms.Panel
-$Panel4.height                   = 500
+$Panel4.height                   = 440
 $Panel4.width                    = 220
-$Panel4.location                 = New-Object System.Drawing.Point(700,60)
+$Panel4.location                 = New-Object System.Drawing.Point(700,10)
 
 $extras                          = New-Object system.Windows.Forms.Label
 $extras.text                     = "Extras"
 $extras.AutoSize                 = $true
 $extras.width                    = 25
 $extras.height                   = 10
-$extras.location                 = New-Object System.Drawing.Point(85,580)
+$extras.location                 = New-Object System.Drawing.Point(80,20)
 $extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $getosinfo                       = New-Object system.Windows.Forms.Button
 $getosinfo.text                  = "OS Info"
 $getosinfo.width                 = 210
 $getosinfo.height                = 30
-$getosinfo.location              = New-Object System.Drawing.Point(3,640)
+$getosinfo.location              = New-Object System.Drawing.Point(3,45)
 $getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $EClipboardHistory               = New-Object system.Windows.Forms.Button
 $EClipboardHistory.text          = "Enable Clipboard History"
 $EClipboardHistory.width         = 210
 $EClipboardHistory.height        = 30
-$EClipboardHistory.location      = New-Object System.Drawing.Point(3,675)
+$EClipboardHistory.location      = New-Object System.Drawing.Point(3,80)
 $EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ELocation                       = New-Object system.Windows.Forms.Button
 $ELocation.text                  = "Enable Location Tracking"
 $ELocation.width                 = 210
 $ELocation.height                = 30
-$ELocation.location              = New-Object System.Drawing.Point(3,710)
+$ELocation.location              = New-Object System.Drawing.Point(3,115)
 $ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $EHibernation                    = New-Object system.Windows.Forms.Button
 $EHibernation.text               = "Enable Hibernation"
 $EHibernation.width              = 210
 $EHibernation.height             = 30
-$EHibernation.location           = New-Object System.Drawing.Point(3,745)
+$EHibernation.location           = New-Object System.Drawing.Point(3,150)
 $EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $EActionCenter                   = New-Object system.Windows.Forms.Button
 $EActionCenter.text              = "Enable Action Center"
 $EActionCenter.width             = 210
 $EActionCenter.height            = 30
-$EActionCenter.location          = New-Object System.Drawing.Point(3,780)
+$EActionCenter.location          = New-Object System.Drawing.Point(3,185)
 $EActionCenter.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $ECortana                        = New-Object system.Windows.Forms.Button
 $ECortana.text                   = "Enable Cortana"
 $ECortana.width                  = 210
 $ECortana.height                 = 30
-$ECortana.location               = New-Object System.Drawing.Point(3,815)
+$ECortana.location               = New-Object System.Drawing.Point(3,220)
 $ECortana.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $dualboottime                    = New-Object system.Windows.Forms.Button
 $dualboottime.text               = "Set Time to UTC"
 $dualboottime.width              = 210
 $dualboottime.height             = 30
-$dualboottime.location           = New-Object System.Drawing.Point(3,850)
+$dualboottime.location           = New-Object System.Drawing.Point(3,255)
 $dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$troubleshoot                    = New-Object system.Windows.Forms.Label
-$troubleshoot.text               = "Troubleshoot/Misc"
-$troubleshoot.AutoSize           = $true
-$troubleshoot.width              = 210
-$troubleshoot.height             = 25
-$troubleshoot.location           = New-Object System.Drawing.Point(85,580)
-$troubleshoot.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
 $fixes                           = New-Object system.Windows.Forms.Label
 $fixes.text                      = "Fixes"
@@ -156,20 +148,12 @@ $fixes.location                  = New-Object System.Drawing.Point(85,20)
 $fixes.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $currentstatus                   = New-Object system.Windows.Forms.Label
-$currentstatus.text              = "Current Status:"
+$currentstatus.text              = "* Current Status *"
 $currentstatus.AutoSize          = $true
 $currentstatus.width             = 25
 $currentstatus.height            = 10
-$currentstatus.location          = New-Object System.Drawing.Point(580,575)
+$currentstatus.location          = New-Object System.Drawing.Point(350,455)
 $currentstatus.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
-
-$tweaking                        = New-Object system.Windows.Forms.Label
-$tweaking.text                   = "Tweaking"
-$tweaking.AutoSize               = $true
-$tweaking.width                  = 25
-$tweaking.height                 = 10
-$tweaking.location               = New-Object System.Drawing.Point(95,11)
-$tweaking.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',24)
 
 $windowsupdate                   = New-Object system.Windows.Forms.Label
 $windowsupdate.text              = "Windows Update"
@@ -242,15 +226,15 @@ $securitypatches.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#
 $onedrive                        = New-Object system.Windows.Forms.Button
 $onedrive.text                   = "Remove OneDrive"
 $onedrive.width                  = 210
-$onedrive.height                 = 30
+$onedrive.height                 = 45
 $onedrive.location               = New-Object System.Drawing.Point(3,325)
 $onedrive.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $InstallOneDrive                 = New-Object system.Windows.Forms.Button
 $InstallOneDrive.text            = "Restore OneDrive"
 $InstallOneDrive.width           = 210
-$InstallOneDrive.height          = 30
-$InstallOneDrive.location        = New-Object System.Drawing.Point(2,360)
+$InstallOneDrive.height          = 45
+$InstallOneDrive.location        = New-Object System.Drawing.Point(2,380)
 $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $visualtweaks                    = New-Object system.Windows.Forms.Label
@@ -258,21 +242,21 @@ $visualtweaks.text               = "Visual Tweaks"
 $visualtweaks.AutoSize           = $true
 $visualtweaks.width              = 25
 $visualtweaks.height             = 10
-$visualtweaks.location           = New-Object System.Drawing.Point(60,405)
+$visualtweaks.location           = New-Object System.Drawing.Point(60,300)
 $visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $darkmode                        = New-Object system.Windows.Forms.Button
 $darkmode.text                   = "Dark Mode"
 $darkmode.width                  = 210
 $darkmode.height                 = 30
-$darkmode.location               = New-Object System.Drawing.Point(3,430)
+$darkmode.location               = New-Object System.Drawing.Point(3,325)
 $darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $lightmode                       = New-Object system.Windows.Forms.Button
 $lightmode.text                  = "Light Mode"
 $lightmode.width                 = 210
 $lightmode.height                = 30
-$lightmode.location              = New-Object System.Drawing.Point(3,465)
+$lightmode.location              = New-Object System.Drawing.Point(3,360)
 $lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
@@ -280,14 +264,14 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $performancefx.text          = "Optimize Performance"
     $performancefx.width         = 210
     $performancefx.height        = 30
-    $performancefx.location      = New-Object System.Drawing.Point(3,500)
+    $performancefx.location      = New-Object System.Drawing.Point(3,395)
     $performancefx.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '0') {
     $appearancefx                = New-Object system.Windows.Forms.Button
     $appearancefx.text           = "Optimize Apperance"
     $appearancefx.width          = 210
     $appearancefx.height         = 30
-    $appearancefx.location       = New-Object System.Drawing.Point(3,500)
+    $appearancefx.location       = New-Object System.Drawing.Point(3,395)
     $appearancefx.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 }
 
@@ -434,7 +418,7 @@ $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 
-$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3,$Panel4, $tweaking, $troubleshoot, $currentstatus, $ResultText))
+$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3, $Panel4, $ResultText, $currentstatus))
 
 $Panel1.controls.AddRange(@(
     $performancetweaks, #header for the bellow selection
@@ -443,18 +427,13 @@ $Panel1.controls.AddRange(@(
     $gamingtweaks,
     $securitypatches, 
     $onedrive,
-    $InstallOneDrive,
-    $darkmode,
-    $lightmode,
-    $visualtweaks,#header for the bellow selection
-    $performancefx,
-    $appearancefx
+    $InstallOneDrive
 ))
 
 $Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
 $Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
 
-$Panel1.controls.AddRange(@(
+$Panel4.controls.AddRange(@(
     $extras,#header for the bellow selection
     $getosinfo,
     $EClipboardHistory,
@@ -462,7 +441,12 @@ $Panel1.controls.AddRange(@(
     $EHibernation,
     $dualboottime,
     $EActionCenter,
-    $ECortana
+    $ECortana,
+    $visualtweaks,#header for the bellow selection
+    $darkmode,
+    $lightmode,
+    $performancefx,
+    $appearancefx
 ))
 
 $EActionCenter.Add_Click({
