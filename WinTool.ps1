@@ -77,6 +77,11 @@ $Panel3.height                   = 500
 $Panel3.width                    = 220
 $Panel3.location                 = New-Object System.Drawing.Point(470,60)
 
+$Panel4                          = New-Object system.Windows.Forms.Panel
+$Panel4.height                   = 500
+$Panel4.width                    = 220
+$Panel4.location                 = New-Object System.Drawing.Point(700,60)
+
 $extras                          = New-Object system.Windows.Forms.Label
 $extras.text                     = "Extras"
 $extras.AutoSize                 = $true
@@ -429,7 +434,7 @@ $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 
-$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3, $tweaking, $troubleshoot, $currentstatus, $ResultText))
+$Form.controls.AddRange(@($Panel1, $Panel2, $Panel3,$Panel4, $tweaking, $troubleshoot, $currentstatus, $ResultText))
 
 $Panel1.controls.AddRange(@(
     $performancetweaks, #header for the bellow selection
@@ -443,7 +448,13 @@ $Panel1.controls.AddRange(@(
     $lightmode,
     $visualtweaks,#header for the bellow selection
     $performancefx,
-    $appearancefx,
+    $appearancefx
+))
+
+$Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
+$Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
+
+$Panel1.controls.AddRange(@(
     $extras,#header for the bellow selection
     $getosinfo,
     $EClipboardHistory,
@@ -453,9 +464,6 @@ $Panel1.controls.AddRange(@(
     $EActionCenter,
     $ECortana
 ))
-
-$Panel2.controls.AddRange(@($fixes,$ncpa,$oldcontrolpanel,$oldsoundpanel,$oldsystempanel,$oldpower,$errorscanner,$oldmenu,$yourphonefix, $resetnetwork,$laptopnumlock,$removeENkeyboard))
-$Panel3.controls.AddRange(@($defaultwindowsupdate,$securitywindowsupdate,$windowsupdatefix,$removebloat,$reinstallbloat,$windowsupdate,$microsoftstore,$cleaning,$ultimateclean,$poweroptions, $ultimatepower,$restorepower))
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
