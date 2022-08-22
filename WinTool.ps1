@@ -45,7 +45,7 @@ $Form.FormBorderStyle            = 'FixedSingle'
 $ResultText                      = New-Object system.Windows.Forms.TextBox
 $ResultText.multiline            = $true
 $ResultText.width                = 440
-$ResultText.height               = 200
+$ResultText.height               = 100
 $ResultText.location             = New-Object System.Drawing.Point(265,495)
 $ResultText.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 $ResultText.FlatAppearance.BorderSize=0
@@ -63,7 +63,7 @@ $Form.Width                      = $objImage.Width
 $Form.Height                     = $objImage.Height
 
 $Panel1                          = New-Object system.Windows.Forms.Panel
-$Panel1.height                   = 700
+$Panel1.height                   = 600
 $Panel1.width                    = 220
 $Panel1.location                 = New-Object System.Drawing.Point(10,10)
 
