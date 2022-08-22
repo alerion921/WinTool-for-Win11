@@ -540,6 +540,7 @@ $Panel4.controls.AddRange(@(
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
+    $ResultText.text = "`r`n" +"`r`n" + "Enabling Action Center..."
 
     Stop-Process -ProcessName explorer -Force	
     taskkill /F /IM explorer.exe
@@ -550,12 +551,13 @@ $EActionCenter.Add_Click({
 
     Start-Process explorer.exe	
 
-	Write-Host "Done - Reverted to Stock Settings"
-    $ResultText.text = "`r`n" +"`r`n" + "Enabled Action Center"
+	Write-Host "Action Center - Enabled..."
+    $ResultText.text = "`r`n" +"`r`n" + "Action Center - Enabled..."
 })
 
 $ECortana.Add_Click({
     Write-Host "Enabling Cortana..."
+    $ResultText.text = "`r`n" +"`r`n" + "Enabling Cortana..."
 
     Stop-Process -ProcessName explorer -Force	
     taskkill /F /IM explorer.exe
@@ -581,12 +583,15 @@ $ECortana.Add_Click({
     
     Start-Process explorer.exe	
 
-	Write-Host "Done - Reverted to Stock Settings"
-    $ResultText.text = "`r`n" +"`r`n" + "Enabled Cortana and Restored Search"
+	Write-Host "Cortana - Enabled..."
+    $ResultText.text = "`r`n" +"`r`n" + "Cortana - Enabled..."
 })
 
 
 $getosinfo.Add_Click({
+    Write-Host "Gathering data please wait for the data to show up inside the GUI..."
+    $ResultText.text = "`r`n" +"`r`n" + "Gathering data please wait for the data to show up inside the GUI..."
+
     $name=(Get-WmiObject Win32_OperatingSystem).caption
     $bit=(Get-WmiObject Win32_OperatingSystem).OSArchitecture
     $ver=(Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
@@ -1123,7 +1128,7 @@ $ultimateclean.Add_Click({
 })
 
 $ultimatepower.Add_Click({
-Write-Host "Enabling and Activating Highest Performance Power Plan..."
+    Write-Host "Enabling and Activating Highest Performance Power Plan..."
 	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
 	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
 	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
@@ -1131,6 +1136,7 @@ Write-Host "Enabling and Activating Highest Performance Power Plan..."
 })
 
 $laptopnumlock.Add_Click({
+    Write-Host "Trying to disable numlock by force to fix errors that might occur..."
     Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
     Add-Type -AssemblyName System.Windows.Forms
     If (([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
@@ -1141,8 +1147,10 @@ $laptopnumlock.Add_Click({
 })
 
 $essentialtweaks.Add_Click({
+    Write-Host "Activating Essential Tweaks... Please Wait"
     Write-Host "Creating Restore Point incase something bad happens"
-    $ResultText.text = "`r`n" +"`r`n" + "  Activating Essential Tweaks... Please Wait" 
+    $ResultText.text = "`r`n" +"`r`n" + "  Activating Essential Tweaks... Please Wait"
+    $ResultText.text = "`r`n" +"`r`n" + "  Creating Restore Point incase something bad happens"
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
@@ -1165,6 +1173,7 @@ $essentialtweaks.Add_Click({
     Write-Host "Removing recently added apps from Start Menu..."
     $ResultText.text += "`r`n" +"Removing recently added apps from Start Menu..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
     Write-Host "Disabling UAC..."
     $ResultText.text += "`r`n" +"Disabling UAC..."
@@ -1281,6 +1290,7 @@ $essentialtweaks.Add_Click({
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 0
+
     Write-Host "Showing task manager details..."
     $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
     Do {
@@ -1290,13 +1300,16 @@ $essentialtweaks.Add_Click({
     Stop-Process $taskmgr
     $preferences.Preferences[28] = 0
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -Type Binary -Value $preferences.Preferences
+
     Write-Host "Showing file operations details..."
     If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager")) {
         New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" | Out-Null
     }
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 1
+
     Write-Host "Hiding Task View button..."
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
+
     Write-Host "Hiding People icon..."
     If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
         New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
@@ -1435,7 +1448,7 @@ $essentialtweaks.Add_Click({
     "BthAvctpSvc"                                 #Disables AVCTP service (if you use  Bluetooth Audio Device or Wireless Headphones. then don't disable this)
     #"FrameServer"                                 #Disables Windows Camera Frame Server(this allows multiple clients to access video frames from camera devices.)
     "Browser"                                     #Disables computer browser
-    "BthAvctpSvc"                                 #AVCTP service (This is Audio Video Control Transport Protocol service.)
+    #"BthAvctpSvc"                                 #AVCTP service (This is Audio Video Control Transport Protocol service.)
     #"BDESVC"                                      #Disables bitlocker
     "iphlpsvc"                                    #Disables ipv6 but most websites don't use ipv6 they use ipv4     
     "edgeupdate"                                  # Disables one of edge update service  
@@ -1453,7 +1466,7 @@ $essentialtweaks.Add_Click({
     "WpnService"                                  #Disables WpnService (Push Notifications may not work )
     #"StorSvc"                                     #Disables StorSvc (usb external hard drive will not be reconised by windows)
     "RtkBtManServ"                                #Disables Realtek Bluetooth Device Manager Service
-    "QWAVE"                                       #Disables Quality Windows Audio Video Experience (audio and video might sound worse)
+    #"QWAVE"                                       #Disables Quality Windows Audio Video Experience (audio and video might sound worse)
      #Hp services
     "HPAppHelperCap"
     "HPDiagsCap"
@@ -1539,7 +1552,7 @@ Write-Host "Disabling Background application access..."
     Start-Sleep -s 5
     Start-Process -name explorer
 
-    Write-Host "Essential Tweaks Completed - Please Reboot"
+    Write-Host "Essential Tweaks - Completed  ** Please Reboot **"
     $ResultText.text =  "`r`n" +"`r`n" + "  Essential Tweaks Done " + "`r`n" + "  -   Ready for Next Task.."
 })
 
@@ -1786,13 +1799,105 @@ $essentialundo.Add_Click({
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -ErrorAction SilentlyContinue
 
+      # Service tweaks to Automatic to make sure things start up smoothly if you wanted to change things back..
+
+    $services = @(
+    "diagnosticshub.standardcollector.service"   # Microsoft (R) Diagnostics Hub Standard Collector Service
+    "DiagTrack"                                  # Diagnostics Tracking Service
+    "DPS"
+    "dmwappushservice"                           # WAP Push Message Routing Service (see known issues)
+    "lfsvc"                                      # Geolocation Service
+    "MapsBroker"                                 # Downloaded Maps Manager
+    "NetTcpPortSharing"                          # Net.Tcp Port Sharing Service
+    "RemoteAccess"                               # Routing and Remote Access
+    "RemoteRegistry"                             # Remote Registry
+    "SharedAccess"                               # Internet Connection Sharing (ICS)
+    "TrkWks"                                     # Distributed Link Tracking Client
+    "WbioSrvc"                                   # Windows Biometric Service (required for Fingerprint reader / facial detection)
+    "WlanSvc"                                    # WLAN AutoConfig
+    "WMPNetworkSvc"                              # Windows Media Player Network Sharing Service
+    "wscsvc"                                     # Windows Security Center Service
+    "WSearch"                                    # Windows Search
+    "XblAuthManager"                             # Xbox Live Auth Manager
+    "XblGameSave"                                # Xbox Live Game Save Service
+    "XboxNetApiSvc"                              # Xbox Live Networking Service
+    "XboxGipSvc"                                 #Disables Xbox Accessory Management Service
+    "ndu"                                        # Windows Network Data Usage Monitor
+    "WerSvc"                                     #disables windows error reporting
+    "Spooler"                                    #Disables your printer
+    "Fax"                                        #Disables fax
+    "fhsvc"                                      #Disables fax histroy
+    "gupdate"                                    #Disables google update
+    "gupdatem"                                   #Disable another google update
+    "stisvc"                                     #Disables Windows Image Acquisition (WIA)
+    "AJRouter"                                   #Disables (needed for AllJoyn Router Service)
+    "MSDTC"                                      # Disables Distributed Transaction Coordinator
+    "WpcMonSvc"                                  #Disables Parental Controls
+    "PhoneSvc"                                   #Disables Phone Service(Manages the telephony state on the device)
+    "PrintNotify"                                #Disables Windows printer notifications and extentions
+    "PcaSvc"                                     #Disables Program Compatibility Assistant Service
+    "WPDBusEnum"                                 #Disables Portable Device Enumerator Service
+    "LicenseManager"                             #Disable LicenseManager(Windows store may not work properly)
+    "seclogon"                                   #Disables  Secondary Logon(disables other credentials only password will work)
+    "SysMain"                                    #Disables sysmain
+    "lmhosts"                                    #Disables TCP/IP NetBIOS Helper
+    "wisvc"                                      #Disables Windows Insider program(Windows Insider will not work)
+    "FontCache"                                  #Disables Windows font cache
+    "RetailDemo"                                 #Disables RetailDemo whic is often used when showing your device
+    "ALG"                                        # Disables Application Layer Gateway Service(Provides support for 3rd party protocol plug-ins for Internet Connection Sharing)
+    "BFE"                                       #Disables Base Filtering Engine (BFE) (is a service that manages firewall and Internet Protocol security)
+    "BrokerInfrastructure"                       #Disables Windows infrastructure service that controls which background tasks can run on the system.
+    "SCardSvr"                                    #Disables Windows smart card
+    "EntAppSvc"                                   #Disables enterprise application management.
+    "BthAvctpSvc"                                 #Disables AVCTP service (if you use  Bluetooth Audio Device or Wireless Headphones. then don't disable this)
+    "FrameServer"                                 #Disables Windows Camera Frame Server(this allows multiple clients to access video frames from camera devices.)
+    "Browser"                                     #Disables computer browser
+    "BthAvctpSvc"                                 #AVCTP service (This is Audio Video Control Transport Protocol service.)
+    "BDESVC"                                      #Disables bitlocker
+    "iphlpsvc"                                    #Disables ipv6 but most websites don't use ipv6 they use ipv4     
+    "edgeupdate"                                  # Disables one of edge update service  
+    "MicrosoftEdgeElevationService"               # Disables one of edge  service 
+    "edgeupdatem"                                 # disbales another one of update service (disables edgeupdatem)                          
+    "SEMgrSvc"                                    #Disables Payments and NFC/SE Manager (Manages payments and Near Field Communication (NFC) based secure elements)
+    "PNRPsvc"                                    # Disables peer Name Resolution Protocol ( some peer-to-peer and collaborative applications, such as Remote Assistance, may not function, Discord will still work)
+    "p2psvc"                                     # Disbales Peer Name Resolution Protocol(nables multi-party communication using Peer-to-Peer Grouping.  If disabled, some applications, such as HomeGroup, may not function. Discord will still work)
+    "p2pimsvc"                                   # Disables Peer Networking Identity Manager (Peer-to-Peer Grouping services may not function, and some applications, such as HomeGroup and Remote Assistance, may not function correctly.Discord will still work)
+    "PerfHost"                                    #Disables  remote users and 64-bit processes to query performance .
+    "BcastDVRUserService_48486de"                 #Disables GameDVR and Broadcast   is used for Game Recordings and Live Broadcasts
+    "CaptureService_48486de"                      #Disables ptional screen capture functionality for applications that call the Windows.Graphics.Capture API.  
+    "cbdhsvc_48486de"                             #Disables   cbdhsvc_48486de (clipboard service it disables)
+    "WpnService"                                  #Disables WpnService (Push Notifications may not work )
+    "StorSvc"                                     #Disables StorSvc (usb external hard drive will not be reconised by windows)
+    "RtkBtManServ"                                #Disables Realtek Bluetooth Device Manager Service
+    "QWAVE"                                       #Disables Quality Windows Audio Video Experience (audio and video might sound worse)
+    "HPAppHelperCap"
+    "HPDiagsCap"
+    "HPNetworkCap"
+    "HPSysInfoCap"
+    "HpTouchpointAnalyticsService"
+    "HvHost"                        
+    "vmickvpexchange"
+    "vmicguestinterface"
+    "vmicshutdown"
+    "vmicheartbeat"
+    "vmicvmsession"
+    "vmicrdv"
+    "vmictimesync" 
+)
+
+foreach ($service in $services) {
+    # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+
+    Write-Host "Setting $service StartupType to Automatic"
+    Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
+}
 
     #Restart Explorer so that the taskbar can update and not look break :D
     Stop-Process -name explorer
     Start-Sleep -s 5
     Start-Process -name explorer
 
-    Write-Host "Essential Undo Completed"
+    Write-Host "Essential Undo - Completed"
     $ResultText.text = "`r`n" +"`r`n" + "  Essential Undo Completed " + "`r`n" + "  -   Ready for Next Task.."
 })
 
@@ -1905,13 +2010,11 @@ $Bloatware = @(
     "Microsoft.MicrosoftSolitaireCollection"
     "Microsoft.NetworkSpeedTest"
     "Microsoft.News"    
-
     "Microsoft.Office.Lens"
     "Microsoft.Office.Sway"
     "Microsoft.Office.Lens"                             # Issue 77
     "Microsoft.Office.OneNote"
     "Microsoft.Office.Sway"
-
     "Microsoft.OneConnect"
     "Microsoft.People"
     "Microsoft.Print3D"
@@ -1933,8 +2036,6 @@ $Bloatware = @(
     "Microsoft.CommsPhone"
     "Microsoft.ScreenSketch"
     "Microsoft.MixedReality.Portal"
-
-    #xbox apps might be needed if you are a gamer so keep them disabled then
     "Microsoft.Xbox.TCUI"
     "Microsoft.XboxApp"
     "Microsoft.XboxGameOverlay"
@@ -1943,20 +2044,15 @@ $Bloatware = @(
     "Microsoft.XboxGamingOverlay"
     "Microsoft.XboxIdentityProvider"
     "Microsoft.XboxSpeechToTextOverlay"
-
     "Microsoft.ZuneMusic"
     "Microsoft.ZuneVideo"
     "Microsoft.YourPhone"
     "Microsoft.Getstarted"
     "Microsoft.MicrosoftOfficeHub"
-
     "*Microsoft.Advertising.Xaml*"
     "*Microsoft.MicrosoftStickyNotes*"
     "Microsoft.Advertising.Xaml_10.1712.5.0_x64__8wekyb3d8bbwe"
     "Microsoft.Advertising.Xaml_10.1712.5.0_x86__8wekyb3d8bbwe"
-
-    #Sponsored Windows 10 & 11 apps
-    #Add sponsored/featured apps to remove in the "*AppName*" format
     "*EclipseManager*"
     "*ActiproSoftwareLLC*"
     "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
@@ -1997,16 +2093,11 @@ $Bloatware = @(
 
 $removebloat.Add_Click({
         $ErrorActionPreference = 'SilentlyContinue'
-        #This function finds any AppX/AppXProvisioned package and uninstalls it, except for Freshpaint, Windows Calculator, Windows Store, and Windows Photos.
-        #Also, to note - This does NOT remove essential system services/software/etc such as .NET framework installations, Cortana, Edge, etc.
-
-        #This is the switch parameter for running this script as a 'silent' script, for use in MDT images or any type of mass deployment without user interaction.
 
         Function SystemPrep {
 
             Write-Host "Starting Sysprep Fixes"
    
-            # Disable Windows Store Automatic Updates
             Write-Host "Adding Registry key to Disable Windows Store Automatic Updates"
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
             If (!(Test-Path $registryPath)) {
@@ -2015,7 +2106,6 @@ $removebloat.Add_Click({
             }
             Set-ItemProperty $registryPath AutoDownload -Value 2
 
-            #Stop WindowsStore Installer Service and set to Disabled
             Write-Host "Stopping InstallService"
             Stop-Service InstallService
             Write-Host "Setting InstallService Startup to Disabled"
@@ -2064,27 +2154,17 @@ $removebloat.Add_Click({
                 "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
                 "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
                 "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
-          
-                #Windows File
                 "HKCR:\Extensions\ContractId\Windows.File\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
-          
-                #Registry keys to delete if they aren't uninstalled by RemoveAppXPackage/RemoveAppXProvisionedPackage
                 "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\46928bounde.EclipseManager_2.2.4.51_neutral__a5h4egax66k6y"
                 "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
                 "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
                 "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
                 "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
-          
-                #Scheduled Tasks to delete
                 "HKCR:\Extensions\ContractId\Windows.PreInstalledConfigTask\PackageId\Microsoft.MicrosoftOfficeHub_17.7909.7600.0_x64__8wekyb3d8bbwe"
-          
-                #Windows Protocol Keys
                 "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
                 "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
                 "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
                 "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
-             
-                #Windows Share Target
                 "HKCR:\Extensions\ContractId\Windows.ShareTarget\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
             )
       
@@ -2952,31 +3032,6 @@ $securitypatches.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Disabling SMB Server.."
 	Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
 	Set-SmbServerConfiguration -EnableSMB2Protocol $false -Force
-
-    <#Start-Job -Name "PowerShell Hardening" -ScriptBlock {
-        #Disable Powershell v2
-        Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2Root" -NoRestart
-        Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2" -NoRestart
-    
-        #Enable PowerShell Logging
-        #https://www.digitalshadows.com/blog-and-research/powershell-security-best-practices/
-        #https://www.cyber.gov.au/acsc/view-all-content/publications/securing-powershell-enterprise
-        New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\" -Name "Transcription" -Force
-        New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "OutputDirectory" -Type "STRING" -Value "C:\PowershellLogs" -Force
-        New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging\" -Name "EnableScriptBlockLogging" -Type "DWORD" -Value "1" -Force
-        New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription\" -Name "EnableTranscripting" -Type "DWORD" -Value "1" -Force
-        New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription\" -Name "EnableInvocationHeader" -Type "DWORD" -Value "1" -Force
-        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "OutputDirectory" -Type "STRING" -Value "C:\PowershellLogs" -Force
-        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging\" -Name "EnableScriptBlockLogging" -Type "DWORD" -Value "1" -Force
-        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription\" -Name "EnableTranscripting" -Type "DWORD" -Value "1" -Force
-        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription\" -Name "EnableInvocationHeader" -Type "DWORD" -Value "1" -Force
-        
-        #Prevent WinRM from using Basic Authentication
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client" -Name "AllowBasic" -Type "DWORD" -Value 0 -Force
-    
-        $ResultText.text = "`r`n" +"`r`n" + "  Powershell security patches has been applied..."
-    }#>
-    
     #Windows Defender Configuration Files
     New-Item -Path "C:\" -Name "Temp" -ItemType "directory" -Force | Out-Null; New-Item -Path "C:\temp\" -Name "Windows Defender" -ItemType "directory" -Force | Out-Null; Copy-Item -Path .\Files\"Windows Defender Configuration Files"\* -Destination "C:\temp\Windows Defender\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
     
