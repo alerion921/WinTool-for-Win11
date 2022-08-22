@@ -1149,8 +1149,8 @@ $laptopnumlock.Add_Click({
 $essentialtweaks.Add_Click({
     Write-Host "Activating Essential Tweaks... Please Wait"
     Write-Host "Creating Restore Point incase something bad happens"
-    $ResultText.text = "`r`n" +"`r`n" + "  Activating Essential Tweaks... Please Wait"
-    $ResultText.text = "`r`n" +"`r`n" + "  Creating Restore Point incase something bad happens"
+    $ResultText.text = "`r`n" + "`r`n" + "  Activating Essential Tweaks... Please Wait"
+    $ResultText.text = "`r`n" + "`r`n" + "  Creating Restore Point incase something bad happens"
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
