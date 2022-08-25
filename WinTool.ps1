@@ -2169,13 +2169,13 @@ $START_MENU_LAYOUT = @"
 })
 
 $reinstallbloat.Add_Click({
-    $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
-    foreach ($Bloat in $Bloatware) {
-        Get-AppxPackage -Name $Bloat | Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" 
+    foreach ($ReBloat in $Bloatware) {
+        Write-Output "Trying to install $safeXboxBloatware1."
+        Get-AppxPackage -Name $ReBloat| Add-AppxPackage
+        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $ReBloat | Add-AppxProvisionedPackage -Online
     }
-    #This line reinstalls all of the bloatware that was removed
-    
+
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
     $Advertising = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"
