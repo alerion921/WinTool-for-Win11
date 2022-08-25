@@ -538,6 +538,40 @@ $Panel4.controls.AddRange(@(
     $appearancefx
 ))
 
+Function RegChange($path, $thing, $value, $desc, $type) {
+	Write-Output ($desc)	
+	
+   # String: Specifies a null-terminated string. Equivalent to REG_SZ.
+   # ExpandString: Specifies a null-terminated string that contains unexpanded references to environment variables that are expanded when the value is retrieved. Equivalent to REG_EXPAND_SZ.
+   # Binary: Specifies binary data in any form. Equivalent to REG_BINARY.
+   # DWord: Specifies a 32-bit binary number. Equivalent to REG_DWORD.
+   # MultiString: Specifies an array of null-terminated strings terminated by two null characters. Equivalent to REG_MULTI_SZ.
+   # Qword: Specifies a 64-bit binary number. Equivalent to REG_QWORD.
+   # Unknown: Indicates an unsupported registry data type, such as REG_RESOURCE_LIST.
+
+	$type2 = "String"
+	if (-not ([string]::IsNullOrEmpty($type)))
+	{
+		$type2 = $type
+	}
+	
+	If (!(Test-Path ("HKLM:\" + $path))) {
+		New-Item -Path ("HKLM:\" + $path) -Force | out-null
+	}
+	If (!(Test-Path ("HKCU:\" + $path))) {
+        New-Item -Path ("HKCU:\" + $path) -Force | out-null
+    }
+	
+    If (Test-Path ("HKLM:\" + $path)) {
+        Set-ItemProperty ("HKLM:\" + $path) $thing -Value $value -Type $type2 -PassThru:$false | out-null
+    }
+	If (Test-Path ("HKCU:\" + $path)) {
+        Set-ItemProperty ("HKCU:\" + $path) $thing -Value $value -Type $type2 -PassThru:$false | out-null
+    }	
+
+}
+
+
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
     $ResultText.text = "`r`n" +"`r`n" + "Enabling Action Center..."
@@ -2171,12 +2205,29 @@ $START_MENU_LAYOUT = @"
 $reinstallbloat.Add_Click({
     $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
+    
+    #This line reinstalls all of the bloatware that was removed
+    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
-    foreach ($Bloat in $Bloatware) {
+    foreach ($Bloat in $bloatwareList) {
 		Write-Output "Trying to INSTALL $Bloat."
 		Get-AppxPackage -Name $Bloat| Add-AppxPackage
-		Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Add-AppxProvisionedPackage -Online		
 	}	
+	
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "FeatureManagementEnabled" "1" "Enabling Windows bloatware" "Dword"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "ContentDeliveryAllowed" "1" "Enabling Windows bloatware" "Dword"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "OemPreInstalledAppsEnabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "PreInstalledAppsEnabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "PreInstalledAppsEverEnabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SilentInstalledAppsEnabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SystemPaneSuggestionsEnabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContentEnabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-353696Enabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-353694Enabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338393Enabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338389Enabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338388Enabled" "1" "Enabling Windows bloatware" "DWord"
+	RegChange "SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-310093Enabled" "1" "Enabling Windows bloatware" "DWord"
 
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
