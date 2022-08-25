@@ -973,14 +973,29 @@ $essentialtweaks.Add_Click({
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
+    Write-Output "Restoring windows 10 context menu and disabling start menu recommended section..."
+	New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -ErrorAction SilentlyContinue | Out-Null #context menu setup
+	Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value "" #restore windows 10 context menu
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Type DWord -Value 0 #set taskbar icons to the left
+	Get-appxpackage -all *shellexperience* -packagetype bundle |% {add-appxpackage -register -disabledevelopmentmode ($_.installlocation + '\appxmetadata\appxbundlemanifest.xml')}
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 #disable widget icon from taskbar
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Type DWord -Value 0 #disable chat icon from taskbar
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
+
     Write-Host "Enabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Enabling Custom QOL fixes..."
-    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -ErrorAction SilentlyContinue | Out-Null
+    $errpref = $ErrorActionPreference #save actual preference
+    $ErrorActionPreference = "silentlycontinue"
+	New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -ErrorAction SilentlyContinue | Out-Null
 	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Name "ScoobeSystemSettingEnabled" -Type DWord -Value 0 | Out-Null -ErrorAction SilentlyContinue #disable annoying Get even more out of Windows
 	Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility" -Name "DynamicScrollbars" -Type DWord -Value 0 #disable Hide Scroll bars
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "SmoothScroll" -Type DWord -Value 0 #disable smooth scrolling 
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoInstrumentation" -Type DWord -Value 1 #disable microsoft usertracking
 	Remove-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "TaskbarNoMultimon" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "TaskbarNoMultimon" -ErrorAction SilentlyContinue
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarMode" -Type DWord -Value 2 #Show taskbar buttons only on taskbar where window is open
+	$ErrorActionPreference = $errpref #restore previous preference
+
 
     Write-Output "Uninstalling Linux Subsystem..."
     $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
@@ -1555,15 +1570,9 @@ $essentialundo.Add_Click({
     $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
     icacls $autoLoggerDir /grant:r SYSTEM:`(OI`)`(CI`)F | Out-Null
 
-    #Write-Host "Enabling and starting Diagnostics Tracking Service..."
-    #$ResultText.text = "`r`n" +"`r`n" + "  Enabling and starting Diagnostics Tracking Service..."
-    #Set-Service "DiagTrack" -StartupType Automatic
-    #Start-Service "DiagTrack"
-
     Write-Host "Hiding known file extensions..."
     $ResultText.text = "`r`n" +"`r`n" + "  Hiding known file extensions..."
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
-
 
     Write-Host "Hide tray icons..."
     $ResultText.text = "`r`n" +"`r`n" + "  Hide tray icons..."
