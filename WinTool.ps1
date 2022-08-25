@@ -2172,7 +2172,7 @@ $reinstallbloat.Add_Click({
     $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
     foreach ($Bloat in $Bloatware) {
-        Get-AppxPackage -Name $Bloat | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
+        Get-AppxPackage -Name $Bloat | Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" 
     }
     #This line reinstalls all of the bloatware that was removed
     
