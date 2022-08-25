@@ -1875,6 +1875,8 @@ $Bloatware = @(
     "*Microsoft.MicrosoftStickyNotes*"
     "Microsoft.Advertising.Xaml_10.1712.5.0_x64__8wekyb3d8bbwe"
     "Microsoft.Advertising.Xaml_10.1712.5.0_x86__8wekyb3d8bbwe"
+
+    #Add sponsored/featured apps to remove in the "*AppName*" format
     "*EclipseManager*"
     "*ActiproSoftwareLLC*"
     "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
@@ -1951,14 +1953,8 @@ $removebloat.Add_Click({
             foreach ($Bloat in $Bloatware) {
                 Get-AppxPackage -Name $Bloat| Remove-AppxPackage
                 Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+                Write-Host "Trying to remove $Bloat."
             }
-        }
-
-        Function DebloatAll {
-            #Removes AppxPackages
-            Get-AppxPackage | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
-            Get-AppxProvisionedPackage -Online | Where-Object { !($_.DisplayName -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.DisplayName) } | Remove-AppxProvisionedPackage -Online
-            Get-AppxPackage -AllUsers | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
         }
   
         #Creates a PSDrive to be able to access the 'HKCR' tree
@@ -2133,7 +2129,6 @@ $START_MENU_LAYOUT = @"
     Write-Host "Removing bloatware apps."
     $ResultText.text = "`r`n" +"`r`n" + "  Removing bloatware apps."
     RemoveMassiveBloat
-    DebloatAll
 
     Write-Host "Removing leftover bloatware registry keys."
     $ResultText.text = "`r`n" +"`r`n" + "  Removing leftover bloatware registry keys."
@@ -2162,9 +2157,9 @@ $START_MENU_LAYOUT = @"
 
 $reinstallbloat.Add_Click({
     #This function will revert the changes you made when running the Start-Debloat function.
-    foreach ($Bloat in $Bloatware) {
-        Get-AppxPackage -Name $Bloat | Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" 
-    }
+
+    #This line reinstalls all of the bloatware that was removed
+    Get-AppxPackage -AllUsers | ForEach { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
