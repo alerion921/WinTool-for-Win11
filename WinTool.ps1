@@ -1911,6 +1911,7 @@ $Bloatware = @(
     "*Hidden City*"
     "*Roblox*"
     "*Photoshop*"
+    "*DTSAudioControl*"
 )
 
 $removebloat.Add_Click({
