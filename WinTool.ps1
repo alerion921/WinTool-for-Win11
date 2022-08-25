@@ -990,7 +990,6 @@ $essentialtweaks.Add_Click({
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "TaskbarNoMultimon" -ErrorAction SilentlyContinue
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarMode" -Type DWord -Value 2 #Show taskbar buttons only on taskbar where window is open
 
-
     Write-Output "Uninstalling Linux Subsystem..."
     $ResultText.text += "`r`n" +"  Uninstalling Linux Subsystem..."
 	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
