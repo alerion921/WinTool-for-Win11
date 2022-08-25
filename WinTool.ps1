@@ -983,7 +983,8 @@ $essentialtweaks.Add_Click({
 
     Write-Host "Enabling Windows 10 context menu..."
     $ResultText.text += "`r`n" +"Enabling Windows 10 context menu..."
-    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Value "" -Force
+    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Value "" -Force
+    Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
     
     Write-Host "Enabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Enabling Custom QOL fixes..."
@@ -1394,7 +1395,7 @@ $essentialundo.Add_Click({
 
     Write-Host "Disabling Windows 10 context menu..."
     $ResultText.text += "`r`n" +"Disabling Windows 10 context menu..."
-    Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+    Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Value "" -Force
 
     Write-Host "Disabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Disabling Custom QOL fixes..."
