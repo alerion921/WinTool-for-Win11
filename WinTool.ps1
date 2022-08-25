@@ -973,8 +973,13 @@ $essentialtweaks.Add_Click({
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
-    Stop-Process -name explorer
-    Start-Sleep -s 5
+    Write-Output "Uninstalling Linux Subsystem..."
+    $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
+	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
+		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
+		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
+	}
+	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
     Write-Output "Restoring windows 10 context menu and disabling start menu recommended section..."
     $ResultText.text += "`r`n" +"Restoring windows 10 context menu and disabling start menu recommended section..."
@@ -992,17 +997,8 @@ $essentialtweaks.Add_Click({
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "TaskbarNoMultimon"
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarMode" -Type DWord -Value 2 #Show taskbar buttons only on taskbar where window is open
 
-    Write-Output "Uninstalling Linux Subsystem..."
-    $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
-	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
-		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
-		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
-	}
-	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
-
     Write-Host "Removing recently added apps from Start Menu..."
     $ResultText.text += "`r`n" +"Removing recently added apps from Start Menu..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
     Write-Host "Disabling UAC..."
@@ -1378,6 +1374,8 @@ Write-Host "Disabling Background application access..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
 
     #Restart Explorer so that the taskbar can update and not look break :D
+    Stop-Process -name explorer
+    Start-Sleep -s 5
     Start-Process -name explorer
 
     Write-Host "Essential Tweaks - Completed  ** Please Reboot **"
@@ -1395,9 +1393,6 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Creating Restore Point and Reverting Settings... Please Wait"
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
-
-    Stop-Process -name explorer
-    Start-Sleep -s 5
 
     Write-Host "Disabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Disabling Custom QOL fixes..."
@@ -1727,7 +1722,10 @@ foreach ($service in $services) {
 }
 
     #Restart Explorer so that the taskbar can update and not look break :D
+    Stop-Process -name explorer
+    Start-Sleep -s 5
     Start-Process -name explorer
+
 
     Write-Host "Essential Undo - Completed"
     $ResultText.text = "`r`n" +"`r`n" + "  Essential Undo Completed " + "`r`n" + "  -   Ready for Next Task.."
