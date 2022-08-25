@@ -2173,14 +2173,9 @@ $reinstallbloat.Add_Click({
     #This function will revert the changes you made when running the Start-Debloat function.
     
     #This line reinstalls all of the bloatware that was removed
-    foreach ($Bloat in $Bloatware) {
-	$errpref = $ErrorActionPreference #save actual preference
-    $ErrorActionPreference = "silentlycontinue"
-        Get-AppxPackage -AllUsers -Name $Bloat| Add-AppxPackage | Out-Null -ErrorAction SilentlyContinue
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Add-AppxProvisionedPackage -Online | Out-Null -ErrorAction SilentlyContinue
-	$ErrorActionPreference = $errpref #restore previous preference
-        Write-Output "Trying to install $Bloat."
-    }
+    Get-AppxPackage | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Add-AppxPackage
+            Get-AppxProvisionedPackage -Online | Where-Object { !($_.DisplayName -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.DisplayName) } | Add-AppxProvisionedPackage -Online
+            Get-AppxPackage -AllUsers | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Add-AppxPackage
 
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
