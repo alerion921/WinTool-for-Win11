@@ -2162,7 +2162,9 @@ $START_MENU_LAYOUT = @"
 
 $reinstallbloat.Add_Click({
     #This function will revert the changes you made when running the Start-Debloat function.
-    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
+    foreach ($Bloat in $Bloatware) {
+        Get-AppxPackage -Name $Bloat | Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" 
+    }
 
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
