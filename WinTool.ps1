@@ -973,13 +973,19 @@ $essentialtweaks.Add_Click({
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
+    Write-Output "Uninstalling Linux Subsystem..."
+    $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
+	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
+		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
+		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
+	}
+	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-    Write-Output "Restoring windows 10 context menu and disabling start menu recommended section..."
-    $ResultText.text += "`r`n" +"Restoring windows 10 context menu and disabling start menu recommended section..."
-	New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" | Out-Null #context menu setup
-	Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value "" #restore windows 10 context menu
-	Get-appxpackage -all *shellexperience* -packagetype bundle |% {add-appxpackage -register -disabledevelopmentmode ($_.installlocation + '\appxmetadata\appxbundlemanifest.xml')}
-
+    Write-Host "Enabling Windows 10 context menu..."
+    $ResultText.text += "`r`n" +"Enabling Windows 10 context menu..."
+    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" | Out-Null
+    Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
+    
     Write-Host "Enabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Enabling Custom QOL fixes..."
 	New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" | Out-Null
