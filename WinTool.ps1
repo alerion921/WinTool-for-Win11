@@ -1960,7 +1960,8 @@ $removebloat.Add_Click({
         #Creates a PSDrive to be able to access the 'HKCR' tree
         New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
   
-        Function Remove-Keys {         
+        Function Remove-Keys {      
+            $ErrorActionPreference = 'SilentlyContinue'   
             #These are the registry keys that it will delete.
           
             $Keys = @(
@@ -2156,6 +2157,7 @@ $START_MENU_LAYOUT = @"
 })
 
 $reinstallbloat.Add_Click({
+    $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
 
     #This line reinstalls all of the bloatware that was removed
