@@ -1958,6 +1958,13 @@ $removebloat.Add_Click({
                 $ResultText.text = "`r`n" +"`r`n" + "  Trying to remove $Bloat."
             }
         }
+
+        Function DebloatAll {
+            #Removes AppxPackages
+            Get-AppxPackage | Where { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
+            Get-AppxProvisionedPackage -Online | Where { !($_.DisplayName -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.DisplayName) } | Remove-AppxProvisionedPackage -Online
+            Get-AppxPackage -AllUsers | Where { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
+        }
   
         #Creates a PSDrive to be able to access the 'HKCR' tree
         New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
@@ -2132,6 +2139,7 @@ $START_MENU_LAYOUT = @"
     Write-Host "Removing bloatware apps."
     $ResultText.text = "`r`n" +"`r`n" + "  Removing bloatware apps."
     RemoveMassiveBloat
+    DebloatAll
 
     Write-Host "Removing leftover bloatware registry keys."
     $ResultText.text = "`r`n" +"`r`n" + "  Removing leftover bloatware registry keys."
