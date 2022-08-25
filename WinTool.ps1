@@ -973,14 +973,17 @@ $essentialtweaks.Add_Click({
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
+    Stop-Process -name explorer
+    Start-Sleep -s 5
+
     Write-Output "Restoring windows 10 context menu and disabling start menu recommended section..."
-    $ResultText.text += "`r`n" +"  Restoring windows 10 context menu and disabling start menu recommended section..."
+    $ResultText.text += "`r`n" +"Restoring windows 10 context menu and disabling start menu recommended section..."
 	New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -ErrorAction SilentlyContinue | Out-Null #context menu setup
-	Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value "" #restore windows 10 context menu
+	Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "Default" -Type String -Value "" #restore windows 10 context menu
 	Get-appxpackage -all *shellexperience* -packagetype bundle |% {add-appxpackage -register -disabledevelopmentmode ($_.installlocation + '\appxmetadata\appxbundlemanifest.xml')}
 
     Write-Host "Enabling Custom QOL fixes..."
-    $ResultText.text += "`r`n" +"  Enabling Custom QOL fixes..."
+    $ResultText.text += "`r`n" +"Enabling Custom QOL fixes..."
 	New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -ErrorAction SilentlyContinue | Out-Null
 	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Name "ScoobeSystemSettingEnabled" -Type DWord -Value 0 | Out-Null -ErrorAction SilentlyContinue #disable annoying Get even more out of Windows
 	Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility" -Name "DynamicScrollbars" -Type DWord -Value 0 #disable Hide Scroll bars
@@ -991,7 +994,7 @@ $essentialtweaks.Add_Click({
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarMode" -Type DWord -Value 2 #Show taskbar buttons only on taskbar where window is open
 
     Write-Output "Uninstalling Linux Subsystem..."
-    $ResultText.text += "`r`n" +"  Uninstalling Linux Subsystem..."
+    $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
 	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
@@ -999,21 +1002,21 @@ $essentialtweaks.Add_Click({
 	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
     Write-Host "Removing recently added apps from Start Menu..."
-    $ResultText.text += "`r`n" +"  Removing recently added apps from Start Menu..."
+    $ResultText.text += "`r`n" +"Removing recently added apps from Start Menu..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
     Write-Host "Disabling UAC..."
-    $ResultText.text += "`r`n" +"  Disabling UAC..."
+    $ResultText.text += "`r`n" +"Disabling UAC..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
 
     Write-Host "Disabling Sticky Keys..."
-    $ResultText.text += "`r`n" +"  Disabling Sticky Keys..."
+    $ResultText.text += "`r`n" +"Disabling Sticky Keys..."
     Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
     
     Write-Host "Disabling Telemetry..."
-    $ResultText.text += "`r`n" +"  Disabling Telemetry..."
+    $ResultText.text += "`r`n" +"Disabling Telemetry..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
     Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" | Out-Null
@@ -1375,9 +1378,7 @@ Write-Host "Disabling Background application access..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
 
-    Stop-Process -ProcessName explorer -Force	
-    taskkill /F /IM explorer.exe
-    Start-Sleep -Seconds 3
+    #Restart Explorer so that the taskbar can update and not look break :D
     Start-Process -name explorer
 
     Write-Host "Essential Tweaks - Completed  ** Please Reboot **"
@@ -1395,6 +1396,9 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Creating Restore Point and Reverting Settings... Please Wait"
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
+
+    Stop-Process -name explorer
+    Start-Sleep -s 5
 
     Write-Host "Disabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Disabling Custom QOL fixes..."
@@ -1724,9 +1728,6 @@ foreach ($service in $services) {
 }
 
     #Restart Explorer so that the taskbar can update and not look break :D
-    Stop-Process -ProcessName explorer -Force	
-    taskkill /F /IM explorer.exe
-    Start-Sleep -Seconds 3
     Start-Process -name explorer
 
     Write-Host "Essential Undo - Completed"
@@ -2161,8 +2162,7 @@ $START_MENU_LAYOUT = @"
 
 $reinstallbloat.Add_Click({
     #This function will revert the changes you made when running the Start-Debloat function.
-    #Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
-    Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
