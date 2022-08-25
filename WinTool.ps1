@@ -2205,11 +2205,8 @@ $START_MENU_LAYOUT = @"
 $reinstallbloat.Add_Click({
     $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
-    
-    #This line reinstalls all of the bloatware that was removed
-    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
-    foreach ($Bloat in $bloatwareList) {
+    foreach ($Bloat in $Bloatware) {
 		Write-Output "Trying to INSTALL $Bloat."
 		Get-AppxPackage -Name $Bloat| Add-AppxPackage
 		Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Add-AppxProvisionedPackage -Online		
