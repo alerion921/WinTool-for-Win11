@@ -973,13 +973,6 @@ $essentialtweaks.Add_Click({
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
-    Write-Output "Uninstalling Linux Subsystem..."
-    $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
-	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
-		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
-		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
-	}
-	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
     Write-Output "Restoring windows 10 context menu and disabling start menu recommended section..."
     $ResultText.text += "`r`n" +"Restoring windows 10 context menu and disabling start menu recommended section..."
