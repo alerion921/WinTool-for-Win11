@@ -966,10 +966,6 @@ $essentialtweaks.Add_Click({
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
-    Stop-Process -ProcessName explorer -Force	
-    taskkill /F /IM explorer.exe
-    Start-Sleep -Seconds 3
-
     Write-Host "Running O&O Shutup with Recommended Settings"
     $ResultText.text += "`r`n" +"Running O&O Shutup with Recommended Settings"
     Import-Module BitsTransfer
@@ -1389,6 +1385,9 @@ Write-Host "Disabling Background application access..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
 
+    Stop-Process -ProcessName explorer -Force	
+    taskkill /F /IM explorer.exe
+    Start-Sleep -Seconds 3
     Start-Process -name explorer
 
     Write-Host "Essential Tweaks - Completed  ** Please Reboot **"
@@ -1406,9 +1405,6 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Creating Restore Point and Reverting Settings... Please Wait"
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
-
-    Stop-Process -name explorer
-    Start-Sleep -s 5
 
     Write-Host "Disabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Disabling Custom QOL fixes..."
@@ -1738,6 +1734,9 @@ foreach ($service in $services) {
 }
 
     #Restart Explorer so that the taskbar can update and not look break :D
+    Stop-Process -ProcessName explorer -Force	
+    taskkill /F /IM explorer.exe
+    Start-Sleep -Seconds 3
     Start-Process -name explorer
 
     Write-Host "Essential Undo - Completed"
