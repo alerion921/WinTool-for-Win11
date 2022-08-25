@@ -1912,6 +1912,7 @@ $Bloatware = @(
     "*Roblox*"
     "*Photoshop*"
     "*DTS Audio Control*"
+    "*DTSAudioControl*"
 )
 
 $removebloat.Add_Click({
