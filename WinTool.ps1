@@ -966,6 +966,10 @@ $essentialtweaks.Add_Click({
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
+    Stop-Process -ProcessName explorer -Force	
+    taskkill /F /IM explorer.exe
+    Start-Sleep -Seconds 3
+
     Write-Host "Running O&O Shutup with Recommended Settings"
     $ResultText.text += "`r`n" +"Running O&O Shutup with Recommended Settings"
     Import-Module BitsTransfer
@@ -974,13 +978,13 @@ $essentialtweaks.Add_Click({
     ./OOSU10.exe ooshutup10.cfg /quiet
 
     Write-Output "Restoring windows 10 context menu and disabling start menu recommended section..."
+    $ResultText.text += "`r`n" +"Restoring windows 10 context menu and disabling start menu recommended section..."
+    $errpref = $ErrorActionPreference #save actual preference
+    $ErrorActionPreference = "silentlycontinue"
 	New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -ErrorAction SilentlyContinue | Out-Null #context menu setup
-	Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value "" #restore windows 10 context menu
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Type DWord -Value 0 #set taskbar icons to the left
+	Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "Default" -Type String -Value "" #restore windows 10 context menu
 	Get-appxpackage -all *shellexperience* -packagetype bundle |% {add-appxpackage -register -disabledevelopmentmode ($_.installlocation + '\appxmetadata\appxbundlemanifest.xml')}
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 #disable widget icon from taskbar
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Type DWord -Value 0 #disable chat icon from taskbar
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
+    $ErrorActionPreference = $errpref #restore previous preference
 
     Write-Host "Enabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Enabling Custom QOL fixes..."
@@ -1385,9 +1389,6 @@ Write-Host "Disabling Background application access..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
 
-    #Restart Explorer so that the taskbar can update and not look break :D
-    Stop-Process -name explorer
-    Start-Sleep -s 5
     Start-Process -name explorer
 
     Write-Host "Essential Tweaks - Completed  ** Please Reboot **"
@@ -1405,6 +1406,9 @@ $essentialundo.Add_Click({
     $ResultText.text = "`r`n" +"`r`n" + "  Creating Restore Point and Reverting Settings... Please Wait"
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
+
+    Stop-Process -name explorer
+    Start-Sleep -s 5
 
     Write-Host "Disabling Custom QOL fixes..."
     $ResultText.text += "`r`n" +"Disabling Custom QOL fixes..."
@@ -1734,8 +1738,6 @@ foreach ($service in $services) {
 }
 
     #Restart Explorer so that the taskbar can update and not look break :D
-    Stop-Process -name explorer
-    Start-Sleep -s 5
     Start-Process -name explorer
 
     Write-Host "Essential Undo - Completed"
@@ -2170,11 +2172,7 @@ $START_MENU_LAYOUT = @"
 
 $reinstallbloat.Add_Click({
     #This function will revert the changes you made when running the Start-Debloat function.
-    foreach ($ReBloat in $Bloatware) {
-        Write-Output "Trying to install $safeXboxBloatware1."
-        Get-AppxPackage -Name $ReBloat| Add-AppxPackage
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $ReBloat | Add-AppxProvisionedPackage -Online
-    }
+    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
     #Tells Windows to enable your advertising information.    
     Write-Host "Re-enabling key to show advertisement information"
