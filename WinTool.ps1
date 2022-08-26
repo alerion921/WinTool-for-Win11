@@ -540,7 +540,7 @@ $Panel4.controls.AddRange(@(
 
 $EActionCenter.Add_Click({
     Write-Host "Enabling Action Center..."
-    $ResultText.text = "`r`n" +"`r`n" + "Enabling Action Center..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Enabling Action Center..."
 
     Stop-Process -ProcessName explorer -Force	
     taskkill /F /IM explorer.exe
@@ -552,12 +552,12 @@ $EActionCenter.Add_Click({
     Start-Process explorer.exe	
 
 	Write-Host "Action Center - Enabled..."
-    $ResultText.text = "`r`n" +"`r`n" + "Action Center - Enabled..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Notifications are now re-enabled..."
 })
 
 $ECortana.Add_Click({
     Write-Host "Enabling Cortana..."
-    $ResultText.text = "`r`n" +"`r`n" + "Enabling Cortana..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Enabling Cortana..."
 
     Stop-Process -ProcessName explorer -Force	
     taskkill /F /IM explorer.exe
@@ -584,13 +584,13 @@ $ECortana.Add_Click({
     Start-Process explorer.exe	
 
 	Write-Host "Cortana - Enabled..."
-    $ResultText.text = "`r`n" +"`r`n" + "Cortana - Enabled..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Cortana - Enabled..."
 })
 
 
 $getosinfo.Add_Click({
     Write-Host "Gathering data please wait for the data to show up inside the GUI..."
-    $ResultText.text = "`r`n" +"`r`n" + "Gathering data please wait for the data to show up inside the GUI..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Gathering data please wait for the data to show up inside the GUI..."
 
     $name=(Get-WmiObject Win32_OperatingSystem).caption
     $bit=(Get-WmiObject Win32_OperatingSystem).OSArchitecture
@@ -967,14 +967,14 @@ $essentialtweaks.Add_Click({
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
     Write-Host "Running O&O Shutup with Recommended Settings"
-    $ResultText.text += "`r`n" +"Running O&O Shutup with Recommended Settings"
+    $ResultText.text += "`r`n" + "`r`n" + "  Running O&O Shutup with Recommended Settings"
     Import-Module BitsTransfer
     Start-BitsTransfer -Source "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/ooshutup10.cfg" -Destination ooshutup10.cfg
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
     Write-Output "Uninstalling Linux Subsystem..."
-    $ResultText.text += "`r`n" +"Uninstalling Linux Subsystem..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Uninstalling Linux Subsystem..."
 	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
@@ -982,12 +982,12 @@ $essentialtweaks.Add_Click({
 	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
     Write-Host "Enabling Windows 10 context menu..."
-    $ResultText.text += "`r`n" +"Enabling Windows 10 context menu..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Enabling Windows 10 context menu..."
     New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force
     Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
     
     Write-Host "Enabling Custom QOL fixes..."
-    $ResultText.text += "`r`n" +"Enabling Custom QOL fixes..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Enabling Custom QOL fixes..."
 	New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" | Out-Null
 	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Name "ScoobeSystemSettingEnabled" -Type DWord -Value 0 | Out-Null #disable annoying Get even more out of Windows
 	Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility" -Name "DynamicScrollbars" -Type DWord -Value 0 #disable Hide Scroll bars
@@ -997,20 +997,20 @@ $essentialtweaks.Add_Click({
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarMode" -Type DWord -Value 2 #Show taskbar buttons only on taskbar where window is open
 
     Write-Host "Removing recently added apps from Start Menu..."
-    $ResultText.text += "`r`n" +"Removing recently added apps from Start Menu..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Removing recently added apps from Start Menu..."
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
     Write-Host "Disabling UAC..."
-    $ResultText.text += "`r`n" +"Disabling UAC..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling UAC..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
 
     Write-Host "Disabling Sticky Keys..."
-    $ResultText.text += "`r`n" +"Disabling Sticky Keys..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Sticky Keys..."
     Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
     
     Write-Host "Disabling Telemetry..."
-    $ResultText.text += "`r`n" +"Disabling Telemetry..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Telemetry..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
     Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" | Out-Null
@@ -1021,6 +1021,7 @@ $essentialtweaks.Add_Click({
     Disable-ScheduledTask -TaskName "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" | Out-Null
 
     Write-Host "Disabling Wi-Fi Sense..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Wi-Fi Sense..."
     If (!(Test-Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting")) {
         New-Item -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Force | Out-Null
     }
@@ -1028,6 +1029,7 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 0
 
     Write-Host "Disabling Application suggestions..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Application suggestions..."
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 0
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 0
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEnabled" -Type DWord -Value 0
@@ -1044,11 +1046,13 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 1
 
     Write-Host "Disabling Activity History..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Activity History..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
     
     Write-Host "Disabling Location Tracking..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Location Tracking..."
     If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location")) {
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Force | Out-Null
     }
@@ -1057,9 +1061,11 @@ $essentialtweaks.Add_Click({
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value 0
 
     Write-Host "Disabling automatic Maps updates..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling automatic Maps updates..."
     Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 0
 
     Write-Host "Disabling Feedback..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Feedback..."
     If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules")) {
         New-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Force | Out-Null
     }
@@ -1069,18 +1075,21 @@ $essentialtweaks.Add_Click({
     Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" -ErrorAction SilentlyContinue | Out-Null
 
     Write-Host "Disabling Tailored Experiences..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Tailored Experiences..."
     If (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
         New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Force | Out-Null
     }
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 1
 
     Write-Host "Disabling Advertising ID..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Advertising ID..."
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 1
 
     Write-Host "Disabling Error reporting..."
+    $ResultText.text += "`r`n" + "`r`n" + "  Disabling Error reporting..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
     Disable-ScheduledTask -TaskName "Microsoft\Windows\Windows Error Reporting\QueueReporting" | Out-Null
 
@@ -1149,14 +1158,14 @@ $essentialtweaks.Add_Click({
 
     Write-Host "Hiding Search Box / Button..."
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
-    
-    #Removes Widgets/Split apps bs from taskbar
-    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 -Force
-    New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Type DWord -Value 0 -Force
 
     Write-Host "Disable News and Interests"
     $ResultText.text += "`r`n" +"Disable News and Interests"
     New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -Force
+
+    #Removes Widgets/Split apps bs from taskbar
+    Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 -Force
+    New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Type DWord -Value 0 -Force
 
     # Removes Chat from the Taskbar
     Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Type DWord -Value 0 -Force
@@ -1913,8 +1922,6 @@ $Bloatware = @(
     "*Hidden City*"
     "*Roblox*"
     "*Photoshop*"
-    "*DTS Audio Control*"
-    "*DTSAudioControl*"
 )
 
 $removebloat.Add_Click({
@@ -2281,6 +2288,7 @@ $securitywindowsupdate.Add_Click({
 
 $performancefx.Add_Click({
     Write-Host "Adjusting visual effects for performance..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Adjusting visual effects for appearance..."
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
@@ -2297,6 +2305,7 @@ $performancefx.Add_Click({
 
 $appearancefx.Add_Click({
 	Write-Host "Adjusting visual effects for appearance..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Adjusting visual effects for appearance..."
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158,30,7,128,18,0,0,0))
