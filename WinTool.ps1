@@ -650,23 +650,19 @@ $ultimateclean.Add_Click({
 
     $componentcache = Read-Host "Initiate Component Store Cache Cleaner? (Y/N)"
     if ($componentcache -eq 'Y') {
-        $componentscan = {
-            $name='Component Store Cache - Offload Process'
-            $host.ui.RawUI.WindowTitle = $name
-            ssadmin delete shadows /all /quiet | Out-Null
-            Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
-            $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
-            ForEach($result in $Key)
-            {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
-            $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
-            New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA 0 | Out-Null}}
-            cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore
-            cmd /c DISM /Online /Cleanup-Image /spsuperseded
-            cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
-            Write-Host "Component Store Caches have been cleared successfully..." 
-            $ResultText.text = "`r`n" +"`r`n" + "  Component Store Caches have been cleared successfully..." 
-        }
-        Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $componentscan"
+        vssadmin delete shadows /all /quiet | Out-Null
+        Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
+        $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
+        ForEach($result in $Key)
+        {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
+        $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
+        New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA 0 | Out-Null}}
+        cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore
+        cmd /c DISM /Online /Cleanup-Image /spsuperseded
+        cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
+        Clear-BCCache -Force -ErrorAction SilentlyContinue
+        Write-Host "Component Store Caches have been cleared successfully..." 
+        $ResultText.text = "`r`n" +"`r`n" + "  Component Store Caches have been cleared successfully..." 
     }
 
     $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
@@ -859,6 +855,8 @@ $ultimateclean.Add_Click({
         Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\DXCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
         Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\GLCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
         Get-ChildItem -Path $env:APPDATA\..\locallow\Intel\ShaderCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+
+        Start-Process cleanmgr.exe /sagerun:1 -Wait
 
         # Only grab log files sitting in the root of the Logfiles directory
         $Sys32Files = Get-ChildItem -Path "$env:windir\System32\LogFiles" | Where-Object { ($_.name -like "*.log")}
