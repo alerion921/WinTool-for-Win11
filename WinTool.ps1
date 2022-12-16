@@ -648,13 +648,10 @@ $ultimateclean.Add_Click({
 	
     $ResultText.text = "`r`n" +"`r`n" + "  Cleaning initiated.." 
 
-    $OffloadScript = {
-        $name='Step one - Offload Process'
-        $host.ui.RawUI.WindowTitle = $name
-        Write-Host "Step one of ultimate cleaning initiated.."
-        Write-Host "This step will allow the next steps to go smoother and clean up component store too.."
+    $1Script = {
+        $Host.UI.RawUI.WindowTitle = "Windows_Optimisation_Pack Cleaner | $([char]0x00A9) Marvin700" 
         vssadmin delete shadows /all /quiet | Out-Null
-        Checkpoint-Computer -Description "Alerion_Ultimateclean" -RestorePointType MODIFY_SETTINGS 
+        Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
         $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
         ForEach($result in $Key)
         {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
@@ -675,12 +672,12 @@ $ultimateclean.Add_Click({
         Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\GLCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
         Get-ChildItem -Path $env:APPDATA\..\locallow\Intel\ShaderCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
         Clear-Host
-        Write-Host "Windows cleanup tool has been initiated..." 
+        Write-Host "Datentraeger Bereinigung wird gestartet..."
         Start-Process cleanmgr.exe /sagerun:1 -Wait
-        Write-Warning "Part 1 of system cleaning is complete..."
+        Write-Warning "The System has been cleaned"
     }
 
-    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
+    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $1Script"
 
     $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
     if ($regcachclean -eq 'Y') {
