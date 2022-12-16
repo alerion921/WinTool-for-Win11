@@ -647,6 +647,31 @@ $errorscanner.Add_Click({
 $ultimateclean.Add_Click({
 	
     $ResultText.text = "`r`n" +"`r`n" + "  Cleaning initiated.." 
+    
+    $ResultText.text = "`r`n" +"`r`n" + "  Starting with cleaning up extra component caches...." 
+    $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
+    ForEach($result in $Key)
+    {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
+    $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
+    New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA 0 | Out-Null}}
+    Dism.exe /Online /Cleanup-Image /AnalyzeComponentStore
+    Dism.exe /Online /Cleanup-Image /spsuperseded
+    Dism.exe /online /Cleanup-Image /StartComponentCleanup
+    Clear-BCCache -Force -ErrorAction SilentlyContinue
+    Get-ChildItem -Path $env:temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+    Get-ChildItem -Path $env:windir\Temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+    Get-ChildItem -Path $env:windir\Prefetch -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+    Get-ChildItem -Path $env:SystemRoot\SoftwareDistribution\Download -Recurse -Force | Remove-Item -Recurse -Force
+    Get-ChildItem -Path $env:ProgramData\Microsoft\Windows\RetailDemo -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+    Get-ChildItem -Path $env:LOCALAPPDATA\AMD -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+    Get-ChildItem -Path $env:windir/../AMD/ -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+    Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\DXCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+    Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\GLCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+    Get-ChildItem -Path $env:APPDATA\..\locallow\Intel\ShaderCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+    Clear-Host
+    $ResultText.text = "`r`n" +"`r`n" + "  Windows cleanup tool has been initiated..." 
+    Start-Process cleanmgr.exe /sagerun:1 -Wait
+    $ResultText.text = "`r`n" +"`r`n" + "  Part 1 of system cleaning is complete..."
 
     $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
     if ($regcachclean -eq 'Y') {
@@ -673,7 +698,6 @@ $ultimateclean.Add_Click({
 
         Start-Process explorer.exe	
     }
-    
 
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
     $users = $Users.Name 
