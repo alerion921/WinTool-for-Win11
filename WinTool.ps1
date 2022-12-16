@@ -648,6 +648,8 @@ $ultimateclean.Add_Click({
 	
     $ResultText.text = "`r`n" +"`r`n" + "  Cleaning initiated.." 
     
+    vssadmin delete shadows /all /quiet | Out-Null
+    Checkpoint-Computer -Description "Alerion_Ultimateclean" -RestorePointType MODIFY_SETTINGS 
     $ResultText.text = "`r`n" +"`r`n" + "  Starting with cleaning up extra component caches...." 
     $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
     ForEach($result in $Key)
