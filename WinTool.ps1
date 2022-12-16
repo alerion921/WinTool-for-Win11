@@ -647,33 +647,40 @@ $errorscanner.Add_Click({
 $ultimateclean.Add_Click({
 	
     $ResultText.text = "`r`n" +"`r`n" + "  Cleaning initiated.." 
-    
-    vssadmin delete shadows /all /quiet | Out-Null
-    Checkpoint-Computer -Description "Alerion_Ultimateclean" -RestorePointType MODIFY_SETTINGS 
-    $ResultText.text = "`r`n" +"`r`n" + "  Starting with cleaning up extra component caches...." 
-    $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
-    ForEach($result in $Key)
-    {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
-    $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
-    New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA 0 | Out-Null}}
-    Dism.exe /Online /Cleanup-Image /AnalyzeComponentStore
-    Dism.exe /Online /Cleanup-Image /spsuperseded
-    Dism.exe /online /Cleanup-Image /StartComponentCleanup
-    Clear-BCCache -Force -ErrorAction SilentlyContinue
-    Get-ChildItem -Path $env:temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-    Get-ChildItem -Path $env:windir\Temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-    Get-ChildItem -Path $env:windir\Prefetch -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-    Get-ChildItem -Path $env:SystemRoot\SoftwareDistribution\Download -Recurse -Force | Remove-Item -Recurse -Force
-    Get-ChildItem -Path $env:ProgramData\Microsoft\Windows\RetailDemo -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-    Get-ChildItem -Path $env:LOCALAPPDATA\AMD -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-    Get-ChildItem -Path $env:windir/../AMD/ -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-    Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\DXCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-    Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\GLCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-    Get-ChildItem -Path $env:APPDATA\..\locallow\Intel\ShaderCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-    Clear-Host
-    $ResultText.text = "`r`n" +"`r`n" + "  Windows cleanup tool has been initiated..." 
-    Start-Process cleanmgr.exe /sagerun:1 -Wait
-    $ResultText.text = "`r`n" +"`r`n" + "  Part 1 of system cleaning is complete..."
+
+    $OffloadScript = {
+        $name='Step one - Offload Process'
+        $host.ui.RawUI.WindowTitle = $name
+        Write-Host "Step one of ultimate cleaning initiated.."
+        Write-Host "This step will allow the next steps to go smoother and clean up component store too.."
+        vssadmin delete shadows /all /quiet | Out-Null
+        Checkpoint-Computer -Description "Alerion_Ultimateclean" -RestorePointType MODIFY_SETTINGS 
+        $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
+        ForEach($result in $Key)
+        {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
+        $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
+        New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA 0 | Out-Null}}
+        Dism.exe /Online /Cleanup-Image /AnalyzeComponentStore
+        Dism.exe /Online /Cleanup-Image /spsuperseded
+        Dism.exe /online /Cleanup-Image /StartComponentCleanup
+        Clear-BCCache -Force -ErrorAction SilentlyContinue
+        Get-ChildItem -Path $env:temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+        Get-ChildItem -Path $env:windir\Temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+        Get-ChildItem -Path $env:windir\Prefetch -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+        Get-ChildItem -Path $env:SystemRoot\SoftwareDistribution\Download -Recurse -Force | Remove-Item -Recurse -Force
+        Get-ChildItem -Path $env:ProgramData\Microsoft\Windows\RetailDemo -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+        Get-ChildItem -Path $env:LOCALAPPDATA\AMD -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+        Get-ChildItem -Path $env:windir/../AMD/ -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
+        Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\DXCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+        Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\GLCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+        Get-ChildItem -Path $env:APPDATA\..\locallow\Intel\ShaderCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+        Clear-Host
+        Write-Host "Windows cleanup tool has been initiated..." 
+        Start-Process cleanmgr.exe /sagerun:1 -Wait
+        Write-Warning "Part 1 of system cleaning is complete..."
+    }
+
+    Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
 
     $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
     if ($regcachclean -eq 'Y') {
