@@ -73,7 +73,7 @@ $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#
 $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#333333") 
 
 # GUI Icon
-$iconBase64                      = [Convert]::ToBase64String((Get-Content "C:\Windows\temp\heart.ico" -Encoding Byte))
+$iconBase64                      = [Convert]::ToBase64String((Get-Content "C:\Windows\heart.ico" -Encoding Byte))
 $iconBytes                       = [Convert]::FromBase64String($iconBase64)
 $stream                          = New-Object IO.MemoryStream($iconBytes, 0, $iconBytes.Length)
 $stream.Write($iconBytes, 0, $iconBytes.Length)
