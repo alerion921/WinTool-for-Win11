@@ -13,13 +13,11 @@ Function MakeForm {
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
-    Write-Host "Shortcut to this applet has been put on the desktop for easy access.."
-    $ResultText.text += "`r`n" + "`r`n" + "  Shortcut to this applet has been put on the desktop for easy access.."
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
     $users = $Users.Name 
 
     Foreach ($user in $Users) {
-        New-Item -ItemType SymbolicLink -Path "C:\Users\$users\Desktop" -Name "Wintool.lnk" -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1')"
+        New-Item -ItemType SymbolicLink -Path "C:\Users\$users\Desktop" -Name "Wintool.lnk" -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
     }
 
 
