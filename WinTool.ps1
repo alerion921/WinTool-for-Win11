@@ -10,14 +10,16 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
 Function MakeForm {
 
+#Sets the information inside "About this computer"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
+#Downloads my heart icon from my github to be able to use it as an app icon and a shortcut icon :)
 $iconPath = 'C:\Windows\temp\heart.ico'
-# for demo I'm using the icon from stackoverflow.com
 $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/heart.ico"
 Invoke-WebRequest -Uri $url -OutFile $iconPath
 
+#Creates the shortcut for the script to be run easily
 $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
 $Shortcut.IconLocation = "C:\Windows\temp\test.ico" # icon index 0
@@ -25,6 +27,7 @@ $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.ex
 $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
 $Shortcut.Save()
 
+#This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
 $bytes = [System.IO.File]::ReadAllBytes("$Home\Desktop\WinTool.lnk")
 $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
 [System.IO.File]::WriteAllBytes("$Home\Desktop\WinTool.lnk", $bytes)
