@@ -13,7 +13,7 @@ Function MakeForm {
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
-$iconPath = 'C:\Windows\temp\test.ico'
+$iconPath = 'C:\Windows\temp\heart.ico'
 # for demo I'm using the icon from stackoverflow.com
 $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/heart.ico"
 Invoke-WebRequest -Uri $url -OutFile $iconPath
@@ -70,7 +70,7 @@ $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#
 $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#333333") 
 
 # GUI Icon
-$iconBase64                      = [Convert]::ToBase64String((Get-Content "C:\Windows\temp\test.ico" -Encoding Byte))
+$iconBase64                      = [Convert]::ToBase64String((Get-Content "C:\Windows\temp\heart.ico" -Encoding Byte))
 $iconBytes                       = [Convert]::FromBase64String($iconBase64)
 $stream                          = New-Object IO.MemoryStream($iconBytes, 0, $iconBytes.Length)
 $stream.Write($iconBytes, 0, $iconBytes.Length)
