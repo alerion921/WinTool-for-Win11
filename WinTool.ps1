@@ -15,14 +15,14 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInfor
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
 #Downloads my heart icon from my github to be able to use it as an app icon and a shortcut icon :)
-$iconPath = 'C:\Windows\temp\heart.ico'
+$iconPath = 'C:\Windows\heart.ico'
 $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/heart.ico"
 Invoke-WebRequest -Uri $url -OutFile $iconPath
 
 #Creates the shortcut for the script to be run easily
 $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
-$Shortcut.IconLocation = "C:\Windows\temp\test.ico" # icon index 0
+$Shortcut.IconLocation = "C:\Windows\test.ico" # icon index 0
 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
 $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
 $Shortcut.Save()
