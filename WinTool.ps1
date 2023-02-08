@@ -13,13 +13,21 @@ Function MakeForm {
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
-    $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
-    $users = $Users.Name 
+$iconPath = 'C:\Windows\temp\test.ico'
+# for demo I'm using the icon from stackoverflow.com
+$url = "https://img.favpng.com/2/17/11/smiley-computer-icons-emoticon-scalable-vector-graphics-png-favpng-7we57JZWQKMHqR7gnzT3fb8BN.jpg"
+Invoke-WebRequest -Uri $url -OutFile $iconPath
 
-    Foreach ($user in $Users) {
-        New-Item -ItemType SymbolicLink -Path "C:\Users\$users\Desktop" -Name "Wintool.lnk" -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
-    }
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
+$Shortcut.IconLocation = "C:\Windows\temp\test.ico" # icon index 0
+$Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+$Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
+$Shortcut.Save()
 
+$bytes = [System.IO.File]::ReadAllBytes("$Home\Desktop\WinTool.lnk")
+$bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
+[System.IO.File]::WriteAllBytes("$Home\Desktop\WinTool.lnk", $bytes)
 
 $Form                            = New-Object system.Windows.Forms.Form
 $Form.ClientSize                 = New-Object System.Drawing.Point(1050,1200) #panels define this width i think
