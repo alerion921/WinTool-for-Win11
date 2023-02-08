@@ -669,7 +669,7 @@ $ultimateclean.Add_Click({
 
     $componentcache = Read-Host "Initiate Component Store Cache Cleaner? (Y/N)"
     if ($componentcache -eq 'Y') {
-        vssadmin delete shadows /all /quiet | Out-Null
+        vssadmin delete shadows /all | Out-Null
         Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
         $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
         ForEach($result in $Key)
