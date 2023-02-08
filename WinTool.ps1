@@ -185,7 +185,7 @@ $errorscanner.location           = New-Object System.Drawing.Point(3,45)
 $errorscanner.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $killedge                        = New-Object system.Windows.Forms.Button
-$killedge.text                   = "Kill Microsoft Edge"
+$killedge.text                   = "Remove Microsoft Edge"
 $killedge.width                  = 210
 $killedge.height                 = 30
 $killedge.location               = New-Object System.Drawing.Point(3,80)
@@ -3346,7 +3346,7 @@ $removeENkeyboard.Add_Click({
 
 $killedge.Add_Click({
     Write-Host "Removing Microsoft Edge..."
-    Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/Edge_Removal.bat | Invoke-Expression
+    Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/killedge.bat | Invoke-Expression
     Write-Host "Microsoft Edge has been successfully removed, i would advice a restart now..."
     $ResultText.text = "`r`n" +"`r`n" + "  Microsoft Edge has been successfully removed, i would advice a restart now " + "`r`n" + "  -   Ready for Next Task.."
 })
