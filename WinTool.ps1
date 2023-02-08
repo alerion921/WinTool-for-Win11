@@ -4,7 +4,7 @@ Add-Type -AssemblyName System.Windows.Forms
 $ErrorActionPreference = 'SilentlyContinue'
 $wshell = New-Object -ComObject Wscript.Shell
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
-	Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+	Start-Process powershell.exe "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
 	Exit
 }
 
@@ -39,7 +39,7 @@ $Form.StartPosition              = "CenterScreen"
 $Form.TopMost                    = $false
 
     if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
-        $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+        $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#003333")
         $Form.ForeColor                 = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
     } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
         $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
@@ -47,7 +47,7 @@ $Form.TopMost                    = $false
     }
 
     if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '0') {
-        $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+        $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#003333")
         $Form.ForeColor                 = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
     } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '1') {
         $Form.BackColor                  = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
@@ -63,14 +63,30 @@ $Form.FormBorderStyle            = 'FixedSingle'
 
 $ResultText                      = New-Object system.Windows.Forms.TextBox
 $ResultText.multiline            = $true
+$ResultText.ReadOnly             = $true
 $ResultText.width                = 440
 $ResultText.height               = 100
 $ResultText.location             = New-Object System.Drawing.Point(265,495)
 $ResultText.Font                 = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
-$ResultText.FlatAppearance.BorderSize=0
-$ResultText.FormBorderStyle      = 'None'
-$ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
-$ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#333333") 
+$ResultText.BorderStyle = "FixedSingle"
+
+
+if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '0') {
+    $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#003333") 
+    $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
+} elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '1') {
+    $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#ffffff") 
+    $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+}
+
+if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
+    $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#003333") 
+    $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
+} elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
+    $ResultText.BackColor            = [System.Drawing.ColorTranslator]::FromHtml("#ffffff") 
+    $ResultText.ForeColor            = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+}
+
 
 # GUI Icon
 $iconBase64                      = [Convert]::ToBase64String((Get-Content "C:\Windows\heart.ico" -Encoding Byte))
@@ -80,6 +96,8 @@ $stream.Write($iconBytes, 0, $iconBytes.Length)
 $Form.Icon                       = [System.Drawing.Icon]::FromHandle((New-Object System.Drawing.Bitmap -Argument $stream).GetHIcon())
 $Form.Width                      = $objImage.Width
 $Form.Height                     = $objImage.Height
+$Form.MinimizeBox                = $false;
+$Form.MaximizeBox                = $false;
 
 $Panel1                          = New-Object system.Windows.Forms.Panel
 $Panel1.height                   = 600
@@ -107,11 +125,13 @@ $Panel4.location                 = New-Object System.Drawing.Point(700,10)
 
 $performancetweaks               = New-Object system.Windows.Forms.Label
 $performancetweaks.text          = "Performance Tweaks"
-$performancetweaks.AutoSize      = $true
-$performancetweaks.width         = 25
-$performancetweaks.height        = 10
-$performancetweaks.location      = New-Object System.Drawing.Point(35,20)
+$performancetweaks.AutoSize      = $false
+$performancetweaks.width         = 220
+$performancetweaks.height        = 35
+$performancetweaks.TextAlign     = "MiddleCenter"
+$performancetweaks.location      = New-Object System.Drawing.Point(3,10)
 $performancetweaks.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$performancetweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
 
 $essentialtweaks                 = New-Object system.Windows.Forms.Button
 $essentialtweaks.text            = "Essential Tweaks"
@@ -119,8 +139,10 @@ $essentialtweaks.width           = 210
 $essentialtweaks.height          = 65
 $essentialtweaks.location        = New-Object System.Drawing.Point(3,45)
 $essentialtweaks.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#AAF683")
-$essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+$essentialtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$essentialtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$essentialtweaks.FlatStyle = "Flat"
+$essentialtweaks.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $essentialundo                   = New-Object system.Windows.Forms.Button
 $essentialundo.text              = "Undo Essential Tweaks"
@@ -128,8 +150,10 @@ $essentialundo.width             = 210
 $essentialundo.height            = 65
 $essentialundo.location          = New-Object System.Drawing.Point(3,115)
 $essentialundo.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$essentialundo.BackColor         = [System.Drawing.ColorTranslator]::FromHtml("#EE6055")  
-$essentialundo.ForeColor         = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+$essentialundo.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$essentialundo.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$essentialundo.FlatStyle = "Flat"
+$essentialundo.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $gamingtweaks                    = New-Object system.Windows.Forms.Button
 $gamingtweaks.text               = "Gaming Tweaks"
@@ -137,8 +161,11 @@ $gamingtweaks.width              = 210
 $gamingtweaks.height             = 65
 $gamingtweaks.location           = New-Object System.Drawing.Point(3,185)
 $gamingtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$gamingtweaks.BackColor          = [System.Drawing.ColorTranslator]::FromHtml("#FFD97D")
-$gamingtweaks.ForeColor          = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+$gamingtweaks.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$gamingtweaks.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$gamingtweaks.FlatStyle = "Flat"
+$gamingtweaks.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
+
 
 $securitypatches                 = New-Object system.Windows.Forms.Button
 $securitypatches.text            = "Patch Security"
@@ -146,8 +173,10 @@ $securitypatches.width           = 210
 $securitypatches.height          = 65
 $securitypatches.location        = New-Object System.Drawing.Point(3,255)
 $securitypatches.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$securitypatches.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#7d93ff")
-$securitypatches.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#333333")
+$securitypatches.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$securitypatches.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$securitypatches.FlatStyle = "Flat"
+$securitypatches.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $onedrive                        = New-Object system.Windows.Forms.Button
 $onedrive.text                   = "Remove OneDrive"
@@ -155,13 +184,21 @@ $onedrive.width                  = 210
 $onedrive.height                 = 45
 $onedrive.location               = New-Object System.Drawing.Point(3,325)
 $onedrive.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$onedrive.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$onedrive.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$onedrive.FlatStyle = "Flat"
+$onedrive.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $InstallOneDrive                 = New-Object system.Windows.Forms.Button
 $InstallOneDrive.text            = "Restore OneDrive"
 $InstallOneDrive.width           = 210
 $InstallOneDrive.height          = 45
-$InstallOneDrive.location        = New-Object System.Drawing.Point(2,380)
+$InstallOneDrive.location        = New-Object System.Drawing.Point(3,375)
 $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$InstallOneDrive.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$InstallOneDrive.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$InstallOneDrive.FlatStyle = "Flat"
+$InstallOneDrive.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 #######################################################################################################
 # Tweaks ends here
@@ -171,11 +208,13 @@ $InstallOneDrive.Font            = New-Object System.Drawing.Font('Microsoft San
 
 $fixes                           = New-Object system.Windows.Forms.Label
 $fixes.text                      = "Fixes"
-$fixes.AutoSize                  = $true
-$fixes.width                     = 25
-$fixes.height                    = 10
-$fixes.location                  = New-Object System.Drawing.Point(85,20)
+$fixes.AutoSize      = $false
+$fixes.width         = 220
+$fixes.height        = 35
+$fixes.TextAlign     = "MiddleCenter"
+$fixes.location      = New-Object System.Drawing.Point(3,10)
 $fixes.Font                      = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$fixes.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
 
 $errorscanner                    = New-Object system.Windows.Forms.Button
 $errorscanner.text               = "Error Scanner"
@@ -183,6 +222,10 @@ $errorscanner.width              = 210
 $errorscanner.height             = 30
 $errorscanner.location           = New-Object System.Drawing.Point(3,45)
 $errorscanner.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$errorscanner.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$errorscanner.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$errorscanner.FlatStyle = "Flat"
+$errorscanner.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $killedge                        = New-Object system.Windows.Forms.Button
 $killedge.text                   = "Remove Microsoft Edge"
@@ -190,6 +233,10 @@ $killedge.width                  = 210
 $killedge.height                 = 30
 $killedge.location               = New-Object System.Drawing.Point(3,80)
 $killedge.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$killedge.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$killedge.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$killedge.FlatStyle = "Flat"
+$killedge.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $resetnetwork                    = New-Object system.Windows.Forms.Button
 $resetnetwork.text               = "Reset Network"
@@ -197,6 +244,10 @@ $resetnetwork.width              = 210
 $resetnetwork.height             = 30
 $resetnetwork.location           = New-Object System.Drawing.Point(3,115)
 $resetnetwork.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$resetnetwork.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$resetnetwork.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$resetnetwork.FlatStyle = "Flat"
+$resetnetwork.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $laptopnumlock                   = New-Object system.Windows.Forms.Button
 $laptopnumlock.text              = "Laptop Numlock Fix"
@@ -204,6 +255,10 @@ $laptopnumlock.width             = 210
 $laptopnumlock.height            = 30
 $laptopnumlock.location          = New-Object System.Drawing.Point(3,150)
 $laptopnumlock.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$laptopnumlock.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$laptopnumlock.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$laptopnumlock.FlatStyle = "Flat"
+$laptopnumlock.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $removeENkeyboard                = New-Object system.Windows.Forms.Button
 $removeENkeyboard.text           = "Force NOR Keyboard"
@@ -211,6 +266,10 @@ $removeENkeyboard.width          = 210
 $removeENkeyboard.height         = 30
 $removeENkeyboard.location       = New-Object System.Drawing.Point(3,185)
 $removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$removeENkeyboard.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$removeENkeyboard.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$removeENkeyboard.FlatStyle = "Flat"
+$removeENkeyboard.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 #######################################################################################################
 # Fixes ends here
@@ -219,47 +278,69 @@ $removeENkeyboard.Font           = New-Object System.Drawing.Font('Microsoft San
 #######################################################################################################
 
 $oldmenu                         = New-Object system.Windows.Forms.Label
-$oldmenu.text                    = "Old Menus"
-$oldmenu.AutoSize                = $true
-$oldmenu.width                   = 25
-$oldmenu.height                  = 10
-$oldmenu.location                = New-Object System.Drawing.Point(75,230)
+$oldmenu.text                    = "Classic Menus"
+$oldmenu.AutoSize      = $false
+$oldmenu.width         = 220
+$oldmenu.height        = 35
+$oldmenu.TextAlign     = "MiddleCenter"
+$oldmenu.location                = New-Object System.Drawing.Point(3,220)
 $oldmenu.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$oldmenu.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
 
 $ncpa                            = New-Object system.Windows.Forms.Button
-$ncpa.text                       = "Old Network Panel"
+$ncpa.text                       = "Network Panel"
 $ncpa.width                      = 210
 $ncpa.height                     = 30
 $ncpa.location                   = New-Object System.Drawing.Point(3,255)
 $ncpa.Font                       = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$ncpa.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$ncpa.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$ncpa.FlatStyle = "Flat"
+$ncpa.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $oldcontrolpanel                 = New-Object system.Windows.Forms.Button
-$oldcontrolpanel.text            = "Old Control Panel"
+$oldcontrolpanel.text            = "Control Panel"
 $oldcontrolpanel.width           = 210
 $oldcontrolpanel.height          = 30
 $oldcontrolpanel.location        = New-Object System.Drawing.Point(3,290)
 $oldcontrolpanel.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$oldcontrolpanel.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$oldcontrolpanel.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$oldcontrolpanel.FlatStyle = "Flat"
+$oldcontrolpanel.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $oldsoundpanel                   = New-Object system.Windows.Forms.Button
-$oldsoundpanel.text              = "Old Sound Panel"
+$oldsoundpanel.text              = "Sound Panel"
 $oldsoundpanel.width             = 210
 $oldsoundpanel.height            = 30
 $oldsoundpanel.location          = New-Object System.Drawing.Point(3,325)
 $oldsoundpanel.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$oldsoundpanel.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$oldsoundpanel.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$oldsoundpanel.FlatStyle = "Flat"
+$oldsoundpanel.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $oldsystempanel                  = New-Object system.Windows.Forms.Button
-$oldsystempanel.text             = "Old System Panel"
+$oldsystempanel.text             = "System Panel"
 $oldsystempanel.width            = 210
 $oldsystempanel.height           = 30
 $oldsystempanel.location         = New-Object System.Drawing.Point(3,360)
 $oldsystempanel.Font             = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$oldsystempanel.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$oldsystempanel.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$oldsystempanel.FlatStyle = "Flat"
+$oldsystempanel.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 $oldpower                        = New-Object system.Windows.Forms.Button
-$oldpower.text                   = "Old Power Panel"
+$oldpower.text                   = "Power Panel"
 $oldpower.width                  = 210
 $oldpower.height                 = 30
 $oldpower.location               = New-Object System.Drawing.Point(3,395)
 $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$oldpower.BackColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
+$oldpower.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#003333")
+$oldpower.FlatStyle = "Flat"
+$oldpower.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#006666")
 
 #######################################################################################################
 # Old menus ends here
@@ -269,11 +350,13 @@ $oldpower.Font                   = New-Object System.Drawing.Font('Microsoft San
 
 $windowsupdate                   = New-Object system.Windows.Forms.Label
 $windowsupdate.text              = "Windows Update"
-$windowsupdate.AutoSize          = $true
-$windowsupdate.width             = 25
-$windowsupdate.height            = 10
-$windowsupdate.location          = New-Object System.Drawing.Point(50,20)
+$windowsupdate.AutoSize      = $false
+$windowsupdate.width         = 220
+$windowsupdate.height        = 35
+$windowsupdate.TextAlign     = "MiddleCenter"
+$windowsupdate.location      = New-Object System.Drawing.Point(3,10)
 $windowsupdate.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$windowsupdate.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
 
 $defaultwindowsupdate            = New-Object system.Windows.Forms.Button
 $defaultwindowsupdate.text       = "Default Settings"
@@ -381,11 +464,13 @@ $restorepower.Font               = New-Object System.Drawing.Font('Microsoft San
 
 $extras                          = New-Object system.Windows.Forms.Label
 $extras.text                     = "Extras"
-$extras.AutoSize                 = $true
-$extras.width                    = 25
-$extras.height                   = 10
-$extras.location                 = New-Object System.Drawing.Point(80,20)
+$extras.AutoSize      = $false
+$extras.width         = 220
+$extras.height        = 35
+$extras.TextAlign     = "MiddleCenter"
+$extras.location      = New-Object System.Drawing.Point(3,10)
 $extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$extras.ForeColor       = [System.Drawing.ColorTranslator]::FromHtml("#007777")
 
 $getosinfo                       = New-Object system.Windows.Forms.Button
 $getosinfo.text                  = "OS Info"
@@ -619,9 +704,7 @@ $getosinfo.Add_Click({
 
     $ResultText.text =  "`r`n" + 
                         "  Username: " + $env:UserName + "`r`n" + 
-                        "  OS: " + $name, "`r`n" + 
-                        "  Architechture: " + $bit, "`r`n" +
-                        "  Build: " + $ver, "`r`n" + 
+                        "  OS: " + $name, " - " + $bit, " - " + $ver, "`r`n" + 
                         "  External IP: " + $myIP, "`r`n" + 
                         "  Licence: " + $licence
 })
