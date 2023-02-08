@@ -184,12 +184,12 @@ $errorscanner.height             = 30
 $errorscanner.location           = New-Object System.Drawing.Point(3,45)
 $errorscanner.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$yourphonefix                    = New-Object system.Windows.Forms.Button
-$yourphonefix.text               = "Your Phone App Fix"
-$yourphonefix.width              = 210
-$yourphonefix.height             = 30
-$yourphonefix.location           = New-Object System.Drawing.Point(3,80)
-$yourphonefix.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$killedge                        = New-Object system.Windows.Forms.Button
+$killedge.text                   = "Kill Microsoft Edge"
+$killedge.width                  = 210
+$killedge.height                 = 30
+$killedge.location               = New-Object System.Drawing.Point(3,80)
+$killedge.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $resetnetwork                    = New-Object system.Windows.Forms.Button
 $resetnetwork.text               = "Reset Network"
@@ -520,7 +520,7 @@ $Panel2.controls.AddRange(@(
     $oldpower,
     $errorscanner,
     $oldmenu,
-    $yourphonefix, 
+    $killedge, 
     $resetnetwork,
     $laptopnumlock,
     $removeENkeyboard
@@ -3344,25 +3344,11 @@ $removeENkeyboard.Add_Click({
 
 })
 
-$yourphonefix.Add_Click({
-    Write-Host "Reinstalling Your Phone App"
-    $ResultText.text = "`r`n" +"`r`n" + "  Reinstalling Your Phone App..."
-    Add-AppxPackage -DisableDevelopmentMode -Register "$($(Get-AppXPackage -AllUsers "Microsoft.YourPhone").InstallLocation)\AppXManifest.xml"
-
-    Write-Host "Enable needed data collection for Your Phone..."
-    $ResultText.text = "`r`n" +"`r`n" + "  Enable needed data collection for Your Phone..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableMmx" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableCdp" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging" -Name "AllowMessageSync" -Type DWord -Value 1
-
-    Write-Host "Allowing Background Apps..."
-    $ResultText.text = "`r`n" +"`r`n" + "  Allowing Background Apps..."
-	Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
-		Remove-ItemProperty -Path $_.PsPath -Name "Disabled" -ErrorAction SilentlyContinue
-		Remove-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -ErrorAction SilentlyContinue
-	}
-    Write-Host "You may need to Reboot and right-click Your Phone app and select repair"
-    $ResultText.text = "`r`n" +"`r`n" + "  You may need to Reboot and right-click Your Phone app and select repair " + "`r`n" + "  -   Ready for Next Task.."
+$killedge.Add_Click({
+    Write-Host "Removing Microsoft Edge..."
+    Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/Edge_Removal.bat | Invoke-Expression
+    Write-Host "Microsoft Edge has been successfully removed, i would advice a restart now..."
+    $ResultText.text = "`r`n" +"`r`n" + "  Microsoft Edge has been successfully removed, i would advice a restart now " + "`r`n" + "  -   Ready for Next Task.."
 })
 
 $ncpa.Add_Click({ #Network cards interface
