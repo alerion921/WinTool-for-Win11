@@ -15,7 +15,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInfor
 
 $iconPath = 'C:\Windows\temp\test.ico'
 # for demo I'm using the icon from stackoverflow.com
-$url = "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/smile.ico"
+$url = "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/heart.ico"
 Invoke-WebRequest -Uri $url -OutFile $iconPath
 
 $WshShell = New-Object -comObject WScript.Shell
