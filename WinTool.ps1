@@ -3355,7 +3355,7 @@ $killedge.Add_Click({
     }
 
     Write-Host "Icon deleted and Edge is getting removed right now.."
-    $ResultText.text = "`r`n" +"`r`n" + "  Microsoft Edge has been successfully removed, i would advice a restart now " + "`r`n" + "  -   Ready for Next Task.."
+    $ResultText.text = "`r`n" +"`r`n" + "  Microsoft Edge has been successfully removed " + "`r`n" + "  -   Ready for Next Task.."
 })
 
 $ncpa.Add_Click({ #Network cards interface
