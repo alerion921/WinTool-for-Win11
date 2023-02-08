@@ -3347,7 +3347,14 @@ $removeENkeyboard.Add_Click({
 $killedge.Add_Click({
     Write-Host "Removing Microsoft Edge..."
     Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/killedge.bat | Invoke-Expression
-    Write-Host "Microsoft Edge has been successfully removed, i would advice a restart now..."
+
+    #removes shortcut from programdata
+    Get-ChildItem "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" -Recurse  -Filter *Edge*.lnk |
+    ForEach-Object {
+       Remove-Item $_.FullName
+    }
+
+    Write-Host "Icon deleted and Edge is getting removed right now.."
     $ResultText.text = "`r`n" +"`r`n" + "  Microsoft Edge has been successfully removed, i would advice a restart now " + "`r`n" + "  -   Ready for Next Task.."
 })
 
