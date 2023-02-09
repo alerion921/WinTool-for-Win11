@@ -12,6 +12,11 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	Exit
 }
 
+#Color Palette for heart.ico
+##C40E61 - bright pink
+##FFE082 - yellow
+##F8BBD0 - light pink
+
 Function MakeForm {
 
 #Sets the information inside "About this computer"
