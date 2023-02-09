@@ -1,10 +1,14 @@
+$t = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+add-type -name win -member $t -namespace native
+[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
+
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 $ErrorActionPreference = 'SilentlyContinue'
 $wshell = New-Object -ComObject Wscript.Shell
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
-	Start-Process powershell.exe "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
 	Exit
 }
 
@@ -24,7 +28,8 @@ $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
 $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-$Shortcut.Arguments = "-WindowStyle Hidden", "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
+$filetorun = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
+$Shortcut.Arguments = $filetorun
 $Shortcut.Save()
 
 #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
