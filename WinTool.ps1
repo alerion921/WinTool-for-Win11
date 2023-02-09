@@ -24,7 +24,7 @@ $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
 $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-$Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
+$Shortcut.Arguments = "-WindowStyle Hidden", "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
 $Shortcut.Save()
 
 #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
