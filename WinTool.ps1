@@ -48,9 +48,9 @@ $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
 ##F8BBD0 - light pink
 
 if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
-    $frontcolor =$backcolor
-    $backcolor = $frontcolor 
-    $hovercolor = $hovercolor
+    $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
+    $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
+    $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
     $frontcolor =[System.Drawing.ColorTranslator]::FromHtml("#C40E61")
     $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#FFE082")
@@ -58,9 +58,9 @@ if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersio
 }
 
 if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '0') {
-    $frontcolor =$backcolor
-    $backcolor = $frontcolor 
-    $hovercolor = $hovercolor
+    $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
+    $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
+    $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
 } elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '1') {
     $frontcolor =[System.Drawing.ColorTranslator]::FromHtml("#C40E61")
     $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#FFE082")
