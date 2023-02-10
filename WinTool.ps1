@@ -211,15 +211,21 @@ $errorscanner.FlatStyle          = "Flat"
 $errorscanner.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
 
 ###PLACEHOLDER
-$PLACEHOLDER                     = New-Object system.Windows.Forms.Button
-$PLACEHOLDER.text                = "PLACEHOLDER"
+$PLACEHOLDER = New-Object system.Windows.Forms.ComboBox
+$PLACEHOLDER.text = “”
 $PLACEHOLDER.width               = 220
 $PLACEHOLDER.height              = 30
+$PLACEHOLDER.autosize = $true
+# Add the items in the dropdown list
+@(‘Jack’,’Dave’,’Alex’) | ForEach-Object {[void] $PLACEHOLDER.Items.Add($_)}
+# Select the default value
+$PLACEHOLDER.SelectedIndex = 0
 $PLACEHOLDER.location            = New-Object System.Drawing.Point(0,80)
 $PLACEHOLDER.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 $PLACEHOLDER.BackColor           = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
 $PLACEHOLDER.ForeColor           = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
 $PLACEHOLDER.FlatStyle           = "Flat"
+$PLACEHOLDER.BorderStyle         = "Flat"
 $PLACEHOLDER.FlatAppearance.MouseOverBackColor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
 
 $resetnetwork                       = New-Object system.Windows.Forms.Button
