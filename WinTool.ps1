@@ -242,7 +242,7 @@ $PLACEHOLDER.width               = 220
 $PLACEHOLDER.height              = 30
 $PLACEHOLDER.autosize = $true
 # Add the items in the dropdown list
-@(‘Jack’,’Dave’,’Alex’) | ForEach-Object {[void] $PLACEHOLDER.Items.Add($_)}
+#@(‘Jack’,’Dave’,’Alex’) | ForEach-Object {[void] $PLACEHOLDER.Items.Add($_)}
 # Select the default value
 $PLACEHOLDER.SelectedIndex = 0
 $PLACEHOLDER.location            = New-Object System.Drawing.Point(0,80)
