@@ -253,6 +253,8 @@ $changedns.BackColor           = $frontcolor
 $changedns.ForeColor           = $backcolor
 $changedns.FlatStyle           = "Flat"
 $changedns.BorderStyle         = "Flat"
+$changedns.ReadOnly             = $true
+$changedns.SelectionLength = 0;
 
 $resetnetwork                       = New-Object system.Windows.Forms.Button
 $resetnetwork.text               = "Reset Network"
