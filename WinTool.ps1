@@ -1,5 +1,5 @@
-$t = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
-add-type -name win -member $t -namespace native
+$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+add-type -name win -member $HidePowershellWindow -namespace native
 [native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
 Add-Type -AssemblyName System.Windows.Forms
@@ -831,8 +831,10 @@ $getosinfo.Add_Click({
 $errorscanner.Add_Click({
     $ResultText.text = "`r`n" + "  System error scan has started, select your options then, Please Wait..." 
     
-        $sfcscando = Read-Host "Run SFC Scan now? (Y/N)"
-        if ($sfcscando -eq 'Y') {
+        [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+        $sfcscando = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Run SFC Scan now?" , 4)
+        if ($sfcscando -eq 'Yes') {
             $sfcscan = {
                 $name='SFC Scannow - Offload Process'
                 $host.ui.RawUI.WindowTitle = $name
@@ -840,11 +842,11 @@ $errorscanner.Add_Click({
                 $ResultText.text = "`r`n" + "  SFC scan is now running, you can abort the process but it's not recommended.." 
             }
 
-            Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $sfcscan"
+            Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $sfcscan"
         }
 
-        $dismscansinit = Read-Host "Initiate DISM Scans (may take a while)? (Y/N)"
-        if ($dismscansinit -eq 'Y') { 
+        $dismscansinit = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Initiate DISM Scans?" , 4)
+        if ($dismscansinit -eq 'Yes') { 
             $dismscan = {
                 $name='DISM Error Scanner - Offload Process'
                 $host.ui.RawUI.WindowTitle = $name
@@ -854,7 +856,7 @@ $errorscanner.Add_Click({
                 $ResultText.text = "`r`n" + "  DISM Scan, Check and Restore Health are now running, you can abort the process but it's not recommended.. (Restart after completion)" 
             }
 
-            Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
+            Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
         }
     
     if($?) { $ResultText.text = "`r`n" + "  System error scans has been initiated wait for it to complete then do a restart -  Ready for Next Task..." }
@@ -865,8 +867,10 @@ $ultimateclean.Add_Click({
 	
     $ResultText.text = "`r`n" + "  Cleaning initiated.." 
 
-    $componentcache = Read-Host "Initiate Component Store Cache Cleaner? (Y/N)"
-    if ($componentcache -eq 'Y') {
+    [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+    $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean the component cache that is used by Windows Store?" , 4)
+    if ($componentcache -eq 'Yes') {
         vssadmin delete shadows /all | Out-Null
         Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
         $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
@@ -881,8 +885,8 @@ $ultimateclean.Add_Click({
         $ResultText.text = "`r`n" + "  Component Store Caches have been cleared successfully..." 
     }
 
-    $regcachclean = Read-Host "Initiate Registry & Cache Cleaner? (Y/N)"
-    if ($regcachclean -eq 'Y') {
+    $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean up a collection of useless registry files?" , 4)
+    if ($regcachclean -eq 'Yes') {
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Managed\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Unmanaged\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -905,6 +909,8 @@ $ultimateclean.Add_Click({
         Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
         Start-Process explorer.exe	
+
+        $ResultText.text = "`r`n" + "  Windows registry junk files deleted successfully..." 
     }
 
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
@@ -912,53 +918,54 @@ $ultimateclean.Add_Click({
 
     # Clear Inetpub Logs Folder
     if (Test-Path "C:\inetpub\logs\LogFiles\") {
-        Write-Host -ForegroundColor Yellow "Clearing Inetpub Logs Folder`n"
+        $ResultText.text = "`r`n" + "  Clearing Inetpub Logs Folder..." 
         $Folders = Get-ChildItem -Path "C:\inetpub\logs\LogFiles\" | Select-Object Name
         foreach ($Folder in $Folders) {
             $folder = $Folder.Name
             Remove-Item -Path "C:\inetpub\logs\LogFiles\$Folder\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         }
-        Write-Host -ForegroundColor Yellow "Done...`n" 
+        $ResultText.text = "`r`n" + "  Deleted Inetpub Logs Folder..." 
     }
 
     if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
         # Delete Microsoft Teams Previous Version files
-        Write-Host -ForegroundColor Yellow "Clearing Teams Previous version`n"
+        $ResultText.text = "`r`n" + " Clearing Microsoft Teams previous versions..." 
         Foreach ($user in $Users) {
             if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Teams\") {
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             } 
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  Deleted old Microsoft Teams versions..." 
     }
 
     if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
         # Delete SnagIt Crash Dump files
-        Write-Host -ForegroundColor Yellow "Clearing SnagIt Crash Dumps`n"
+        $ResultText.text = "`r`n" + " Clearing SnagIt crash dumps..." 
         Foreach ($user in $Users) {
             if (Test-Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt") {
                 Remove-Item -Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             } 
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        
+        $ResultText.text = "`r`n" + "  Deleted SnagIt crash dumps..." 
     }
 
     if (!(Test-Path "C:\Program Files (x86)\Dropbox\Client")){
-        Write-Host "Dropbox is not installed & Folders can't be found.. Skipping clean..."
+        $ResultText.text = "`r`n" + " Dropbox is not installed & Folders can't be found.. Skipping clean..." 
     }  
     else {
-        $Dropboxclean = Read-Host "Clear Dropbox Cache? (Y/N)"
-        if ($Dropboxclean -eq 'Y') {
+        $Dropboxclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete all Dropbox Caches?" , 4)
+        if ($Dropboxclean -eq 'Yes') {
             # Clear Dropbox
-            Write-Host -ForegroundColor Yellow "Clearing Dropbox Cache`n"
+            $ResultText.text = "`r`n" + " Clearing Dropbox Cache..." 
             Foreach ($user in $Users) {
                 if (Test-Path "C:\Users\$user\Dropbox\") {
                     Remove-Item -Path "C:\Users\$user\Dropbox\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                     Remove-Item -Path "C:\Users\$user\Dropbox*\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
             }
-            Write-Host -ForegroundColor Yellow "Done...`n"
+            $ResultText.text = "`r`n" + "  Dropbox caches deleted..." 
         }
     }
 
@@ -967,10 +974,10 @@ $ultimateclean.Add_Click({
         Remove-Item -Path "C:\swsetup" -Force -ErrorAction SilentlyContinue -Verbose
     } 
 
-    $DeleteOldDownloads = Read-Host "Delete User files from Download folder? (Y/N)"
+    $DeleteOldDownloads = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete User files from Download folder?" , 4)
     # Delete files from Downloads folder
-    if ($DeleteOldDownloads -eq 'Y') { 
-        Write-Host -ForegroundColor Yellow "Deleting files from User Downloads folder`n"
+    if ($DeleteOldDownloads -eq 'Yes') { 
+        $ResultText.text = "`r`n" + " Deleting files from User Downloads folder..." 
         Foreach ($user in $Users) {
             $UserDownloads = "C:\Users\$user\Downloads"
             $OldFiles = Get-ChildItem -Path "$UserDownloads\" -Recurse -File -ErrorAction SilentlyContinue
@@ -978,23 +985,23 @@ $ultimateclean.Add_Click({
                 Remove-Item -Path "$UserDownloads\$file" -Force -ErrorAction SilentlyContinue -Verbose
             }
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  All files in the user download folder have been deleted..." 
     }
 
     # Delete files from Azure Log folder
     if (Test-Path "C:\WindowsAzure\Logs") {
-        Write-Host -ForegroundColor Yellow "Deleting files from Azure Log folder`n"
+        $ResultText.text = "`r`n" + " Deleting files from Azure Log folder..." 
         $AzureLogs = "C:\WindowsAzure\Logs"
         $OldFiles = Get-ChildItem -Path "$AzureLogs\" -Recurse -File -ErrorAction SilentlyContinue
         foreach ($file in $OldFiles) {
             Remove-Item -Path "$AzureLogs\$file" -Force -ErrorAction SilentlyContinue -Verbose
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  Azure log files removed..." 
     } 
 
     if (Test-Path "$env:LocalAppData\Microsoft\Office") {
         # Delete files from Office Cache Folder
-        Write-Host -ForegroundColor Yellow "Clearing Office Cache Folder`n"
+        $ResultText.text = "`r`n" + "  Clearing Office Cache Folder..." 
         Foreach ($user in $Users) {
             $officecache = "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache"
             if (Test-Path $officecache) {
@@ -1004,45 +1011,45 @@ $ultimateclean.Add_Click({
                 }
             } 
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  Office cache has been cleared..." 
     }
 
     # Delete files from LFSAgent Log folder https://www.lepide.com/
     if (Test-Path "$env:windir\LFSAgent\Logs") {
-        Write-Host -ForegroundColor Yellow "Deleting files from LFSAgent Log folder`n"
+        $ResultText.text = "`r`n" + "  Deleting files from LFSAgent Log folder..." 
         $LFSAgentLogs = "$env:windir\LFSAgent\Logs"
         $OldFiles = Get-ChildItem -Path "$LFSAgentLogs\" -Recurse -File -ErrorAction SilentlyContinue
         foreach ($file in $OldFiles) {
             Remove-Item -Path "$LFSAgentLogs\$file" -Force -ErrorAction SilentlyContinue -Verbose
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  LFSAgent log folder has been deleted..." 
     }         
 
     # Delete SOTI MobiController Log files
     if (Test-Path "C:\Program Files (x86)\SOTI\MobiControl") {
-        Write-Host -ForegroundColor Yellow "Deleting SOTI MobiController Log files`n"
+        $ResultText.text = "`r`n" + "  Deleting SOTI MobiController Log files..." 
         $SotiLogFiles = Get-ChildItem -Path "C:\Program Files (x86)\SOTI\MobiControl" | Where-Object { ($_.name -like "*Device*.log" -or $_.name -like "*Server*.log" ) }
         foreach ($File in $SotiLogFiles) {
             Remove-Item -Path "C:\Program Files (x86)\SOTI\MobiControl\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  SOTI MobiController log files removed..." 
     }
 
     # Delete old Cylance Log files
     if (Test-Path "C:\Program Files\Cylance\Desktop") {
-        Write-Host -ForegroundColor Yellow "Deleting Cylance Log files`n"
+        $ResultText.text = "`r`n" + "  Deleting Cylance Log files..." 
         $OldCylanceLogFiles = Get-ChildItem -Path "C:\Program Files\Cylance\Desktop" | Where-Object name -Like "cylog-*.log"
         foreach ($File in $OldCylanceLogFiles) {
             Remove-Item -Path "C:\Program Files\Cylance\Desktop\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
         }
-        Write-Host -ForegroundColor Yellow "Done...`n"
+        $ResultText.text = "`r`n" + "  Cylance log files deleted..." 
     }
 
 
-    $CleanKnownTemp = Read-Host "Clear all System, User and Common Temp Files? (Y/N)"
-    if ($CleanKnownTemp -eq 'Y') {
+    $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clear all System, User and Common Temp Files?" , 4)
+    if ($CleanKnownTemp -eq 'Yes') {
         # Clear User Temp Folders
-        Write-Host -ForegroundColor Yellow "Clearing User Temp Folders`n"
+        $ResultText.text = "`r`n" + "  Clearing User Temp Folders..." 
         Foreach ($user in $Users) {
             Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1053,7 +1060,7 @@ $ultimateclean.Add_Click({
         }
 
         # Clear Windows Temp Folder
-        Write-Host -ForegroundColor Yellow "Clearing Windows Temp, Logs and Prefetch Folders`n"
+        $ResultText.text = "`r`n" + "  Clearing Windows Temp, Logs and Prefetch Folders..." 
         Remove-Item -Path "$env:systemdrive\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1080,7 +1087,7 @@ $ultimateclean.Add_Click({
             Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
         }
 
-        Write-Host -ForegroundColor Yellow "Done...`n"   
+        $ResultText.text = "`r`n" + "  All System, User and Common Temp Files have been deleted successfully..." 
     }     
 
      # Get the size of the Windows Updates folder (SoftwareDistribution)
@@ -1088,12 +1095,12 @@ $ultimateclean.Add_Click({
 
      # Ask the user if they would like to clean the Windows Update folder
      if ($WUfoldersize -gt 0.5) {
-         Write-Host "The Software Distribution folder is" ("{0:N2} GB" -f $WUFoldersize)
-         $CleanWU = Read-Host "Do you want clean the Software Distribution folder and reset Windows Updates? (Y/N)"
+         $ResultText.text = "`r`n" + "  The Software Distribution folder is", ("{0:N2} GB" -f $WUFoldersize) 
+         $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Do you want clean the Software Distribution folder?" , 4)
      }
 
-    if ($CleanWU -eq 'Y') { 
-        Write-Host -ForegroundColor Yellow "Restarting Windows Update Service and Deleting SoftwareDistribution Folder`n"
+    if ($CleanWU -eq 'Yes') { 
+        $ResultText.text = "`r`n" + "  Restarting Windows Update Service and Deleting SoftwareDistribution Folder"
         # Stop the Windows Update service
         try {
             Stop-Service -Name wuauserv
@@ -1114,13 +1121,12 @@ $ultimateclean.Add_Click({
             $ErrorMessage = $_.Exception.Message
             Write-Warning "$ErrorMessage" 
         }
-        Write-Host -ForegroundColor Yellow "Done..."
-        Write-Host -ForegroundColor Yellow "Please rerun Windows Update to pull down the latest updates `n"
+        $ResultText.text = "`r`n" + "  SoftwareDistribution folder removed, reinitiate Windows Update to reaquire updates..." 
     }
 
-    $CleanBin = Read-Host "Would you like to empty the Recycle Bin for All Users? (Y/N)"
-    if ($Cleanbin -eq 'Y') {
-        Write-Host -ForegroundColor Green "Cleaning Recycle Bin`n"
+    $CleanBin = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Would you like to empty the Recycle Bin for All Users?" , 4)
+    if ($Cleanbin -eq 'Yes') {
+        $ResultText.text = "`r`n" + "  Cleaning Recycle Bin..." 
         $ErrorActionPreference = 'SilentlyContinue'
         $RecycleBin = "C:\`$Recycle.Bin"
         $BinFolders = Get-ChildItem $RecycleBin -Directory -Force
@@ -1130,12 +1136,12 @@ $ultimateclean.Add_Click({
             $objSID = New-Object System.Security.Principal.SecurityIdentifier ($folder)
             try {
                 $objUser = $objSID.Translate( [System.Security.Principal.NTAccount])
-                Write-Host -Foreground Yellow -Background Black "Cleaning $objUser Recycle Bin"
+                $ResultText.text = "`r`n" + "  Cleaning $objUser Recycle Bin..." 
             }
             # If SID cannot be Translated, Throw out the SID instead of error
             catch {
                 $objUser = $objSID.Value
-                Write-Host -Foreground Yellow -Background Black "$objUser"
+                $ResultText.text = "`r`n" + "  $objUser"
             }
             $Files = @()
 
@@ -1156,17 +1162,17 @@ $ultimateclean.Add_Click({
             }
             Write-Progress -Activity "Recycle Bin Clean-up" -Status "Complete" -Completed -Id 1
         }
-        Write-Host -ForegroundColor Green "Done`n `n"
+        $ResultText.text = "`r`n" + "  Recycle Bin has been emptied..." 
     }
     
-    $SuperCleanOffload = Read-Host "Launch Superdeep Cleaner (May take 60 min or more)? (Y/N)"
-    if ($SuperCleanOffload -eq 'Y') {
+    $SuperCleanOffload = [System.Windows.Forms.MessageBox]::Show('This may take over an hour to complete, are you sure you want to continue?' , "Launch Superdeep Cleaner?" , 4)
+    if ($SuperCleanOffload -eq 'Yes') {
 
          $OffloadScript = {
             $name='Superdeep Cleaner - Offload Process'
             $host.ui.RawUI.WindowTitle = $name
-            Write-Host "This offload process makes the WinTool app not crash.."
-            Write-Host "Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists.."
+            $ResultText.text = "`r`n" + "  This offload process makes the WinTool app not crash..." 
+            $ResultText.text = "`r`n" + "  Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists..." 
             cmd /C del /f /s /q %systemdrive%\*.tmp
             cmd /C del /f /s /q %systemdrive%\*._mp
             cmd /C del /f /s /q %systemdrive%\*.log
@@ -1179,13 +1185,13 @@ $ultimateclean.Add_Click({
        
         Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
 
-        Write-Host -ForegroundColor Yellow "Clearing Temporary hidden system files...`n"#>
+        $ResultText.text = "`r`n" + "  Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
     }
-    Write-Host -ForegroundColor Green "Done`n `n"
+    $ResultText.text = "`r`n" + "  Cleaning process has been completed - Ready for Next Task..." 
 })
 
 $ultimatepower.Add_Click({
-    Write-Host "Enabling and Activating Highest Performance Power Plan..."
+    $ResultText.text = "`r`n" + "  Enabling and Activating Highest Performance Power Plan..."
 	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
 	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
 	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
@@ -1193,19 +1199,19 @@ $ultimatepower.Add_Click({
 })
 
 $laptopnumlock.Add_Click({
-    Write-Host "Trying to disable numlock by force to fix errors that might occur..."
+    $ResultText.text = "`r`n" + "  Trying to disable numlock by force..."
     Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
     Add-Type -AssemblyName System.Windows.Forms
     If (([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
         $wsh = New-Object -ComObject WScript.Shell
         $wsh.SendKeys('{NUMLOCK}')
-        $ResultText.text = "`r`n" + "  Numlock Bug Has Been Fixed - Ready for Next Task..."
+        $ResultText.text = "`r`n" + "  Numlock bug has been fixed - Ready for Next Task..."
     }
 })
 
 $essentialtweaks.Add_Click({
     $ResultText.text = "`r`n" + "  Activating Essential Tweaks... Please Wait"
-    $ResultText.text = "`r`n" + "  Creating a restore point incase something bad happens"
+    $ResultText.text = "`r`n" + "  Creating a restore point incase something bad happens.."
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
@@ -1215,7 +1221,6 @@ $essentialtweaks.Add_Click({
     Start-BitsTransfer -Source "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/OOSU10.exe" -Destination OOSU10.exe
     ./OOSU10.exe ooshutup10.cfg /quiet
 
-    Write-Output "Uninstalling Linux Subsystem..."
     $ResultText.text += "`r`n" + "  Uninstalling Linux Subsystem..."
 	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
@@ -1359,6 +1364,10 @@ $essentialtweaks.Add_Click({
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 0
+
+    $ResultText.AppendText($ResultText.Text);
+    $ResultText.CaretIndex = $ResultText.Text.Length;
+    $ResultText.ScrollToEnd();
 
     $ResultText.text += "`r`n" + "  Showing task manager details..."
     $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
@@ -1607,6 +1616,10 @@ foreach ($service in $services) {
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableNotifications" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications" -Name "DisableEnhancedNotifications" -Type DWord -Value 1
+
+    $ResultText.AppendText($ResultText.Text);
+    $ResultText.CaretIndex = $ResultText.Text.Length;
+    $ResultText.ScrollToEnd();
 
     #Restart Explorer so that the taskbar can update and not look break :D
     Stop-Process -name explorer
@@ -2151,9 +2164,9 @@ $removebloat.Add_Click({
 
         Function DebloatAll {
             #Removes AppxPackages
-            Get-AppxPackage | Where { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
-            Get-AppxProvisionedPackage -Online | Where { !($_.DisplayName -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.DisplayName) } | Remove-AppxProvisionedPackage -Online
-            Get-AppxPackage -AllUsers | Where { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
+            Get-AppxPackage | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
+            Get-AppxProvisionedPackage -Online | Where-Object { !($_.DisplayName -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.DisplayName) } | Remove-AppxProvisionedPackage -Online
+            Get-AppxPackage -AllUsers | Where-Object { !($_.Name -cmatch $global:WhiteListedAppsRegex) -and !($NonRemovables -cmatch $_.Name) } | Remove-AppxPackage
         }
   
         #Creates a PSDrive to be able to access the 'HKCR' tree
@@ -2355,7 +2368,7 @@ $reinstallbloat.Add_Click({
     #This function will revert the changes you made when running the Start-Debloat function.
 
     #This line reinstalls all of the bloatware that was removed
-    Get-AppxPackage -AllUsers | ForEach { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
+    Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
     #Tells Windows to enable your advertising information.    
     $ResultText.text = "`r`n" + "  Re-enabling key to show advertisement information"
@@ -2451,7 +2464,7 @@ $securitywindowsupdate.Add_Click({
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
-    Write-Host "Disabling Windows Update automatic restart..."
+    $ResultText.text = "`r`n" + "  Disabling Windows Update automatic restart..."
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
@@ -3065,7 +3078,6 @@ $securitypatches.Add_Click({
         Set-MpPreference -CloudExtendedTimeout 50
         $ResultText.text = "`r`n" + "  Updating Windows Defender Exploit Guard settings"
         #Enabling Controlled Folder Access and setting to block mode
-        #Write-Host "Enabling Controlled Folder Access and setting to block mode"
         #Set-MpPreference -EnableControlledFolderAccess Enabled 
         #Enabling Network Protection and setting to block mode
         $ResultText.text = "`r`n" + "  Enabling Network Protection and setting to block mode"
@@ -3294,7 +3306,6 @@ $securitypatches.Add_Click({
         $ResultText.text = "`r`n" + "  SMB Optimized and Hardening Activated..."
     }
 
-    Write-Host "All known security exploits have been patched successfully & additional system hardening has been applied..."
     $ResultText.text = "`r`n" + "  All known security exploits have been patched successfully & additional system hardening has been applied - Ready for Next Task..."
 })
 
