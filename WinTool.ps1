@@ -235,23 +235,24 @@ $errorscanner.ForeColor          = $backcolor
 $errorscanner.FlatStyle          = "Flat"
 $errorscanner.FlatAppearance.MouseOverBackColor = $hovercolor
 
-###PLACEHOLDER
-$PLACEHOLDER = New-Object system.Windows.Forms.ComboBox
-$PLACEHOLDER.text = “”
-$PLACEHOLDER.width               = 220
-$PLACEHOLDER.height              = 30
-$PLACEHOLDER.autosize = $true
-# Add the items in the dropdown list
-#@(‘Jack’,’Dave’,’Alex’) | ForEach-Object {[void] $PLACEHOLDER.Items.Add($_)}
+##PLACEHOLDER
+$changedns = New-Object system.Windows.Forms.ComboBox
+$changedns.text = ""
+$changedns.width               = 220
+$changedns.height              = 30
+$changedns.autosize = $true
+[void] $changedns.Items.Add('Google')
+[void] $changedns.Items.Add('Cloud Flare')
+[void] $changedns.Items.Add('Level3')
+[void] $changedns.Items.Add('Open DNS')
 # Select the default value
-$PLACEHOLDER.SelectedIndex = 0
-$PLACEHOLDER.location            = New-Object System.Drawing.Point(0,80)
-$PLACEHOLDER.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$PLACEHOLDER.BackColor           = $frontcolor 
-$PLACEHOLDER.ForeColor           = $backcolor
-$PLACEHOLDER.FlatStyle           = "Flat"
-$PLACEHOLDER.BorderStyle         = "Flat"
-$PLACEHOLDER.FlatAppearance.MouseOverBackColor = $hovercolor
+$changedns.SelectedIndex = 0
+$changedns.location            = New-Object System.Drawing.Point(0,80)
+$changedns.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$changedns.BackColor           = $frontcolor 
+$changedns.ForeColor           = $backcolor
+$changedns.FlatStyle           = "Flat"
+$changedns.BorderStyle         = "Flat"
 
 $resetnetwork                       = New-Object system.Windows.Forms.Button
 $resetnetwork.text               = "Reset Network"
@@ -723,7 +724,7 @@ $Panel2.controls.AddRange(@(
     $oldsystempanel,
     $oldpower,
     $errorscanner,
-    $PLACEHOLDER,
+    $changedns,
     $oldmenu,
     $resetnetwork,
     $laptopnumlock,
@@ -765,6 +766,43 @@ $Panel5.controls.AddRange(@(
     $ResultText
     #$currentstatus
 ))
+
+
+##DNS CHANGER TEST HERE
+$changedns.Add_Click({
+If ( $changedns.text -eq 'Google' ) { 
+    $ResultText.text = "`r`n" +"  Setting DNS to Google for all connections..."
+    $DC = "8.8.8.8"
+    $Internet = "8.8.4.4"
+    $dns = "$DC", "$Internet"
+    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+}
+If ( $changedns.text -eq 'Cloud Flare' ) { 
+    $ResultText.text = "`r`n" +"  Setting DNS to Cloud Flare for all connections..."
+    $DC = "1.1.1.1"
+    $Internet = "1.0.0.1"
+    $dns = "$DC", "$Internet"
+    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+}
+If ( $changedns.text -eq 'Level3' ) { 
+    $ResultText.text = "`r`n" +"  Setting DNS to Level3 for all connections..."
+    $DC = "4.2.2.2"
+    $Internet = "4.2.2.1"
+    $dns = "$DC", "$Internet"
+    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+}
+If ( $changedns.text -eq 'Open DNS' ) { 
+    $ResultText.text = "`r`n" +"  Setting DNS to Open DNS for all connections..."
+    $DC = "208.67.222.222"
+    $Internet = "208.67.220.220"
+    $dns = "$DC", "$Internet"
+    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+}
+})
 
 $EActionCenter.Add_Click({
     $ResultText.text = "`r`n" +"  Trying to re-enable Action Center..."
