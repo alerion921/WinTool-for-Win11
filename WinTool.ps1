@@ -47,6 +47,9 @@ $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
 ##FFE082 - yellow
 ##F8BBD0 - light pink
 
+$working = [System.Drawing.ColorTranslator]::FromHtml("#FF0000")
+$success = [System.Drawing.ColorTranslator]::FromHtml("#00FF00")
+
 if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
     $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
     $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
@@ -467,7 +470,7 @@ $cleaning.location               = New-Object System.Drawing.Point(0,255)
 $cleaning.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $ultimateclean                   = New-Object system.Windows.Forms.Button
-$ultimateclean.text              = "Ultimate Cleaning (needs to display output somewhereelse)"
+$ultimateclean.text              = "Ultimate Cleaning"
 $ultimateclean.width             = 220
 $ultimateclean.height            = 30
 $ultimateclean.location          = New-Object System.Drawing.Point(0,290)
@@ -903,13 +906,16 @@ $errorscanner.Add_Click({
 
 $ultimateclean.Add_Click({
 	
-    $ResultText.text = "`r`n" + "  Cleaning initiated.." 
+    $ResultText.text = "`r`n" + "  Cleaning initiated, empty folders will be skipped automaticly..." 
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
-    $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean the component cache that is used by Windows Store?" , 4)
+    <# $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean the component cache that is used by Windows Store?" , 4)
     if ($componentcache -eq 'Yes') {
+        $ResultText.ForeColor            = $working 
+        $ResultText.text = "`r`n" + "  Component cache is being cleaned please be patient..." 
         vssadmin delete shadows /all | Out-Null
+        $ResultText.text = "`r`n" + "  Shadowcopies deleted, moving on to deleting useless component caches that are being stored please wait..." 
         Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
         $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
         ForEach($result in $Key)
@@ -919,8 +925,10 @@ $ultimateclean.Add_Click({
         cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore
         cmd /c DISM /Online /Cleanup-Image /spsuperseded
         cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
+        $ResultText.text = "`r`n" + "  Component cache cleaned..." 
+        $ResultText.ForeColor            = $success 
         Clear-BCCache -Force -ErrorAction SilentlyContinue
-    }
+    } #>
 
     $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean up a collection of useless registry files?" , 4)
     if ($regcachclean -eq 'Yes') {
@@ -1164,6 +1172,7 @@ if (Test-Path "$env:systemdrive\Nvidia") {
     }
     else {
         $ResultText.text = "`r`n" + "  There is no need for cleaning the temp folders right now..." 
+        Start-Sleep -s 5
     }
 
     if ($CleanKnownTemp -eq 'Yes') {
@@ -1216,12 +1225,13 @@ if (Test-Path "$env:systemdrive\Nvidia") {
      $WUfoldersize = (Get-ChildItem "$env:windir\SoftwareDistribution" -Recurse | Measure-Object Length -s).sum / 1Gb
 
      # Ask the user if they would like to clean the Windows Update folder
-     if ($WUfoldersize -gt 0.5) {
+     if ($WUfoldersize -gt 0.2) {
          $ResultText.text = "`r`n" + "  The Software Distribution folder is", ("{0:N2} GB" -f $WUFoldersize) 
          $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $WUFoldersize) , "Do you want clean the Software Distribution folder?" , 4)
      }
      else {
         $ResultText.text = "`r`n" + "  There is no need for cleaning Software Distribution folder right now..." 
+        Start-Sleep -s 4
     }
 
     if ($CleanWU -eq 'Yes') { 
@@ -1249,7 +1259,15 @@ if (Test-Path "$env:systemdrive\Nvidia") {
         $ResultText.text = "`r`n" + "  SoftwareDistribution folder removed, reinitiate Windows Update to reaquire updates..." 
     }
 
-    $CleanBin = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Would you like to empty the Recycle Bin for All Users?" , 4)
+    $binfoldersize = (Get-ChildItem "C:\`$Recycle.Bin" -Recurse | Measure-Object Length -s).sum / 1Gb
+    if ($binfoldersize -gt 0.2) {
+        $ResultText.text = "`r`n" + "  The Recycling Bing is", ("{0:N2} GB" -f $binfoldersize) 
+        $CleanBin = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $binfoldersize) , "Would you like to empty the Recycle Bin for All Users?" , 4)
+    }
+    else {
+       $ResultText.text = "`r`n" + "  There is no need for cleaning the Recycling Bin right now..." 
+    }
+
     if ($Cleanbin -eq 'Yes') {
         $ResultText.text = "`r`n" + "  Cleaning Recycle Bin..." 
         $ErrorActionPreference = 'SilentlyContinue'
@@ -1289,8 +1307,8 @@ if (Test-Path "$env:systemdrive\Nvidia") {
         }
         $ResultText.text = "`r`n" + "  Recycle Bin has been emptied..." 
     }
-    
-    $SuperCleanOffload = [System.Windows.Forms.MessageBox]::Show('This may take over an hour to complete, are you sure you want to continue?' , "Launch Superdeep Cleaner?" , 4)
+
+    $SuperCleanOffload = [System.Windows.Forms.MessageBox]::Show('This may take over an hour to complete, are you sure you want to continue?', "Launch Superdeep Cleaner?" , 4)
     if ($SuperCleanOffload -eq 'Yes') {
 
          $OffloadScript = {
