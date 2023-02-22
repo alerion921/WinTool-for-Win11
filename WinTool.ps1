@@ -1088,6 +1088,10 @@ if (Test-Path "$env:windir\Prefetch") {
 (Get-ChildItem "$env:windir\Prefetch" -Force -Recurse  | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
 }
 
+if (Test-Path "$env:windir\SoftwareDistribution.bak") {
+    (Get-ChildItem "$env:windir\SoftwareDistribution.bak" -Force -Recurse  | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+    }
+
 if (Test-Path "$env:windir\Temp") {
 (Get-ChildItem "$env:windir\Temp" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
 }
@@ -1154,7 +1158,7 @@ if (Test-Path "$env:systemdrive\Nvidia") {
 
 ) | Measure-Object -Sum).Sum / 1GB)
 
-    if ($getSize -gt 0.2) {
+    if ($getSize -gt 0.1) {
         $ResultText.text = "`r`n" + "  Folders for System, User and Common Temp Files contain: ", ("{0:N2} GB" -f $getSize) 
         $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $getSize) , "Clear all System, User and Common Temp Files?" , 4)
     }
@@ -1176,6 +1180,7 @@ if (Test-Path "$env:systemdrive\Nvidia") {
 
         # Clear Windows Temp Folder
         $ResultText.text = "`r`n" + "  Clearing Windows Temp, Logs and Prefetch Folders..." 
+        Remove-Item -Path "$env:windir\SoftwareDistribution.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:systemdrive\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
