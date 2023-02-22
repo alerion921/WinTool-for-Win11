@@ -879,7 +879,6 @@ $errorscanner.Add_Click({
                 $name='SFC Scannow - Offload Process'
                 $host.ui.RawUI.WindowTitle = $name
                 cmd /c sfc /scannow
-                $ResultText.text = "`r`n" + "  SFC scan is now running, you can abort the process but it's not recommended.." 
             }
 
             Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $sfcscan"
@@ -893,7 +892,6 @@ $errorscanner.Add_Click({
                 cmd /c DISM /Online /Cleanup-Image /ScanHealth
                 cmd /c DISM /Online /Cleanup-Image /CheckHealth
                 cmd /c DISM /Online /Cleanup-Image /RestoreHealth
-                $ResultText.text = "`r`n" + "  DISM Scan, Check and Restore Health are now running, you can abort the process but it's not recommended.. (Restart after completion)" 
             }
 
             Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
@@ -922,7 +920,6 @@ $ultimateclean.Add_Click({
         cmd /c DISM /Online /Cleanup-Image /spsuperseded
         cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
         Clear-BCCache -Force -ErrorAction SilentlyContinue
-        $ResultText.text = "`r`n" + "  Component Store Caches have been cleared successfully..." 
     }
 
     $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean up a collection of useless registry files?" , 4)
@@ -1085,8 +1082,86 @@ $ultimateclean.Add_Click({
         $ResultText.text = "`r`n" + "  Cylance log files deleted..." 
     }
 
+    $getSize = "{0:N2} " -f ((@(
 
-    $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clear all System, User and Common Temp Files?" , 4)
+if (Test-Path "$env:windir\Prefetch") {
+(Get-ChildItem "$env:windir\Prefetch" -Force -Recurse  | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:windir\Temp") {
+(Get-ChildItem "$env:windir\Temp" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:windir\Logs\CBS") {
+(Get-ChildItem "$env:windir\Logs\CBS" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Windows.old") {
+(Get-ChildItem "$env:systemdrive\Windows.old" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:ProgramData\Microsoft\Windows\RetailDemo") {
+(Get-ChildItem "$env:ProgramData\Microsoft\Windows\RetailDemo" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:LOCALAPPDATA\AMD") {
+(Get-ChildItem "$env:LOCALAPPDATA\AMD" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:windir\..\AMD\") {
+(Get-ChildItem "$env:windir\..\AMD\" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:LOCALAPPDATA\NVIDIA\DXCache") {
+(Get-ChildItem "$env:LOCALAPPDATA\NVIDIA\DXCache" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:LOCALAPPDATA\NVIDIA\GLCache") {
+(Get-ChildItem "$env:LOCALAPPDATA\NVIDIA\GLCache" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:APPDATA\..\locallow\Intel\ShaderCache") {
+(Get-ChildItem "$env:APPDATA\..\locallow\Intel\ShaderCache"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Intel") {
+(Get-ChildItem "$env:systemdrive\Intel" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\PerfLogs") {
+(Get-ChildItem "$env:systemdrive\PerfLogs" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Temp") {
+(Get-ChildItem "$env:systemdrive\Temp" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Drivers") {
+(Get-ChildItem "$env:systemdrive\Drivers" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Scripts") {
+(Get-ChildItem "$env:systemdrive\Scripts" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Script") {
+(Get-ChildItem "$env:systemdrive\Script"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemdrive\Nvidia") {
+(Get-ChildItem "$env:systemdrive\Nvidia"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+) | Measure-Object -Sum).Sum / 1GB)
+
+    if ($getSize -gt 0.2) {
+        $ResultText.text = "`r`n" + "  Folders for System, User and Common Temp Files contain: ", ("{0:N2} GB" -f $getSize) 
+        $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $getSize) , "Clear all System, User and Common Temp Files?" , 4)
+    }
+    else {
+        $ResultText.text = "`r`n" + "  There is no need for cleaning the temp folders right now..." 
+    }
+
     if ($CleanKnownTemp -eq 'Yes') {
         # Clear User Temp Folders
         $ResultText.text = "`r`n" + "  Clearing User Temp Folders..." 
@@ -1107,19 +1182,21 @@ $ultimateclean.Add_Click({
         Remove-Item -Path "$env:windir\Logs\CBS\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:ProgramData\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:systemdrive\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-        #old above -- bellow is test
-        Get-ChildItem -Path $env:temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-        Get-ChildItem -Path $env:windir\Temp -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-        Get-ChildItem -Path $env:windir\Prefetch -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-        Get-ChildItem -Path $env:SystemRoot\SoftwareDistribution\Download -Recurse -Force | Remove-Item -Recurse -Force
-        Get-ChildItem -Path $env:ProgramData\Microsoft\Windows\RetailDemo -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-        Get-ChildItem -Path $env:LOCALAPPDATA\AMD -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-        Get-ChildItem -Path $env:windir/../AMD/ -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse 
-        Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\DXCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-        Get-ChildItem -Path $env:LOCALAPPDATA\NVIDIA\GLCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
-        Get-ChildItem -Path $env:APPDATA\..\locallow\Intel\ShaderCache -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse
+        Remove-Item -Path "$env:ProgramData\Microsoft\Windows\RetailDemo" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:LOCALAPPDATA\AMD" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:windir/../AMD/" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:LOCALAPPDATA\NVIDIA\DXCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:LOCALAPPDATA\NVIDIA\GLCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:APPDATA\..\locallow\Intel\ShaderCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
-        Start-Process cleanmgr.exe /sagerun:1 -Wait
+        # Clear Custom folders
+        Remove-Item -Path "C:\Intel" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\PerfLogs" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Temp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Drivers" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Scripts" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Script" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "C:\Nvidia" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
         # Only grab log files sitting in the root of the Logfiles directory
         $Sys32Files = Get-ChildItem -Path "$env:windir\System32\LogFiles" | Where-Object { ($_.name -like "*.log")}
@@ -1128,7 +1205,7 @@ $ultimateclean.Add_Click({
         }
 
         $ResultText.text = "`r`n" + "  All System, User and Common Temp Files have been deleted successfully..." 
-    }     
+    } 
 
      # Get the size of the Windows Updates folder (SoftwareDistribution)
      $WUfoldersize = (Get-ChildItem "$env:windir\SoftwareDistribution" -Recurse | Measure-Object Length -s).sum / 1Gb
@@ -1136,8 +1213,11 @@ $ultimateclean.Add_Click({
      # Ask the user if they would like to clean the Windows Update folder
      if ($WUfoldersize -gt 0.5) {
          $ResultText.text = "`r`n" + "  The Software Distribution folder is", ("{0:N2} GB" -f $WUFoldersize) 
-         $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Do you want clean the Software Distribution folder?" , 4)
+         $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $WUFoldersize) , "Do you want clean the Software Distribution folder?" , 4)
      }
+     else {
+        $ResultText.text = "`r`n" + "  There is no need for cleaning Software Distribution folder right now..." 
+    }
 
     if ($CleanWU -eq 'Yes') { 
         $ResultText.text = "`r`n" + "  Restarting Windows Update Service and Deleting SoftwareDistribution Folder"
@@ -1211,8 +1291,6 @@ $ultimateclean.Add_Click({
          $OffloadScript = {
             $name='Superdeep Cleaner - Offload Process'
             $host.ui.RawUI.WindowTitle = $name
-            $ResultText.text = "`r`n" + "  This offload process makes the WinTool app not crash..." 
-            $ResultText.text = "`r`n" + "  Deleting temporary system files that can be hard to remove, also removes Windows.old folder if it exists..." 
             cmd /C del /f /s /q %systemdrive%\*.tmp
             cmd /C del /f /s /q %systemdrive%\*._mp
             cmd /C del /f /s /q %systemdrive%\*.log
@@ -3538,8 +3616,7 @@ $resetnetwork.Add_Click({
     $ResultText.text = "`r`n" + "  4. DNS Flushed!"
     cmd /c ipconfig /renew
     $ResultText.text = "`r`n" + "  5. IP renewed!"
-    $ResultText.text = "`r`n" + "  6. Network settings restored to default! - Ready for Next Task..."
-    
+    $ResultText.text = "`r`n" + "  6. Network settings restored to default! - Ready for Next Task..." 
 })
 
 $windowsupdatefix.Add_Click({
