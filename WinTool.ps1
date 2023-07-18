@@ -2810,7 +2810,7 @@ $gamingtweaks.Add_Click({
 	Powercfg -setacvalueindex scheme_current sub_processor CPMINCORES 100 | Out-Null
 	Powercfg -setactive scheme_current | Out-Null
 
-    $ResultText.text = "`r`n" + "  Optimizing Network, applying Tweaks for no throttle and maximum speed!..."
+    $ResultText.text = "`r`n" + "  Optimizing Network, applying Tweaks for no throttle and maximum speed..."
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -ErrorAction SilentlyContinue | Out-Null
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\QoS" -ErrorAction SilentlyContinue | Out-Null
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters" -ErrorAction SilentlyContinue | Out-Null
