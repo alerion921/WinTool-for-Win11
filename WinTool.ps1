@@ -245,7 +245,7 @@ $changedns.width               = 220
 $changedns.height              = 30
 $changedns.autosize = $true
 
-@('Change DNS here','Google DNS','Cloudflare DNS','Level3 DNS','OpenDNS', 'Restore Default DNS') | ForEach-Object {[void] $changedns.Items.Add($_)}
+@('ChangeDNS (Experimental)','Google DNS','Cloudflare DNS','Level3 DNS','OpenDNS', 'Restore Default DNS') | ForEach-Object {[void] $changedns.Items.Add($_)}
 
 $changedns.SelectedIndex = 0   # Select the default value
 $changedns.location            = New-Object System.Drawing.Point(0,80)
@@ -810,13 +810,13 @@ $changedns.add_SelectedIndexChanged({
         }
         5 {
             $ResultText.text = "`r`n" +"  Not sure why this would be needed since Cloudflare provides the fastest DNS connection..."
-            $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Reset DNS to Windows Default (DHCP)?" , 4)
+            $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Reset DNS to Windows Default, this will break any VPNs too?" , 4)
             if ($regcachclean -eq 'Yes') {
-                Netsh int ip reset
-                ipconfig /flushdns
-                ipconfig /release
-                ipconfig /renew
-                $ResultText.text = "`r`n" +"  Restart Windows in order for the Network Adapter to reset properly :)"
+                $Interface = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+                $interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
+                $interface | Set-NetIPInterface -Dhcp Enabled
+                $interface | Set-DnsClientServerAddress -ResetServerAddresses
+                $ResultText.text = "`r`n" +"  The Network Adapters has been reset properly."
             }
         }
         default {
@@ -1345,7 +1345,7 @@ if (Test-Path "$env:systemdrive\Nvidia") {
 
         $ResultText.text = "`r`n" + "  Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
     }
-    $ResultText.text = "`r`n" + "  Cleaning process has been completed - Ready for Next Task..." 
+    $ResultText.text = "`r`n" + "  Cleaning process has been completed. `r`n  Ready for Next Task!" 
 })
 
 $ultimatepower.Add_Click({
@@ -1353,7 +1353,7 @@ $ultimatepower.Add_Click({
 	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
 	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
 	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-    $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan. `r`n  Ready for Next Task..."
 })
 
 $laptopnumlock.Add_Click({
@@ -1363,8 +1363,9 @@ $laptopnumlock.Add_Click({
     If (([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
         $wsh = New-Object -ComObject WScript.Shell
         $wsh.SendKeys('{NUMLOCK}')
-        $ResultText.text = "`r`n" + "  Numlock bug has been fixed - Ready for Next Task..."
     }
+    Start-Sleep -Seconds 3
+    $ResultText.text = "`r`n" + "  Numlock bug has been fixed. `r`n  Ready for Next Task!"
 })
 
 $essentialtweaks.Add_Click({
@@ -1784,12 +1785,12 @@ foreach ($service in $services) {
     Start-Sleep -s 5
     Start-Process -name explorer
 
-    $ResultText.text =  "`r`n" + "  Essential Tweaks Done - Ready for Next Task..."
+    $ResultText.text =  "`r`n" + "  Essential Tweaks Done. `r`n  Ready for Next Task!"
 })
 
 $dualboottime.Add_Click({
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-    $ResultText.text = "`r`n" + "  Time set to UTC for consistent time in Dual Boot Systems - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Time set to UTC for consistent time in Dual Boot Systems. `r`n  Ready for Next Task!"
 })
 
 $essentialundo.Add_Click({
@@ -2094,7 +2095,7 @@ foreach ($service in $services) {
     Start-Sleep -s 5
     Start-Process -name explorer
 
-    $ResultText.text = "`r`n" + "  Essential Undo Completed - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Essential Undo Completed. `r`n  Ready for Next Task!"
 })
 
 #Valuable Windows 10 AppX apps that most people want to keep. Protected from DeBloat All.
@@ -2516,7 +2517,7 @@ $START_MENU_LAYOUT = @"
     CheckDMWService
     CheckInstallService
 
-    $ResultText.text = "`r`n" + "  Finished Removing Bloatware Apps - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Finished Removing Bloatware Apps. `r`n  Ready for Next Task!"
 })
 
 $reinstallbloat.Add_Click({
@@ -2589,7 +2590,7 @@ $reinstallbloat.Add_Click({
         New-Item $Objects64
     }
 
-    $ResultText.text = "`r`n" + "  Finished Reinstalling Bloatware Apps - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Finished Reinstalling Bloatware Apps. `r`n  Ready for Next Task!"
 })
 
 $defaultwindowsupdate.Add_Click({
@@ -2603,7 +2604,7 @@ $defaultwindowsupdate.Add_Click({
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
     $ResultText.text = "`r`n" + "  Enabled driver offering through Windows Update"
-    $ResultText.text = "`r`n" + "  Set Windows Updates to Stock Settings - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Windows Updates has been set to Default Settings. `r`n  Ready for Next Task!"
 })
 
 $securitywindowsupdate.Add_Click({
@@ -2629,7 +2630,7 @@ $securitywindowsupdate.Add_Click({
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
     $ResultText.text = "`r`n" + "  Disabled driver offering through Windows Update"
-    $ResultText.text = "`r`n" + "  Set Windows Update to Sane Settings - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
 })
 
 $performancefx.Add_Click({
@@ -2644,7 +2645,7 @@ $performancefx.Add_Click({
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
-    $ResultText.text = "`r`n" + "  Adjusted visual effects for performance - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance. `r`n  Ready for Next Task!"
 })
 
 $appearancefx.Add_Click({
@@ -2659,7 +2660,7 @@ $appearancefx.Add_Click({
 	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
 	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
 	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-    $ResultText.text = "`r`n" + "  Visual effects are set for appearance (Defaults) - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss. `r`n  Ready for Next Task!"
 })
 
 $gamingtweaks.Add_Click({
@@ -3078,7 +3079,7 @@ $gamingtweaks.Add_Click({
     $ResultText.text = "`r`n" + "  Disabling VBS..."
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
     
-    $ResultText.text = "`r`n" + "  Gaming Tweaks Applied - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Gaming Tweaks Applied. `r`n  Ready for Next Task!"
 
 })
 
@@ -3464,7 +3465,7 @@ $securitypatches.Add_Click({
         $ResultText.text = "`r`n" + "  SMB Optimized and Hardening Activated..."
     }
 
-    $ResultText.text = "`r`n" + "  All known security exploits have been patched successfully & additional system hardening has been applied - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  All known security exploits have been patched successfully & additional system hardening has been applied. `r`n  Ready for Next Task!"
 })
 
 $onedrive.Add_Click({
@@ -3484,6 +3485,7 @@ $onedrive.Add_Click({
     Start-Sleep -s 2
     Stop-Process -Name "explorer" -ErrorAction SilentlyContinue
     Start-Sleep -s 2
+    $ResultText.text = "`r`n" + "  Removing extra OneDrive leftovers..."
     Remove-Item -Path "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
@@ -3493,28 +3495,28 @@ $onedrive.Add_Click({
     }
     Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
     Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Deleted and Disabled OneDrive - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Deleted and Disabled OneDrive. `r`n  Ready for Next Task!"
 })
 
 $darkmode.Add_Click({
     $ResultText.text = "`r`n" + "  Setting dark mode to active"
     New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0" -Force
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value "0"
-    $ResultText.text = "`r`n" + "  Dark mode successfully activated - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Dark mode successfully activated. `r`n  Ready for Next Task!"
 })
 
 $lightmode.Add_Click({
     $ResultText.text = "`r`n" + "  Switching Back to Light Mode"
     Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Force
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
-    $ResultText.text = "`r`n" + "  Enabled Light Mode - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Enabled Light Mode. `r`n  Ready for Next Task!"
 })
 
 $EClipboardHistory.Add_Click({
 	$ResultText.text = "`r`n" + "  Restoring Clipboard History..."
 	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Enabled Clipboard History - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Enabled Clipboard History. `r`n  Ready for Next Task!"
 })
 
 $ELocation.Add_Click({
@@ -3541,14 +3543,14 @@ $EHibernation.Add_Click({
     $ResultText.text = "`r`n" + "  Enabling Hibernation..."
     Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 1
-    $ResultText.text = "`r`n" + "  Enabled Hibernation - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Enabled Hibernation. `r`n  Ready for Next Task!"
 })
 
 $InstallOneDrive.Add_Click({
     $ResultText.text = "`r`n" + "  Installing Onedrive. Please Wait..."
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
     %systemroot%\SysWOW64\OneDriveSetup.exe
-    $ResultText.text = "`r`n" + "  Finished Reinstalling OneDrive - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Finished Reinstalling OneDrive. `r`n  Ready for Next Task!"
 })
 
 $DisableNumLock.Add_Click({
@@ -3559,19 +3561,19 @@ $DisableNumLock.Add_Click({
         $wsh = New-Object -ComObject WScript.Shell
         $wsh.SendKeys('{NUMLOCK}')
     }
-    $ResultText.text = "`r`n" + "  Disable NumLock after startup... - Restart or Logout to Apply.."
+    $ResultText.text = "`r`n" + "  Disable NumLock after startup. `r`n  Ready for Next Task!"
 })
 
 #Add secondary en-US keyboard
 $addENkeyboard.Add_Click({
-    $ResultText.text = "`r`n" + "  Setting Norwegian keyboard default... - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Setting Norwegian keyboard default. `r`n  Ready for Next Task!"
 
     Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
 })
 
 # Remove secondary en-US keyboard
 $removeENkeyboard.Add_Click({
-    $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default... - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default."
 
     Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
 
@@ -3585,6 +3587,7 @@ $removeENkeyboard.Add_Click({
     $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
     Set-WinUserLanguageList $2 -Force
 
+    $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default. `r`n  Ready for Next Task!"
 })
 
 $killedge.Add_Click({
@@ -3597,7 +3600,7 @@ $killedge.Add_Click({
        Remove-Item $_.FullName
     }
 
-    $ResultText.text = "`r`n" + "  Microsoft Edge has been successfully removed - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Microsoft Edge has been successfully removed. `r`n  Ready for Next Task!"
 })
 
 $ncpa.Add_Click({ #Network cards interface
@@ -3629,7 +3632,7 @@ $restorepower.Add_Click({
     if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")){powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a}
     if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")){powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e}
     if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")){powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61}
-    $ResultText.text = "`r`n" + "  Restored all power plans: Power Saver, Balanced, and Ultimate Performance - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Restored all power plans: Power Saver, Balanced, and Ultimate Performance. `r`n  Ready for Next Task!"
 })
 
 $NFS.Add_Click({
@@ -3641,7 +3644,7 @@ $NFS.Add_Click({
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
     nfsadmin client start
     nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-    $ResultText.text = "`r`n" + "  NFS is now setup for user based NFS mounts - Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  NFS is now setup for user based NFS mounts `r`n  Ready for Next Task!"
 })
 
 $resetnetwork.Add_Click({
@@ -3656,7 +3659,7 @@ $resetnetwork.Add_Click({
     $ResultText.text = "`r`n" + "  4. DNS Flushed!"
     cmd /c ipconfig /renew
     $ResultText.text = "`r`n" + "  5. IP renewed!"
-    $ResultText.text = "`r`n" + "  6. Network settings restored to default! - Ready for Next Task..." 
+    $ResultText.text = "`r`n" + "  6. Network settings restored to default!. `r`n  Ready for Next Task!" 
 })
 
 $windowsupdatefix.Add_Click({
