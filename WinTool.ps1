@@ -244,12 +244,10 @@ $changedns.text = ""
 $changedns.width               = 220
 $changedns.height              = 30
 $changedns.autosize = $true
-[void] $changedns.Items.Add('Google')
-[void] $changedns.Items.Add('Cloud Flare')
-[void] $changedns.Items.Add('Level3')
-[void] $changedns.Items.Add('Open DNS')
-# Select the default value
-$changedns.SelectedIndex = 0
+
+@('Change DNS here','Google DNS','Cloudflare DNS','Level3 DNS','OpenDNS', 'Restore Default DNS') | ForEach-Object {[void] $changedns.Items.Add($_)}
+
+$changedns.SelectedIndex = 0   # Select the default value
 $changedns.location            = New-Object System.Drawing.Point(0,80)
 $changedns.Font                = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 $changedns.BackColor           = $frontcolor 
@@ -774,39 +772,57 @@ $Panel5.controls.AddRange(@(
 
 
 ##DNS CHANGER TEST HERE
-$changedns.Add_Click({
-If ( $changedns.text -eq 'Google' ) { 
-    $ResultText.text = "`r`n" +"  Setting DNS to Google for all connections..."
-    $DC = "8.8.8.8"
-    $Internet = "8.8.4.4"
-    $dns = "$DC", "$Internet"
-    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-}
-If ( $changedns.text -eq 'Cloud Flare' ) { 
-    $ResultText.text = "`r`n" +"  Setting DNS to Cloud Flare for all connections..."
-    $DC = "1.1.1.1"
-    $Internet = "1.0.0.1"
-    $dns = "$DC", "$Internet"
-    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-}
-If ( $changedns.text -eq 'Level3' ) { 
-    $ResultText.text = "`r`n" +"  Setting DNS to Level3 for all connections..."
-    $DC = "4.2.2.2"
-    $Internet = "4.2.2.1"
-    $dns = "$DC", "$Internet"
-    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-}
-If ( $changedns.text -eq 'Open DNS' ) { 
-    $ResultText.text = "`r`n" +"  Setting DNS to Open DNS for all connections..."
-    $DC = "208.67.222.222"
-    $Internet = "208.67.220.220"
-    $dns = "$DC", "$Internet"
-    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-}
+$changedns.add_SelectedIndexChanged({
+    $selected = $changedns.SelectedIndex
+
+    switch ($selected) {
+        1 {
+            $ResultText.text = "`r`n" +"  DNS set to Google on all network adapters..."
+            $DNS1 = "8.8.8.8"
+            $DNS2 = "8.8.4.4"
+            $dns = "$DNS1", "$DNS2"
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+        }
+        2 {
+            $ResultText.text = "`r`n" +"  DNS set to Cloudflare on all network adapters..."
+            $DNS1 = "1.1.1.1"
+            $DNS2 = "1.0.0.1"
+            $dns = "$DNS1", "$DNS2"
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+        }
+        3 {
+            $ResultText.text = "`r`n" +"  DNS set to Level3 on all network adapters..."
+            $DNS1 = "4.2.2.2"
+            $DNS2 = "4.2.2.1"
+            $dns = "$DNS1", "$DNS2"
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+        }
+        4 {
+            $ResultText.text = "`r`n" +"  DNS set to OpenDNS on all network adapters..."
+            $DNS1 = "208.67.222.222"
+            $DNS2 = "208.67.220.220"
+            $dns = "$DNS1", "$DNS2"
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+        }
+        5 {
+            $ResultText.text = "`r`n" +"  Not sure why this would be needed since Cloudflare provides the fastest DNS connection..."
+            $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Reset DNS to Windows Default (DHCP)?" , 4)
+            if ($regcachclean -eq 'Yes') {
+                Netsh int ip reset
+                ipconfig /flushdns
+                ipconfig /release
+                ipconfig /renew
+                $ResultText.text = "`r`n" +"  Restart Windows in order for the Network Adapter to reset properly :)"
+            }
+        }
+        default {
+            $ResultText.text = "`r`n" +"  You need to press an option to change the DNS Address to your liking :)"
+        }
+    }
 })
 
 $EActionCenter.Add_Click({
@@ -996,13 +1012,10 @@ $ultimateclean.Add_Click({
         $ResultText.text = "`r`n" + "  Deleted SnagIt crash dumps..." 
     }
 
-    if (!(Test-Path "C:\Program Files (x86)\Dropbox\Client")){
-        $ResultText.text = "`r`n" + " Dropbox is not installed & Folders can't be found.. Skipping clean..." 
-    }  
-    else {
+    if (Test-Path "C:\Program Files (x86)\Dropbox\Client"){
         $Dropboxclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete all Dropbox Caches?" , 4)
         if ($Dropboxclean -eq 'Yes') {
-            # Clear Dropbox
+            # Clear Dropbox Cache
             $ResultText.text = "`r`n" + " Clearing Dropbox Cache..." 
             Foreach ($user in $Users) {
                 if (Test-Path "C:\Users\$user\Dropbox\") {
@@ -1013,6 +1026,10 @@ $ultimateclean.Add_Click({
             $ResultText.text = "`r`n" + "  Dropbox caches deleted..." 
         }
     }
+    else {
+        Start-Sleep -s 3
+        $ResultText.text = "`r`n" + " No Dropbox installation can be found.. Skipping clean..." 
+    }
 
     # Clear HP Support Assistant Installation Folder
     if (Test-Path "C:\swsetup") {
@@ -1022,7 +1039,7 @@ $ultimateclean.Add_Click({
     $DeleteOldDownloads = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete User files from Download folder?" , 4)
     # Delete files from Downloads folder
     if ($DeleteOldDownloads -eq 'Yes') { 
-        $ResultText.text = "`r`n" + " Deleting files from User Downloads folder..." 
+        $ResultText.text = "`r`n" + " Deleting files from User Download folder..." 
         Foreach ($user in $Users) {
             $UserDownloads = "C:\Users\$user\Downloads"
             $OldFiles = Get-ChildItem -Path "$UserDownloads\" -Recurse -File -ErrorAction SilentlyContinue
@@ -1030,7 +1047,7 @@ $ultimateclean.Add_Click({
                 Remove-Item -Path "$UserDownloads\$file" -Force -ErrorAction SilentlyContinue -Verbose
             }
         }
-        $ResultText.text = "`r`n" + "  All files in the user download folder have been deleted..." 
+        $ResultText.text = "`r`n" + "  All files in the User Download folder have been deleted..." 
     }
 
     # Delete files from Azure Log folder
@@ -1171,13 +1188,13 @@ if (Test-Path "$env:systemdrive\Nvidia") {
         $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $getSize) , "Clear all System, User and Common Temp Files?" , 4)
     }
     else {
-        $ResultText.text = "`r`n" + "  There is no need for cleaning the temp folders right now..." 
-        Start-Sleep -s 5
+        Start-Sleep -s 3
+        $ResultText.text = "`r`n" + "  There is no need for cleaning the Common Temp folders right now..." 
     }
 
     if ($CleanKnownTemp -eq 'Yes') {
-        # Clear User Temp Folders
-        $ResultText.text = "`r`n" + "  Clearing User Temp Folders..." 
+        # Clear Common Temp Folders
+        $ResultText.text = "`r`n" + "  Clearing Common Temp Folders..." 
         Foreach ($user in $Users) {
             Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
             Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1230,8 +1247,8 @@ if (Test-Path "$env:systemdrive\Nvidia") {
          $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $WUFoldersize) , "Do you want clean the Software Distribution folder?" , 4)
      }
      else {
+        Start-Sleep -s 3
         $ResultText.text = "`r`n" + "  There is no need for cleaning Software Distribution folder right now..." 
-        Start-Sleep -s 4
     }
 
     if ($CleanWU -eq 'Yes') { 
