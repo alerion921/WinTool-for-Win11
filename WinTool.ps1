@@ -168,7 +168,7 @@ $gamingtweaks.FlatStyle          = "Flat"
 $gamingtweaks.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $securitypatches                 = New-Object system.Windows.Forms.Button
-$securitypatches.text            = "Patch Security"
+$securitypatches.text            = "Patch Security (Caution!)"
 $securitypatches.width           = 220
 $securitypatches.height          = 65
 $securitypatches.location        = New-Object System.Drawing.Point(0,255)
@@ -777,7 +777,7 @@ $changedns.add_SelectedIndexChanged({
 
     switch ($selected) {
         1 {
-            $ResultText.text = "`r`n" +"  DNS set to Google on all network adapters..."
+            $ResultText.text = "`r`n" +"  DNS set to Google on all network adapters. `r`n  Ready for Next Task!"
             $DNS1 = "8.8.8.8"
             $DNS2 = "8.8.4.4"
             $dns = "$DNS1", "$DNS2"
@@ -785,7 +785,7 @@ $changedns.add_SelectedIndexChanged({
             $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         2 {
-            $ResultText.text = "`r`n" +"  DNS set to Cloudflare on all network adapters..."
+            $ResultText.text = "`r`n" +"  DNS set to Cloudflare on all network adapters. `r`n  Ready for Next Task!"
             $DNS1 = "1.1.1.1"
             $DNS2 = "1.0.0.1"
             $dns = "$DNS1", "$DNS2"
@@ -793,7 +793,7 @@ $changedns.add_SelectedIndexChanged({
             $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         3 {
-            $ResultText.text = "`r`n" +"  DNS set to Level3 on all network adapters..."
+            $ResultText.text = "`r`n" +"  DNS set to Level3 on all network adapters. `r`n  Ready for Next Task!"
             $DNS1 = "4.2.2.2"
             $DNS2 = "4.2.2.1"
             $dns = "$DNS1", "$DNS2"
@@ -801,7 +801,7 @@ $changedns.add_SelectedIndexChanged({
             $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         4 {
-            $ResultText.text = "`r`n" +"  DNS set to OpenDNS on all network adapters..."
+            $ResultText.text = "`r`n" +"  DNS set to OpenDNS on all network adapters. `r`n  Ready for Next Task!"
             $DNS1 = "208.67.222.222"
             $DNS2 = "208.67.220.220"
             $dns = "$DNS1", "$DNS2"
@@ -816,7 +816,7 @@ $changedns.add_SelectedIndexChanged({
                 $interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
                 $interface | Set-NetIPInterface -Dhcp Enabled
                 $interface | Set-DnsClientServerAddress -ResetServerAddresses
-                $ResultText.text = "`r`n" +"  The Network Adapters has been reset properly."
+                $ResultText.text = "`r`n" +"  The Network Adapters has been reset properly. `r`n  Ready for Next Task!"
             }
         }
         default {
@@ -837,7 +837,7 @@ $EActionCenter.Add_Click({
 
     Start-Process explorer.exe	
 
-    $ResultText.text = "`r`n" + "  Action Center has been successfully re-enabled..."
+    $ResultText.text = "`r`n" + "  Action Center has been successfully re-enabled. `r`n  Ready for Next Task!"
 })
 
 $ECortana.Add_Click({
@@ -867,7 +867,7 @@ $ECortana.Add_Click({
     
     Start-Process explorer.exe	
 
-    $ResultText.text = "`r`n" + "  Cortana has been successfully re-enabled..."
+    $ResultText.text = "`r`n" + "  Cortana has been successfully re-enabled. `r`n  Ready for Next Task!"
 })
 
 
@@ -916,7 +916,7 @@ $errorscanner.Add_Click({
             Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
         }
     
-    if($?) { $ResultText.text = "`r`n" + "  System error scans has been initiated wait for it to complete then do a restart -  Ready for Next Task..." }
+    if($?) { $ResultText.text = "`r`n" + "  System error scans has been initiated wait for it to complete then do a restart. `r`n  Ready for Next Task!" }
 })
 
 
@@ -1353,7 +1353,7 @@ $ultimatepower.Add_Click({
 	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
 	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
 	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-    $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan. `r`n  Ready for Next Task..."
+    $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan. `r`n  Ready for Next Task!"
 })
 
 $laptopnumlock.Add_Click({
@@ -3600,21 +3600,21 @@ $killedge.Add_Click({
        Remove-Item $_.FullName
     }
 
-    $ResultText.text = "`r`n" + "  Microsoft Edge has been successfully removed. `r`n  Ready for Next Task!"
+    $ResultText.text = "`r`n" + "  Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n  Ready for Next Task!"
 })
 
 $ncpa.Add_Click({ #Network cards interface
-    $ResultText.text = "`r`n" + "  Opened Network Interfaces..."
+    $ResultText.text = "`r`n" + "  Opened Network Connections..."
     cmd /c ncpa.cpl
 })
 
 $oldsoundpanel.Add_Click({ #Old sound control panel
-    $ResultText.text = "`r`n" + "  Opened Old Sound Panel..."
+    $ResultText.text = "`r`n" + "  Opened Sound Properties..."
     cmd /c mmsys.cpl
 })
 
 $oldcontrolpanel.Add_Click({ #Old controlpanel
-    $ResultText.text = "`r`n" + "  Opened Old Control Panel..."
+    $ResultText.text = "`r`n" + "  Opened Control Panel..."
     cmd /c control
 })
 
@@ -3626,6 +3626,16 @@ $oldsystempanel.Add_Click({ #Old system panel
 $oldpower.Add_Click({
     $ResultText.text = "`r`n" + "  Opened Advanced Power Options..."
     cmd /c powercfg.cpl
+})
+
+$olddevicemanager.Add_Click({
+    $ResultText.text = "`r`n" + "  Opened Device Manager..."
+    cmd /c devmgmt.msc
+})
+
+$oldprinters.Add_Click({
+    $ResultText.text = "`r`n" + "  Opened Devices/Printers..."
+    cmd /c control printers
 })
 
 $restorepower.Add_Click({
