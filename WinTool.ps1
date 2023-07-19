@@ -1193,7 +1193,15 @@ if (Test-Path "$env:systemdrive\Nvidia") {
 
 if (Test-Path "$env:LOCALAPPDATA\temp") {
     (Get-ChildItem "$env:LOCALAPPDATA\temp"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-    }
+}
+
+if (Test-Path "$env:systemroot\System32\Catroot2.bak") {
+    (Get-ChildItem "$env:systemroot\System32\Catroot2.bak"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
+
+if (Test-Path "$env:systemroot\SoftwareDistribution.bak") {
+    (Get-ChildItem "$env:systemroot\SoftwareDistribution.bak"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+}
 
 ) | Measure-Object -Sum).Sum / 1GB)
 
@@ -1220,7 +1228,8 @@ if (Test-Path "$env:LOCALAPPDATA\temp") {
 
         # Clear Windows Temp Folder
         $ResultText.text = "`r`n" + "  Clearing Windows Temp, Logs and Prefetch Folders..." 
-        Remove-Item -Path "$env:windir\SoftwareDistribution.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemroot\SoftwareDistribution.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        Remove-Item -Path "$env:systemroot\System32\Catroot2.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:systemdrive\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
         Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -3714,7 +3723,8 @@ $resetnetwork.Add_Click({
     cmd /c ipconfig /renew
     $ResultText.text = "`r`n" + "  5. IP renewed!"
     Start-Sleep -s 1
-    $ResultText.text = "`r`n" + "  6. Network settings restored to default!. `r`n  Ready for Next Task!" 
+    $ResultText.text = "`r`n" + "  Network settings restore to default, please reboot your computer.."
+    $Form.text                       = "WinTool by Alerion - Network settings restore to default, please reboot your computer..."
 })
 
 $windowsupdatefix.Add_Click({
@@ -3809,8 +3819,8 @@ $windowsupdatefix.Add_Click({
     $ResultText.text = "`r`n" + "  12. Forcing discovery..."
     wuauclt /resetauthorization /detectnow 
     Start-Sleep -s 1
-    $ResultText.text = "`r`n" + "  Process complete - Please reboot your computer.."
-    $Form.text                       = "WinTool by Alerion - Please reboot your computer"
+    $ResultText.text = "`r`n" + "  Windows Update has been repaired, please reboot your computer..."
+    $Form.text                       = "WinTool by Alerion - Windows Update has been repaired, please reboot your computer..."
 })
 
 $Form.ShowDialog() | Out-Null
