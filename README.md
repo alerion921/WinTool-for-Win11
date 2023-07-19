@@ -21,6 +21,12 @@ Alternativly you can use the Ultimate Cleaner to clean up (this is a feature i s
 
 
 Paste this command into Powershell (admin):
+
+Shortest:
+```
+iwr -useb  https://t.ly/uObQL | iex
+```
+Longest: 
 ```
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))
 ```
