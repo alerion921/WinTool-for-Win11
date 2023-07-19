@@ -2618,20 +2618,24 @@ $reinstallbloat.Add_Click({
 
 $defaultwindowsupdate.Add_Click({
     $ResultText.text = "`r`n" + "  Enabling driver offering through Windows Update..."
+    Start-Sleep -s 1
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
     $ResultText.text = "`r`n" + "  Enabling Windows Update automatic restart..."
+    Start-Sleep -s 1
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
     $ResultText.text = "`r`n" + "  Enabled driver offering through Windows Update"
-    $ResultText.text = "`r`n" + "  Windows Updates has been set to Default Settings. `r`n  Ready for Next Task!"
+    Start-Sleep -s 1
+    $ResultText.text = "`r`n" + "  Windows Update has been set to Default Settings. `r`n  Ready for Next Task!"
 })
 
 $securitywindowsupdate.Add_Click({
     $ResultText.text = "`r`n" + "  Disabling driver offering through Windows Update..."
+    Start-Sleep -s 1
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
     }
@@ -2647,17 +2651,20 @@ $securitywindowsupdate.Add_Click({
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
     $ResultText.text = "`r`n" + "  Disabling Windows Update automatic restart..."
+    Start-Sleep -s 1
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
     $ResultText.text = "`r`n" + "  Disabled driver offering through Windows Update"
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
 })
 
 $performancefx.Add_Click({
     $ResultText.text = "`r`n" + "  Adjusting visual effects for performance..."
+    Start-Sleep -s 1
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
@@ -2673,6 +2680,7 @@ $performancefx.Add_Click({
 
 $appearancefx.Add_Click({
     $ResultText.text = "`r`n" + "  Adjusting visual effects for appearance..."
+    Start-Sleep -s 1
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158,30,7,128,18,0,0,0))
@@ -3692,37 +3700,47 @@ $NFS.Add_Click({
 $resetnetwork.Add_Click({
     cmd /c netsh winsock reset
     $ResultText.text = "`r`n" + "  1. Winsock reset!"
+    Start-Sleep -s 1
     cmd /c netsh int ip reset
     $ResultText.text = "`r`n" + "  2. IP reset!"
+    Start-Sleep -s 1
     cmd /c netsh advfirewall reset
     $ResultText.text = "`r`n" + "  3. Firewall reset!"
+    Start-Sleep -s 1
     cmd /c ipconfig /release
     cmd /c ipconfig /flushdns
     $ResultText.text = "`r`n" + "  4. DNS Flushed!"
+    Start-Sleep -s 1
     cmd /c ipconfig /renew
     $ResultText.text = "`r`n" + "  5. IP renewed!"
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  6. Network settings restored to default!. `r`n  Ready for Next Task!" 
 })
 
 $windowsupdatefix.Add_Click({
     $Form.text                       = "WinTool by Alerion - Initializing Windows Update Fix..."
     $ResultText.text = "`r`n" + "  1. Stopping Windows Update Services..."
+    Start-Sleep -s 1
     Stop-Service -Name BITS 
     Stop-Service -Name wuauserv 
     Stop-Service -Name appidsvc 
     Stop-Service -Name cryptsvc 
     
     $ResultText.text = "`r`n" + "  2. Remove QMGR Data file..."
+    Start-Sleep -s 1
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
     
     $ResultText.text = "`r`n" + "  3. Renaming the Software Distribution and CatRoot Folder..."
+    Start-Sleep -s 1
     Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue #should probably delete these files with the ultimate cleaner but has not been setup yet
     Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue #should probably delete these files with the ultimate cleaner but has not been setup yet
     
     $ResultText.text = "`r`n" + "  4. Removing old Windows Update log..."
+    Start-Sleep -s 1
     Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
     
     $ResultText.text = "`r`n" + "  5. Resetting the Windows Update Services to defualt settings..."
+    Start-Sleep -s 1
     "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
     "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
     
@@ -3772,12 +3790,14 @@ $windowsupdatefix.Add_Click({
     REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f 
     
     $ResultText.text = "`r`n" + "  8. Resetting the WinSock..."
+    Start-Sleep -s 1
     netsh winsock reset 
     netsh winhttp reset proxy 
     
     $ResultText.text = "`r`n" + "  9. Delete all BITS jobs..."
+    Start-Sleep -s 1
     Get-BitsTransfer | Remove-BitsTransfer 
-    
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  10. Attempting to install the Windows Update Agent..."
     if($arch -eq 64){ 
         wusa Windows8-RT-KB2937636-x64 /quiet 
@@ -3793,6 +3813,7 @@ $windowsupdatefix.Add_Click({
     Start-Service -Name cryptsvc 
     
     $ResultText.text = "`r`n" + "  12. Forcing discovery..."
+    Start-Sleep -s 1
     wuauclt /resetauthorization /detectnow 
     
     $ResultText.text = "`r`n" + "  Process complete - Please reboot your computer.."
