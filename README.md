@@ -1,11 +1,19 @@
 Basic usage to setup a Gaming PC with this Script:
+
 Press "Essential Tweaks"
+
 Press "Gaming Tweaks"
+
 Press "Remove OneDrive"
+
 Press "Security Updates"
+
 Press "Remove MS Store Apps"
+
 Press "Ultimate Power Plan"
+
 Press "Optimize Performance"
+
 
 Then at the end since Windows is a bit buggy press "Enable Action Centre" this will make sound, internet and notification area work again.
 
