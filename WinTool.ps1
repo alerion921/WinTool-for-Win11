@@ -926,14 +926,23 @@ $ultimateclean.Add_Click({
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
-    <# $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean the component cache that is used by Windows Store?" , 4)
+    $Form.text                       = "WinTool by Alerion - Initializing Ultimate Cleaning..."
+
+    $ResultText.text = "`r`n" + "  Creating a restore point named: WinTool-Ultimate-Cleaning-Restorepoint, incase something bad happens.."
+    Enable-ComputerRestore -Drive "C:\"
+    Checkpoint-Computer -Description "WinTool-Ultimate-Cleaning-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
+
+    $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean Shadow Copies cache and Windows Store Component cache?" , 4)
+
     if ($componentcache -eq 'Yes') {
-        $ResultText.ForeColor            = $working 
-        $ResultText.text = "`r`n" + "  Component cache is being cleaned please be patient..." 
+        $ResultText.text = "`r`n" + "  Windows Store Component cache is being cleaned please be patient..." 
+        Start-Sleep -Seconds 2
         vssadmin delete shadows /all | Out-Null
-        $ResultText.text = "`r`n" + "  Shadowcopies deleted, moving on to deleting useless component caches that are being stored please wait..." 
-        Checkpoint-Computer -Description "Windows_Optimisation_Pack Cleaner" -RestorePointType MODIFY_SETTINGS 
+        $ResultText.text = "`r`n" + "  Shadowcopies deleted, moving on to deleting useless Windows Store caches please wait..." 
+        Start-Sleep -Seconds 2
         $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
+        $Form.text                       = "WinTool by Alerion - Please wait patiently Ultimate Cleaning is still deleting files..."
+        $ResultText.text = "`r`n" + "  Still deleting alot of unnecessary Windows crap..." 
         ForEach($result in $Key)
         {If($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder"){}Else{
         $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
@@ -941,10 +950,9 @@ $ultimateclean.Add_Click({
         cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore
         cmd /c DISM /Online /Cleanup-Image /spsuperseded
         cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
-        $ResultText.text = "`r`n" + "  Component cache cleaned..." 
-        $ResultText.ForeColor            = $success 
+        $ResultText.text = "`r`n" + "  Shadow Copies cache and Windows Store Component cache cleaned..." 
         Clear-BCCache -Force -ErrorAction SilentlyContinue
-    } #>
+    }
 
     $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean up a collection of useless registry files?" , 4)
     if ($regcachclean -eq 'Yes') {
@@ -971,6 +979,7 @@ $ultimateclean.Add_Click({
 
         Start-Process explorer.exe	
 
+        Start-Sleep -s 3
         $ResultText.text = "`r`n" + "  Windows registry junk files deleted successfully..." 
     }
 
@@ -1027,7 +1036,7 @@ $ultimateclean.Add_Click({
         }
     }
     else {
-        Start-Sleep -s 3
+        Start-Sleep -s 2
         $ResultText.text = "`r`n" + " No Dropbox installation can be found.. Skipping clean..." 
     }
 
@@ -1047,6 +1056,7 @@ $ultimateclean.Add_Click({
                 Remove-Item -Path "$UserDownloads\$file" -Force -ErrorAction SilentlyContinue -Verbose
             }
         }
+        Start-Sleep -s 2
         $ResultText.text = "`r`n" + "  All files in the User Download folder have been deleted..." 
     }
 
@@ -1181,6 +1191,10 @@ if (Test-Path "$env:systemdrive\Nvidia") {
 (Get-ChildItem "$env:systemdrive\Nvidia"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
 }
 
+if (Test-Path "$env:LOCALAPPDATA\temp") {
+    (Get-ChildItem "$env:LOCALAPPDATA\temp"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+    }
+
 ) | Measure-Object -Sum).Sum / 1GB)
 
     if ($getSize -gt 0.1) {
@@ -1189,7 +1203,7 @@ if (Test-Path "$env:systemdrive\Nvidia") {
     }
     else {
         Start-Sleep -s 3
-        $ResultText.text = "`r`n" + "  There is no need for cleaning the Common Temp folders right now..." 
+        $ResultText.text = "`r`n" + "  No need to clean the System, User and Common Temp folders right now..." 
     }
 
     if ($CleanKnownTemp -eq 'Yes') {
@@ -1345,7 +1359,8 @@ if (Test-Path "$env:systemdrive\Nvidia") {
 
         $ResultText.text = "`r`n" + "  Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
     }
-    $ResultText.text = "`r`n" + "  Cleaning process has been completed. `r`n  Ready for Next Task!" 
+    $ResultText.text = "`r`n" + "  Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n  Ready for Next Task!" 
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $ultimatepower.Add_Click({
@@ -1369,10 +1384,11 @@ $laptopnumlock.Add_Click({
 })
 
 $essentialtweaks.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Initializing Essential Tweaks..."
     $ResultText.text = "`r`n" + "  Activating Essential Tweaks... Please Wait"
-    $ResultText.text = "`r`n" + "  Creating a restore point incase something bad happens.."
+    $ResultText.text = "`r`n" + "  Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.."
     Enable-ComputerRestore -Drive "C:\"
-    Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
+    Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
     $ResultText.text += "`r`n" + "  Running O&O Shutup with Recommended Settings"
     Import-Module BitsTransfer
@@ -1786,6 +1802,7 @@ foreach ($service in $services) {
     Start-Process -name explorer
 
     $ResultText.text =  "`r`n" + "  Essential Tweaks Done. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $dualboottime.Add_Click({
@@ -1794,9 +1811,10 @@ $dualboottime.Add_Click({
 })
 
 $essentialundo.Add_Click({
-    $ResultText.text = "`r`n" + "  Creating Restore Point and Reverting Settings..."
+    $Form.text                       = "WinTool by Alerion - Initializing Essentials Undo..."
+    $ResultText.text = "`r`n" + "  Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong..."
     Enable-ComputerRestore -Drive "C:\"
-    Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
+    Checkpoint-Computer -Description "WinTool-EssentialTweaksUndo-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
     $ResultText.text += "`r`n" +"  Disabling Windows 10 context menu..."
     New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Force
@@ -2096,6 +2114,7 @@ foreach ($service in $services) {
     Start-Process -name explorer
 
     $ResultText.text = "`r`n" + "  Essential Undo Completed. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 #Valuable Windows 10 AppX apps that most people want to keep. Protected from DeBloat All.
@@ -2280,13 +2299,14 @@ $Bloatware = @(
 )
 
 $removebloat.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Removing Bloat..."
         $ErrorActionPreference = 'SilentlyContinue'
 
         Function SystemPrep {
 
             $ResultText.text = "`r`n" + "  Starting Sysprep Fixes"
    
-            $ResultText.text = "`r`n" + "  Adding Registry key to Disable Windows Store Automatic Updates"
+            $ResultText.text = "`r`n" + "  Adding Registry key to disable Windows Store Automatic Updates"
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
             If (!(Test-Path $registryPath)) {
                 Mkdir $registryPath
@@ -2517,11 +2537,12 @@ $START_MENU_LAYOUT = @"
     CheckDMWService
     CheckInstallService
 
-    $ResultText.text = "`r`n" + "  Finished Removing Bloatware Apps. `r`n  Ready for Next Task!"
+    $ResultText.text = "`r`n" + "  Finished removing bloatware apps. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $reinstallbloat.Add_Click({
-
+    $Form.text                       = "WinTool by Alerion - Reinstalling Bloatware..."
     $ResultText.text = "`r`n" + "  Reinstalling MS Store Apps and activating deactivated features for MS Store..."
     $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
@@ -2591,6 +2612,7 @@ $reinstallbloat.Add_Click({
     }
 
     $ResultText.text = "`r`n" + "  Finished Reinstalling Bloatware Apps. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $defaultwindowsupdate.Add_Click({
@@ -2664,6 +2686,8 @@ $appearancefx.Add_Click({
 })
 
 $gamingtweaks.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Initializing Gaming Tweaks..."
+
     $ResultText.text = "`r`n" + "  Disabling Fullscreen Optimization..."
 	Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehaviorMode" -Type DWord -Value 2
 	Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type DWord -Value 1
@@ -3080,11 +3104,11 @@ $gamingtweaks.Add_Click({
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
     
     $ResultText.text = "`r`n" + "  Gaming Tweaks Applied. `r`n  Ready for Next Task!"
-
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $securitypatches.Add_Click({
-    
+    $Form.text                       = "WinTool by Alerion - Patching known Security Exploits..."
     $ResultText.text = "`r`n" + "  Applying Security Patches to disable known exploits"
 
     $ResultText.text = "`r`n" + "  Disabling Spectre Meltdown vulnerability on this system"
@@ -3466,9 +3490,11 @@ $securitypatches.Add_Click({
     }
 
     $ResultText.text = "`r`n" + "  All known security exploits have been patched successfully & additional system hardening has been applied. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $onedrive.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Removing OneDrive..."
     $ResultText.text = "`r`n" + "  Disabling OneDrive..."
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
@@ -3496,6 +3522,7 @@ $onedrive.Add_Click({
     Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
     Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
     $ResultText.text = "`r`n" + "  Deleted and Disabled OneDrive. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $darkmode.Add_Click({
@@ -3547,10 +3574,12 @@ $EHibernation.Add_Click({
 })
 
 $InstallOneDrive.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Reinstalling OneDrive..."
     $ResultText.text = "`r`n" + "  Installing Onedrive. Please Wait..."
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
     %systemroot%\SysWOW64\OneDriveSetup.exe
     $ResultText.text = "`r`n" + "  Finished Reinstalling OneDrive. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $DisableNumLock.Add_Click({
@@ -3591,6 +3620,7 @@ $removeENkeyboard.Add_Click({
 })
 
 $killedge.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Removing Microsoft Edge..."
     $ResultText.text = "`r`n" + "  Removing Microsoft Edge..."
     Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/killedge.bat | Invoke-Expression
 
@@ -3601,6 +3631,7 @@ $killedge.Add_Click({
     }
 
     $ResultText.text = "`r`n" + "  Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n  Ready for Next Task!"
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $ncpa.Add_Click({ #Network cards interface
@@ -3673,6 +3704,7 @@ $resetnetwork.Add_Click({
 })
 
 $windowsupdatefix.Add_Click({
+    $Form.text                       = "WinTool by Alerion - Initializing Windows Update Fix..."
     $ResultText.text = "`r`n" + "  1. Stopping Windows Update Services..."
     Stop-Service -Name BITS 
     Stop-Service -Name wuauserv 
@@ -3763,7 +3795,7 @@ $windowsupdatefix.Add_Click({
     wuauclt /resetauthorization /detectnow 
     
     $ResultText.text = "`r`n" + "  Process complete - Please reboot your computer.."
-
+    $Form.text                       = "WinTool by Alerion"
 })
 
 $Form.ShowDialog() | Out-Null
