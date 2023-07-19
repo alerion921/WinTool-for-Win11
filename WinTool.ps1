@@ -2299,7 +2299,8 @@ $Bloatware = @(
 )
 
 $removebloat.Add_Click({
-    $Form.text                       = "WinTool by Alerion - Removing Bloat..."
+    $Form.text                       = "WinTool by Alerion - Removing Bloatware..."
+    $ResultText.text = "`r`n" + "  Hang on while Windows Bloatware is being removed"
         $ErrorActionPreference = 'SilentlyContinue'
 
         Function SystemPrep {
@@ -2542,7 +2543,7 @@ $START_MENU_LAYOUT = @"
 })
 
 $reinstallbloat.Add_Click({
-    $Form.text                       = "WinTool by Alerion - Reinstalling Bloatware..."
+    $Form.text                       = "WinTool by Alerion - Reinstalling MS Store Apps and activating deactivated features..."
     $ResultText.text = "`r`n" + "  Reinstalling MS Store Apps and activating deactivated features for MS Store..."
     $ErrorActionPreference = 'SilentlyContinue'
     #This function will revert the changes you made when running the Start-Debloat function.
