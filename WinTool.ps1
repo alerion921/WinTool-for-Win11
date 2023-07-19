@@ -3720,32 +3720,28 @@ $resetnetwork.Add_Click({
 $windowsupdatefix.Add_Click({
     $Form.text                       = "WinTool by Alerion - Initializing Windows Update Fix..."
     $ResultText.text = "`r`n" + "  1. Stopping Windows Update Services..."
-    Start-Sleep -s 1
     Stop-Service -Name BITS 
     Stop-Service -Name wuauserv 
     Stop-Service -Name appidsvc 
     Stop-Service -Name cryptsvc 
+    Start-Sleep -s 1
     
     $ResultText.text = "`r`n" + "  2. Remove QMGR Data file..."
-    Start-Sleep -s 1
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
+    Start-Sleep -s 1
     
     $ResultText.text = "`r`n" + "  3. Renaming the Software Distribution and CatRoot Folder..."
-    Start-Sleep -s 1
     Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue #should probably delete these files with the ultimate cleaner but has not been setup yet
     Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue #should probably delete these files with the ultimate cleaner but has not been setup yet
-    
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  4. Removing old Windows Update log..."
-    Start-Sleep -s 1
     Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
-    
-    $ResultText.text = "`r`n" + "  5. Resetting the Windows Update Services to defualt settings..."
     Start-Sleep -s 1
+    $ResultText.text = "`r`n" + "  5. Resetting the Windows Update Services to defualt settings..."
     "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
     "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
-    
     Set-Location $env:systemroot\system32 
-    
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  6. Registering usefull DLLs..."
     regsvr32.exe /s atl.dll 
     regsvr32.exe /s urlmon.dll 
@@ -3783,19 +3779,17 @@ $windowsupdatefix.Add_Click({
     regsvr32.exe /s wucltux.dll 
     regsvr32.exe /s muweb.dll 
     regsvr32.exe /s wuwebv.dll 
-    
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  7. Removing WSUS client settings..."
     REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v AccountDomainSid /f 
     REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v PingID /f 
     REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f 
-    
-    $ResultText.text = "`r`n" + "  8. Resetting the WinSock..."
     Start-Sleep -s 1
+    $ResultText.text = "`r`n" + "  8. Resetting the WinSock..."
     netsh winsock reset 
     netsh winhttp reset proxy 
-    
-    $ResultText.text = "`r`n" + "  9. Delete all BITS jobs..."
     Start-Sleep -s 1
+    $ResultText.text = "`r`n" + "  9. Delete all BITS jobs..."
     Get-BitsTransfer | Remove-BitsTransfer 
     Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  10. Attempting to install the Windows Update Agent..."
@@ -3805,19 +3799,18 @@ $windowsupdatefix.Add_Click({
     else{ 
         wusa Windows8-RT-KB2937636-x86 /quiet 
     } 
-    
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  11. Starting Windows Update Services..."
     Start-Service -Name BITS 
     Start-Service -Name wuauserv 
     Start-Service -Name appidsvc 
     Start-Service -Name cryptsvc 
-    
-    $ResultText.text = "`r`n" + "  12. Forcing discovery..."
     Start-Sleep -s 1
+    $ResultText.text = "`r`n" + "  12. Forcing discovery..."
     wuauclt /resetauthorization /detectnow 
-    
+    Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  Process complete - Please reboot your computer.."
-    $Form.text                       = "WinTool by Alerion"
+    $Form.text                       = "WinTool by Alerion - Please reboot your computer"
 })
 
 $Form.ShowDialog() | Out-Null
