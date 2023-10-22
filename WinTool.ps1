@@ -279,16 +279,16 @@ $laptopnumlock.ForeColor         = $backcolor
 $laptopnumlock.FlatStyle         = "Flat"
 $laptopnumlock.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$removeENkeyboard                 = New-Object system.Windows.Forms.Button
-$removeENkeyboard.text            = "PLACEHOLDER 1"
-$removeENkeyboard.width           = 220
-$removeENkeyboard.height          = 30
-$removeENkeyboard.location        = New-Object System.Drawing.Point(0,185)
-$removeENkeyboard.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$removeENkeyboard.BackColor       = $frontcolor 
-$removeENkeyboard.ForeColor       = $backcolor
-$removeENkeyboard.FlatStyle       = "Flat"
-$removeENkeyboard.FlatAppearance.MouseOverBackColor = $hovercolor
+$dualboottime                 = New-Object system.Windows.Forms.Button
+$dualboottime.text            = "Set Time to UTC"
+$dualboottime.width           = 220
+$dualboottime.height          = 30
+$dualboottime.location        = New-Object System.Drawing.Point(0,185)
+$dualboottime.Font            = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$dualboottime.BackColor       = $frontcolor 
+$dualboottime.ForeColor       = $backcolor
+$dualboottime.FlatStyle       = "Flat"
+$dualboottime.FlatAppearance.MouseOverBackColor = $hovercolor
 
 #######################################################################################################
 # Fixes ends here
@@ -481,43 +481,43 @@ $ultimateclean.FlatAppearance.MouseOverBackColor = $hovercolor
 #######################################################################################################
 # Cleaning ends here
 #######################################################################################################
-# Power options starts here
+# Visual Tweaks starts here
 #######################################################################################################
 
-$poweroptions                    = New-Object system.Windows.Forms.Label
-$poweroptions.text               = "Power Options"
-$poweroptions.AutoSize           = $false
-$poweroptions.width              = 220
-$poweroptions.height             = 35
-$poweroptions.TextAlign          = "MiddleCenter"
-$poweroptions.ForeColor          = $frontcolor 
-$poweroptions.location           = New-Object System.Drawing.Point(0,325)
-$poweroptions.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$visualtweaks                    = New-Object system.Windows.Forms.Label
+$visualtweaks.text               = "Visual Tweaks"
+$visualtweaks.AutoSize           = $false
+$visualtweaks.width              = 220
+$visualtweaks.height             = 35
+$visualtweaks.TextAlign          = "MiddleCenter"
+$visualtweaks.ForeColor          = $frontcolor 
+$visualtweaks.location           = New-Object System.Drawing.Point(0,325)
+$visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-$ultimatepower                   = New-Object system.Windows.Forms.Button
-$ultimatepower.text              = "PLACEHOLDER 2"
-$ultimatepower.width             = 220
-$ultimatepower.height            = 30
-$ultimatepower.location          = New-Object System.Drawing.Point(0,360)
-$ultimatepower.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$ultimatepower.BackColor         = $frontcolor 
-$ultimatepower.ForeColor         = $backcolor
-$ultimatepower.FlatStyle         = "Flat"
-$ultimatepower.FlatAppearance.MouseOverBackColor = $hovercolor
+$darkmode                   = New-Object system.Windows.Forms.Button
+$darkmode.text              = "Dark Mode"
+$darkmode.width             = 220
+$darkmode.height            = 30
+$darkmode.location          = New-Object System.Drawing.Point(0,360)
+$darkmode.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$darkmode.BackColor         = $frontcolor 
+$darkmode.ForeColor         = $backcolor
+$darkmode.FlatStyle         = "Flat"
+$darkmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$restorepower                    = New-Object system.Windows.Forms.Button
-$restorepower.text               = "PLACEHOLDER 3"
-$restorepower.width              = 220
-$restorepower.height             = 30
-$restorepower.location           = New-Object System.Drawing.Point(0,395)
-$restorepower.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$restorepower.BackColor          = $frontcolor 
-$restorepower.ForeColor          = $backcolor
-$restorepower.FlatStyle          = "Flat"
-$restorepower.FlatAppearance.MouseOverBackColor = $hovercolor
+$lightmode                    = New-Object system.Windows.Forms.Button
+$lightmode.text               = "Light Mode"
+$lightmode.width              = 220
+$lightmode.height             = 30
+$lightmode.location           = New-Object System.Drawing.Point(0,395)
+$lightmode.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$lightmode.BackColor          = $frontcolor 
+$lightmode.ForeColor          = $backcolor
+$lightmode.FlatStyle          = "Flat"
+$lightmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
 #######################################################################################################
-# Power options ends here
+# Visual Tweaks ends here
 #######################################################################################################
 # Extras starts here
 #######################################################################################################
@@ -532,16 +532,16 @@ $extras.location                 = New-Object System.Drawing.Point(0,10)
 $extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 $extras.ForeColor                = $frontcolor 
 
-$getosinfo                       = New-Object system.Windows.Forms.Button
-$getosinfo.text                  = "OS Info"
-$getosinfo.width                 = 220
-$getosinfo.height                = 30
-$getosinfo.location              = New-Object System.Drawing.Point(0,45)
-$getosinfo.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$getosinfo.BackColor             = $frontcolor 
-$getosinfo.ForeColor             = $backcolor
-$getosinfo.FlatStyle             = "Flat"
-$getosinfo.FlatAppearance.MouseOverBackColor = $hovercolor
+$placeholder11                       = New-Object system.Windows.Forms.Button
+$placeholder11.text                  = "placeholder11"
+$placeholder11.width                 = 220
+$placeholder11.height                = 30
+$placeholder11.location              = New-Object System.Drawing.Point(0,45)
+$placeholder11.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$placeholder11.BackColor             = $frontcolor 
+$placeholder11.ForeColor             = $backcolor
+$placeholder11.FlatStyle             = "Flat"
+$placeholder11.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $EClipboardHistory               = New-Object system.Windows.Forms.Button
 $EClipboardHistory.text          = "PLACEHOLDER 4"
@@ -598,16 +598,16 @@ $ECortana.ForeColor              = $backcolor
 $ECortana.FlatStyle              = "Flat"
 $ECortana.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$dualboottime                    = New-Object system.Windows.Forms.Button
-$dualboottime.text               = "Set Time to UTC"
-$dualboottime.width              = 220
-$dualboottime.height             = 30
-$dualboottime.location           = New-Object System.Drawing.Point(0,255)
-$dualboottime.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$dualboottime.BackColor          = $frontcolor 
-$dualboottime.ForeColor          = $backcolor
-$dualboottime.FlatStyle          = "Flat"
-$dualboottime.FlatAppearance.MouseOverBackColor = $hovercolor
+$placeholder1                    = New-Object system.Windows.Forms.Button
+$placeholder1.text               = "placeholder 1"
+$placeholder1.width              = 220
+$placeholder1.height             = 30
+$placeholder1.location           = New-Object System.Drawing.Point(0,255)
+$placeholder1.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$placeholder1.BackColor          = $frontcolor 
+$placeholder1.ForeColor          = $backcolor
+$placeholder1.FlatStyle          = "Flat"
+$placeholder1.FlatAppearance.MouseOverBackColor = $hovercolor
 
 #######################################################################################################
 # Extras ends here
@@ -615,37 +615,39 @@ $dualboottime.FlatAppearance.MouseOverBackColor = $hovercolor
 # Visual tweaks starts here
 #######################################################################################################
 
-$visualtweaks                    = New-Object system.Windows.Forms.Label
-$visualtweaks.text               = "Visual Tweaks"
-$visualtweaks.AutoSize           = $false
-$visualtweaks.width              = 220
-$visualtweaks.height             = 35
-$visualtweaks.TextAlign          = "MiddleCenter"
-$visualtweaks.ForeColor          = $frontcolor 
-$visualtweaks.location           = New-Object System.Drawing.Point(0,290)
-$visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+$placeholder12                    = New-Object system.Windows.Forms.Button
+$placeholder12.text               = "Placeholder 12"
+$placeholder12.AutoSize           = $false
+$placeholder12.width              = 220
+$placeholder12.height             = 35
+$placeholder12.location           = New-Object System.Drawing.Point(0,290)
+$placeholder12.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$placeholder12.BackColor              = $frontcolor 
+$placeholder12.ForeColor              = $backcolor
+$placeholder12.FlatStyle              = "Flat"
+$placeholder12.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$darkmode                        = New-Object system.Windows.Forms.Button
-$darkmode.text                   = "Dark Mode"
-$darkmode.width                  = 220
-$darkmode.height                 = 30
-$darkmode.location               = New-Object System.Drawing.Point(0,325)
-$darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$darkmode.BackColor              = $frontcolor 
-$darkmode.ForeColor              = $backcolor
-$darkmode.FlatStyle              = "Flat"
-$darkmode.FlatAppearance.MouseOverBackColor = $hovercolor
+$placeholder13                        = New-Object system.Windows.Forms.Button
+$placeholder13.text                   = "Placeholder13"
+$placeholder13.width                  = 220
+$placeholder13.height                 = 30
+$placeholder13.location               = New-Object System.Drawing.Point(0,325)
+$placeholder13.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$placeholder13.BackColor              = $frontcolor 
+$placeholder13.ForeColor              = $backcolor
+$placeholder13.FlatStyle              = "Flat"
+$placeholder13.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$lightmode                       = New-Object system.Windows.Forms.Button
-$lightmode.text                  = "Light Mode"
-$lightmode.width                 = 220
-$lightmode.height                = 30
-$lightmode.location              = New-Object System.Drawing.Point(0,360)
-$lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$lightmode.BackColor             = $frontcolor 
-$lightmode.ForeColor             = $backcolor
-$lightmode.FlatStyle             = "Flat"
-$lightmode.FlatAppearance.MouseOverBackColor = $hovercolor
+$placeholder14                       = New-Object system.Windows.Forms.Button
+$placeholder14.text                  = "Placeholder 14"
+$placeholder14.width                 = 220
+$placeholder14.height                = 30
+$placeholder14.location              = New-Object System.Drawing.Point(0,360)
+$placeholder14.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$placeholder14.BackColor             = $frontcolor 
+$placeholder14.ForeColor             = $backcolor
+$placeholder14.FlatStyle             = "Flat"
+$placeholder14.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $performancefx                   = New-Object system.Windows.Forms.Button
     $performancefx.text              = "PLACEHOLDER 9"
@@ -730,7 +732,7 @@ $Panel2.controls.AddRange(@(
     $oldmenu,
     $resetnetwork,
     $laptopnumlock,
-    $removeENkeyboard
+    $dualboottime
 ))
 
 $Panel3.controls.AddRange(@(
@@ -743,25 +745,25 @@ $Panel3.controls.AddRange(@(
     $microsoftstore,
     $cleaning,
     $ultimateclean,
-    $poweroptions, 
-    $ultimatepower,
-    $restorepower
-))
-
-$Panel4.controls.AddRange(@(
-    $extras,#header for the bellow selection
-    $getosinfo,
-    $EClipboardHistory,
-    $ELocation,
-    $EHibernation,
-    $dualboottime,
-    $EActionCenter,
-    $ECortana,
     $visualtweaks,#header for the bellow selection
     $darkmode,
     $lightmode,
     $performancefx,
     $appearancefx
+))
+
+$Panel4.controls.AddRange(@(
+    $extras,#header for the bellow selection
+    $placeholder11,
+    $EClipboardHistory,
+    $ELocation,
+    $EHibernation,
+    $placeholder1,
+    $EActionCenter,
+    $ECortana,
+    $placeholder12, 
+    $placeholder13,
+    $placeholder14
 ))
 
 $Panel5.controls.AddRange(@(
@@ -831,20 +833,7 @@ $ECortana.Add_Click({
 })
 
 
-$getosinfo.Add_Click({
-    $ResultText.text = "`r`n" + "  Gathering data please wait for the data to show up..."
-
-    $name=(Get-WmiObject Win32_OperatingSystem).caption
-    $bit=(Get-WmiObject Win32_OperatingSystem).OSArchitecture
-    $ver=(Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
-    $myIP=(Invoke-WebRequest -uri "https://api.ipify.org/").Content
-    $licence=(Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
-
-    $ResultText.text =  "`r`n" + 
-                        "  Username: " + $env:UserName + "`r`n" + 
-                        "  OS: " + $name, " Build: " + $ver, "Arch: " + $bit, "`r`n" + 
-                        "  External IP: " + $myIP, "`r`n" + 
-                        "  Licence: " + $licence
+$placeholder11.Add_Click({
 })
     
 $errorscanner.Add_Click({
