@@ -12,7 +12,7 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	Exit
 }
 
-#Color Palette for heart.ico
+#Color Palette for heart.icos
 ##C40E61 - bright pink
 ##FFE082 - yellow
 ##F8BBD0 - light pink
@@ -280,7 +280,7 @@ $laptopnumlock.FlatStyle         = "Flat"
 $laptopnumlock.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $removeENkeyboard                 = New-Object system.Windows.Forms.Button
-$removeENkeyboard.text            = "Force NOR Keyboard"
+$removeENkeyboard.text            = "PLACEHOLDER 1"
 $removeENkeyboard.width           = 220
 $removeENkeyboard.height          = 30
 $removeENkeyboard.location        = New-Object System.Drawing.Point(0,185)
@@ -495,7 +495,7 @@ $poweroptions.location           = New-Object System.Drawing.Point(0,325)
 $poweroptions.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
 $ultimatepower                   = New-Object system.Windows.Forms.Button
-$ultimatepower.text              = "Ultimate Power Plan"
+$ultimatepower.text              = "PLACEHOLDER 2"
 $ultimatepower.width             = 220
 $ultimatepower.height            = 30
 $ultimatepower.location          = New-Object System.Drawing.Point(0,360)
@@ -506,7 +506,7 @@ $ultimatepower.FlatStyle         = "Flat"
 $ultimatepower.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $restorepower                    = New-Object system.Windows.Forms.Button
-$restorepower.text               = "Restore Power Options"
+$restorepower.text               = "PLACEHOLDER 3"
 $restorepower.width              = 220
 $restorepower.height             = 30
 $restorepower.location           = New-Object System.Drawing.Point(0,395)
@@ -544,7 +544,7 @@ $getosinfo.FlatStyle             = "Flat"
 $getosinfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $EClipboardHistory               = New-Object system.Windows.Forms.Button
-$EClipboardHistory.text          = "Enable Clipboard History"
+$EClipboardHistory.text          = "PLACEHOLDER 4"
 $EClipboardHistory.width         = 220
 $EClipboardHistory.height        = 30
 $EClipboardHistory.location      = New-Object System.Drawing.Point(0,80)
@@ -555,7 +555,7 @@ $EClipboardHistory.FlatStyle     = "Flat"
 $EClipboardHistory.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $ELocation                       = New-Object system.Windows.Forms.Button
-$ELocation.text                  = "Enable Location Tracking"
+$ELocation.text                  = "PLACEHOLDER 5"
 $ELocation.width                 = 220
 $ELocation.height                = 30
 $ELocation.location              = New-Object System.Drawing.Point(0,115)
@@ -566,7 +566,7 @@ $ELocation.FlatStyle             = "Flat"
 $ELocation.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $EHibernation                    = New-Object system.Windows.Forms.Button
-$EHibernation.text               = "Enable Hibernation"
+$EHibernation.text               = "PLACEHOLDER 6"
 $EHibernation.width              = 220
 $EHibernation.height             = 30
 $EHibernation.location           = New-Object System.Drawing.Point(0,150)
@@ -577,7 +577,7 @@ $EHibernation.FlatStyle          = "Flat"
 $EHibernation.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $EActionCenter                   = New-Object system.Windows.Forms.Button
-$EActionCenter.text              = "Enable Action Center"
+$EActionCenter.text              = "PLACEHOLDER 7"
 $EActionCenter.width             = 220
 $EActionCenter.height            = 30
 $EActionCenter.location          = New-Object System.Drawing.Point(0,185)
@@ -588,7 +588,7 @@ $EActionCenter.FlatStyle         = "Flat"
 $EActionCenter.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $ECortana                        = New-Object system.Windows.Forms.Button
-$ECortana.text                   = "Enable Cortana"
+$ECortana.text                   = "PLACEHOLDER 8"
 $ECortana.width                  = 220
 $ECortana.height                 = 30
 $ECortana.location               = New-Object System.Drawing.Point(0,220)
@@ -647,9 +647,8 @@ $lightmode.ForeColor             = $backcolor
 $lightmode.FlatStyle             = "Flat"
 $lightmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
-if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '1') {
     $performancefx                   = New-Object system.Windows.Forms.Button
-    $performancefx.text              = "Optimize Performance"
+    $performancefx.text              = "PLACEHOLDER 9"
     $performancefx.width             = 220
     $performancefx.height            = 30
     $performancefx.location          = New-Object System.Drawing.Point(0,395)
@@ -658,9 +657,10 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $performancefx.ForeColor         = $backcolor
     $performancefx.FlatStyle         = "Flat"
     $performancefx.FlatAppearance.MouseOverBackColor = $hovercolor
-} elseif ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect") -eq '0') {
+
+
     $appearancefx                    = New-Object system.Windows.Forms.Button
-    $appearancefx.text               = "Optimize Apperance"
+    $appearancefx.text               = "PLACEHOLDER 10"
     $appearancefx.width              = 220
     $appearancefx.height             = 30
     $appearancefx.location           = New-Object System.Drawing.Point(0,395)
@@ -669,7 +669,6 @@ if ((Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersio
     $appearancefx.ForeColor          = $backcolor
     $appearancefx.FlatStyle          = "Flat"
     $appearancefx.FlatAppearance.MouseOverBackColor = $hovercolor
-}
 
 #######################################################################################################
 # Visual tweaks ends here
@@ -826,48 +825,9 @@ $changedns.add_SelectedIndexChanged({
 })
 
 $EActionCenter.Add_Click({
-    $ResultText.text = "`r`n" +"  Trying to re-enable Action Center..."
-
-    Stop-Process -ProcessName explorer -Force	
-    taskkill /F /IM explorer.exe
-    Start-Sleep -Seconds 3
-
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -ErrorAction SilentlyContinue
-
-    Start-Process explorer.exe	
-
-    $ResultText.text = "`r`n" + "  Action Center has been successfully re-enabled. `r`n  Ready for Next Task!"
 })
 
 $ECortana.Add_Click({
-    $ResultText.text = "`r`n" +"  Trying to re-enable Cortana..."
-
-    Stop-Process -ProcessName explorer -Force	
-    taskkill /F /IM explorer.exe
-    Start-Sleep -Seconds 3
-
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
-	If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
-		New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
-	}
-	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 0
-	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 0
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -ErrorAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Restoring Windows Search..."
-	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Type DWord -Value "1"
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "DisableWebSearch" -ErrorAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Restoring and Starting Windows Search Service..."
-    Set-Service "WSearch" -StartupType Automatic
-    Start-Service "WSearch" -WarningAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Restoring Windows Search taskbar widget..."
-	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 1
-    
-    Start-Process explorer.exe	
-
-    $ResultText.text = "`r`n" + "  Cortana has been successfully re-enabled. `r`n  Ready for Next Task!"
 })
 
 
@@ -1373,11 +1333,6 @@ if (Test-Path "$env:systemroot\SoftwareDistribution.bak") {
 })
 
 $ultimatepower.Add_Click({
-    $ResultText.text = "`r`n" + "  Enabling and Activating Highest Performance Power Plan..."
-	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
-	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-    $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan. `r`n  Ready for Next Task!"
 })
 
 $laptopnumlock.Add_Click({
@@ -1399,12 +1354,73 @@ $essentialtweaks.Add_Click({
     Enable-ComputerRestore -Drive "C:\"
     Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
+    $ResultText.text = "`r`n" + "  Adjusting visual effects for performance..."
+    Start-Sleep -s 1
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 0
+    Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
+    $ResultText.text = "`r`n" + "  Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance."
+
+    $ResultText.text += "`r`n" +"  Disabling Cortana..."
+    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings")) {
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Type DWord -Value 0
+    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization")) {
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 1
+    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -Type DWord -Value 0
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
+
+    $ResultText.text += "`r`n" +"  Disabling Background application access..."
+    Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
+        Set-ItemProperty -Path $_.PsPath -Name "Disabled" -Type DWord -Value 1
+        Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Type DWord -Value 1
+    }S
+
     $ResultText.text += "`r`n" + "  Uninstalling Linux Subsystem..."
 	If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
 	}
 	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
+
+    $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default."
+
+    Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
+
+    Start-Sleep -s 5
+
+    $1 = Get-WinUserLanguageList
+    $1.RemoveAll( { $args[0].LanguageTag -clike 'us*' } )
+    Set-WinUserLanguageList $1 -Force
+
+    $2 = Get-WinUserLanguageList
+    $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
+    Set-WinUserLanguageList $2 -Force
+
+    $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
+
+    $ResultText.text = "`r`n" + "  Enabling and Activating Highest Performance Power Plan..."
+	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
+	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
+	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
+    $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan."
 
     $ResultText.text += "`r`n" + "  Enabling Windows 10 context menu..."
     New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force
@@ -1495,6 +1511,41 @@ $essentialundo.Add_Click({
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 1
 	}
 	Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
+
+    $ResultText.text = "`r`n" + "  Enabling Cortana..."
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
+	If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
+		New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
+	}
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitTextCollection" -Type DWord -Value 0
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" -Name "RestrictImplicitInkCollection" -Type DWord -Value 0
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Name "HarvestContacts" -ErrorAction SilentlyContinue
+	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -ErrorAction SilentlyContinue
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Type DWord -Value "1"
+	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -ErrorAction SilentlyContinue
+	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "DisableWebSearch" -ErrorAction SilentlyContinue
+    Set-Service "WSearch" -StartupType Automatic
+    Start-Service "WSearch" -WarningAction SilentlyContinue
+
+    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")){powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a}
+    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")){powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e}
+    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")){powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61}
+    $ResultText.text = "`r`n" + "  Restored all power plans: Power Saver, Balanced, and Ultimate Performance."
+
+    $ResultText.text = "`r`n" + "  Adjusting visual effects for appearance..."
+    Start-Sleep -s 1
+	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
+	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
+	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158,30,7,128,18,0,0,0))
+	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 1
+	Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 1
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 1
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 1
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
+	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
+    $ResultText.text = "`r`n" + "  Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss."
+
 
     $ResultText.text = "`r`n" + "  Raising UAC level..."
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
@@ -2081,36 +2132,11 @@ $securitywindowsupdate.Add_Click({
 })
 
 $performancefx.Add_Click({
-    $ResultText.text = "`r`n" + "  Adjusting visual effects for performance..."
-    Start-Sleep -s 1
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 0
-    Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
-    $ResultText.text = "`r`n" + "  Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance. `r`n  Ready for Next Task!"
+  
 })
 
 $appearancefx.Add_Click({
-    $ResultText.text = "`r`n" + "  Adjusting visual effects for appearance..."
-    Start-Sleep -s 1
-	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
-	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
-	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158,30,7,128,18,0,0,0))
-	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 1
-	Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 1
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 1
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 1
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
-	Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-    $ResultText.text = "`r`n" + "  Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss. `r`n  Ready for Next Task!"
-})
+  })
 
 $gamingtweaks.Add_Click({
     $Form.text                       = "WinTool by Alerion - Initializing Gaming Tweaks..."
@@ -2967,37 +2993,15 @@ $lightmode.Add_Click({
 })
 
 $EClipboardHistory.Add_Click({
-	$ResultText.text = "`r`n" + "  Restoring Clipboard History..."
-	Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Enabled Clipboard History. `r`n  Ready for Next Task!"
 })
 
 $ELocation.Add_Click({
-	$ResultText.text = "`r`n" + "  Enabling Location Provider..."
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableWindowsLocationProvider" -ErrorAction SilentlyContinue
-	$ResultText.text = "`r`n" + "  Enabling Location Scripting..."
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableLocationScripting" -ErrorAction SilentlyContinue
-	$ResultText.text = "`r`n" + "  Enabling Location..."
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableLocation" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -ErrorAction SilentlyContinue
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "Value" -Type String -Value "Allow"
-	$ResultText.text = "`r`n" + "  Allow access to Location..."
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Allow"
-	Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value "1"
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessLocation" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessLocation_UserInControlOfTheseApps" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessLocation_ForceAllowTheseApps" -ErrorAction SilentlyContinue
-	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessLocation_ForceDenyTheseApps" -ErrorAction SilentlyContinue
-    $ResultText.text = "`r`n" + "  Location Tracking now on - Reboot to check.."
+	
 })
 
 
 $EHibernation.Add_Click({
-    $ResultText.text = "`r`n" + "  Enabling Hibernation..."
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 1
-    $ResultText.text = "`r`n" + "  Enabled Hibernation. `r`n  Ready for Next Task!"
+    
 })
 
 $InstallOneDrive.Add_Click({
@@ -3022,29 +3026,11 @@ $DisableNumLock.Add_Click({
 
 #Add secondary en-US keyboard
 $addENkeyboard.Add_Click({
-    $ResultText.text = "`r`n" + "  Setting Norwegian keyboard default. `r`n  Ready for Next Task!"
-
-    Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
 })
 
 # Remove secondary en-US keyboard
 $removeENkeyboard.Add_Click({
-    $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default."
-
-    Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
-
-    Start-Sleep -s 5
-
-    $1 = Get-WinUserLanguageList
-    $1.RemoveAll( { $args[0].LanguageTag -clike 'us*' } )
-    Set-WinUserLanguageList $1 -Force
-
-    $2 = Get-WinUserLanguageList
-    $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
-    Set-WinUserLanguageList $2 -Force
-
-    $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default. `r`n  Ready for Next Task!"
-})
+  })
 
 $killedge.Add_Click({
     $Form.text                       = "WinTool by Alerion - Removing Microsoft Edge..."
@@ -3097,10 +3083,6 @@ $oldprinters.Add_Click({
 })
 
 $restorepower.Add_Click({
-    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")){powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a}
-    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")){powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e}
-    if(!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")){powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61}
-    $ResultText.text = "`r`n" + "  Restored all power plans: Power Saver, Balanced, and Ultimate Performance. `r`n  Ready for Next Task!"
 })
 
 $NFS.Add_Click({
