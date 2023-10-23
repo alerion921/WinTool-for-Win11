@@ -16,17 +16,13 @@ Also added Winget app installation so the software i recommend and use the most 
 
 Paste this command into Powershell (admin):
 
-Shortest:
+Long: 
 ```
-iwr -useb  https://t.ly/uObQL | iex
-```
-Longest: 
-```
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))
 ```
 Or, shorter:
 ```
-iwr -useb  https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1 | iex
+iwr -useb  https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1 | iex
 ```
 
 Some credits here to:
