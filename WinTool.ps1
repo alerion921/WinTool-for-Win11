@@ -25,7 +25,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInfor
 
 #Downloads my heart icon from my github to be able to use it as an app icon and a shortcut icon :)
 $iconPath = 'C:\Windows\heart.ico'
-$url = "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/heart.ico"
+$url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
 Invoke-WebRequest -Uri $url -OutFile $iconPath
 
 #Creates the shortcut for the script to be run easily
@@ -34,7 +34,7 @@ $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
 $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
 $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
-$Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/WinTool.ps1'))"
+$Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
 $Shortcut.Save()
 
 #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
@@ -1390,7 +1390,7 @@ $essentialtweaks.Add_Click({
     $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
 
     $ResultText.text = "`r`n" + "  Enabling and Activating Highest Performance Power Plan..."
-	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
+	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
 	powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
 	powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
     $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan."
@@ -2393,7 +2393,7 @@ $gamingtweaks.Add_Click({
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "DpiMapIommuContiguous" -Type DWord -Value 1
 
     $ResultText.text = "`r`n" + "  Disabling High Precision Event Timer..."
-    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/SetTimerResolutionService.exe" -OutFile "$Env:windir\system32\SetTimerResolutionService.exe" -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-Win11/blob/main/Files/SetTimerResolutionService.exe" -OutFile "$Env:windir\system32\SetTimerResolutionService.exe" -ErrorAction SilentlyContinue
     New-Service -name "SetTimerResolutionService" -BinaryPathName "$Env:windir\system32\SetTimerResolutionService.exe" -StartupType Automatic | Out-Null -ErrorAction SilentlyContinue
     bcdedit /set x2apicpolicy Enable | Out-Null
     bcdedit /set configaccesspolicy Default | Out-Null
@@ -2416,8 +2416,8 @@ $gamingtweaks.Add_Click({
     $CheckGPU = wmic path win32_VideoController get name
     if(($CheckGPU -like "*GTX*") -or ($CheckGPU -like "*RTX*")) {
     $ResultText.text = "`r`n" + "  NVIDIA GTX/RTX Card Detected! Applying Nvidia Power Tweaks..."
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/BaseProfile.nip" -OutFile "$Env:windir\system32\BaseProfile.nip" -ErrorAction SilentlyContinue
-    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-10-11/blob/main/Files/nvidiaProfileInspector.exe" -OutFile "$Env:windir\system32\nvidiaProfileInspector.exe" -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/BaseProfile.nip" -OutFile "$Env:windir\system32\BaseProfile.nip" -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-Win11/blob/main/Files/nvidiaProfileInspector.exe" -OutFile "$Env:windir\system32\nvidiaProfileInspector.exe" -ErrorAction SilentlyContinue
     Push-Location
     set-location "$Env:windir\system32\"
     nvidiaProfileInspector.exe /s -load "BaseProfile.nip"
@@ -2981,7 +2981,7 @@ $DisableNumLock.Add_Click({
 $killedge.Add_Click({
     $Form.text                       = "WinTool by Alerion - Removing Microsoft Edge..."
     $ResultText.text = "`r`n" + "  Removing Microsoft Edge..."
-    Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-10-11/main/Files/killedge.bat | Invoke-Expression
+    Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/killedge.bat | Invoke-Expression
 
     #removes shortcut from programdata
     Get-ChildItem "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" -Recurse  -Filter *Edge*.lnk |
