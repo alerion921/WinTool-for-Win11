@@ -1,4 +1,4 @@
-Basic usage to setup a Gaming PC with this Script:
+Basic usage!
 
 Press essential tweaks, this now includes all needed for the optimal setup as long as you disabled all the tracking shit from Microsoft when you setup your OS.
 
