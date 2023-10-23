@@ -12,7 +12,7 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	Exit
 }
 
-#Color Palette for heart.icos
+#Color Palette for heart.ico
 ##C40E61 - bright pink
 ##FFE082 - yellow
 ##F8BBD0 - light pink
@@ -69,7 +69,6 @@ if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersio
     $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#FFE082")
     $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#F8BBD0")
 }
-
 
 #Form Design
 $Form                            = New-Object system.Windows.Forms.Form
@@ -245,7 +244,7 @@ $changedns.width               = 220
 $changedns.height              = 30
 $changedns.autosize = $true
 
-@('ChangeDNS (Experimental)','Google DNS','Cloudflare DNS','Level3 DNS','OpenDNS', 'Restore Default DNS') | ForEach-Object {[void] $changedns.Items.Add($_)}
+@('ChangeDNS','Google DNS','Cloudflare DNS','Level3 DNS','OpenDNS', 'Restore Default DNS') | ForEach-Object {[void] $changedns.Items.Add($_)}
 
 $changedns.SelectedIndex = 0   # Select the default value
 $changedns.location            = New-Object System.Drawing.Point(0,80)
@@ -494,36 +493,36 @@ $visualtweaks.ForeColor          = $frontcolor
 $visualtweaks.location           = New-Object System.Drawing.Point(0,325)
 $visualtweaks.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 
-$darkmode                   = New-Object system.Windows.Forms.Button
-$darkmode.text              = "Dark Mode"
-$darkmode.width             = 220
-$darkmode.height            = 30
-$darkmode.location          = New-Object System.Drawing.Point(0,360)
-$darkmode.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$darkmode.BackColor         = $frontcolor 
-$darkmode.ForeColor         = $backcolor
-$darkmode.FlatStyle         = "Flat"
+$darkmode                        = New-Object system.Windows.Forms.Button
+$darkmode.text                   = "Dark Mode"
+$darkmode.width                  = 220
+$darkmode.height                 = 30
+$darkmode.location               = New-Object System.Drawing.Point(0,360)
+$darkmode.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$darkmode.BackColor              = $frontcolor 
+$darkmode.ForeColor              = $backcolor
+$darkmode.FlatStyle              = "Flat"
 $darkmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$lightmode                    = New-Object system.Windows.Forms.Button
-$lightmode.text               = "Light Mode"
-$lightmode.width              = 220
-$lightmode.height             = 30
-$lightmode.location           = New-Object System.Drawing.Point(0,395)
-$lightmode.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$lightmode.BackColor          = $frontcolor 
-$lightmode.ForeColor          = $backcolor
-$lightmode.FlatStyle          = "Flat"
+$lightmode                       = New-Object system.Windows.Forms.Button
+$lightmode.text                  = "Light Mode"
+$lightmode.width                 = 220
+$lightmode.height                = 30
+$lightmode.location              = New-Object System.Drawing.Point(0,395)
+$lightmode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$lightmode.BackColor             = $frontcolor 
+$lightmode.ForeColor             = $backcolor
+$lightmode.FlatStyle             = "Flat"
 $lightmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
 #######################################################################################################
 # Visual Tweaks ends here
 #######################################################################################################
-# Extras starts here
+# Install Apps starts here
 #######################################################################################################
 
 $extras                          = New-Object system.Windows.Forms.Label
-$extras.text                     = "Extras"
+$extras.text                     = "Install Apps"
 $extras.AutoSize                 = $false
 $extras.width                    = 220
 $extras.height                   = 35
@@ -532,148 +531,131 @@ $extras.location                 = New-Object System.Drawing.Point(0,10)
 $extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 $extras.ForeColor                = $frontcolor 
 
-$placeholder11                       = New-Object system.Windows.Forms.Button
-$placeholder11.text                  = "placeholder11"
-$placeholder11.width                 = 220
-$placeholder11.height                = 30
-$placeholder11.location              = New-Object System.Drawing.Point(0,45)
-$placeholder11.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$placeholder11.BackColor             = $frontcolor 
-$placeholder11.ForeColor             = $backcolor
-$placeholder11.FlatStyle             = "Flat"
-$placeholder11.FlatAppearance.MouseOverBackColor = $hovercolor
+$bravebrowser                       = New-Object system.Windows.Forms.Button
+$bravebrowser.text                  = "Brave Browser"
+$bravebrowser.width                 = 220
+$bravebrowser.height                = 30
+$bravebrowser.location              = New-Object System.Drawing.Point(0,45)
+$bravebrowser.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$bravebrowser.BackColor             = $frontcolor 
+$bravebrowser.ForeColor             = $backcolor
+$bravebrowser.FlatStyle             = "Flat"
+$bravebrowser.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$EClipboardHistory               = New-Object system.Windows.Forms.Button
-$EClipboardHistory.text          = "PLACEHOLDER 4"
-$EClipboardHistory.width         = 220
-$EClipboardHistory.height        = 30
-$EClipboardHistory.location      = New-Object System.Drawing.Point(0,80)
-$EClipboardHistory.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$EClipboardHistory.BackColor     = $frontcolor 
-$EClipboardHistory.ForeColor     = $backcolor
-$EClipboardHistory.FlatStyle     = "Flat"
-$EClipboardHistory.FlatAppearance.MouseOverBackColor = $hovercolor
+$dropbox               = New-Object system.Windows.Forms.Button
+$dropbox.text          = "Dropbox"
+$dropbox.width         = 220
+$dropbox.height        = 30
+$dropbox.location      = New-Object System.Drawing.Point(0,80)
+$dropbox.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$dropbox.BackColor     = $frontcolor 
+$dropbox.ForeColor     = $backcolor
+$dropbox.FlatStyle     = "Flat"
+$dropbox.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$ELocation                       = New-Object system.Windows.Forms.Button
-$ELocation.text                  = "PLACEHOLDER 5"
-$ELocation.width                 = 220
-$ELocation.height                = 30
-$ELocation.location              = New-Object System.Drawing.Point(0,115)
-$ELocation.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$ELocation.BackColor             = $frontcolor 
-$ELocation.ForeColor             = $backcolor
-$ELocation.FlatStyle             = "Flat"
-$ELocation.FlatAppearance.MouseOverBackColor = $hovercolor
+$7zip                       = New-Object system.Windows.Forms.Button
+$7zip.text                  = "7-Zip"
+$7zip.width                 = 220
+$7zip.height                = 30
+$7zip.location              = New-Object System.Drawing.Point(0,115)
+$7zip.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$7zip.BackColor             = $frontcolor 
+$7zip.ForeColor             = $backcolor
+$7zip.FlatStyle             = "Flat"
+$7zip.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$EHibernation                    = New-Object system.Windows.Forms.Button
-$EHibernation.text               = "PLACEHOLDER 6"
-$EHibernation.width              = 220
-$EHibernation.height             = 30
-$EHibernation.location           = New-Object System.Drawing.Point(0,150)
-$EHibernation.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$EHibernation.BackColor          = $frontcolor 
-$EHibernation.ForeColor          = $backcolor
-$EHibernation.FlatStyle          = "Flat"
-$EHibernation.FlatAppearance.MouseOverBackColor = $hovercolor
+$malwarebytes                    = New-Object system.Windows.Forms.Button
+$malwarebytes.text               = "Malwarebytes"
+$malwarebytes.width              = 220
+$malwarebytes.height             = 30
+$malwarebytes.location           = New-Object System.Drawing.Point(0,150)
+$malwarebytes.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$malwarebytes.BackColor          = $frontcolor 
+$malwarebytes.ForeColor          = $backcolor
+$malwarebytes.FlatStyle          = "Flat"
+$malwarebytes.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$EActionCenter                   = New-Object system.Windows.Forms.Button
-$EActionCenter.text              = "PLACEHOLDER 7"
-$EActionCenter.width             = 220
-$EActionCenter.height            = 30
-$EActionCenter.location          = New-Object System.Drawing.Point(0,185)
-$EActionCenter.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$EActionCenter.BackColor         = $frontcolor 
-$EActionCenter.ForeColor         = $backcolor
-$EActionCenter.FlatStyle         = "Flat"
-$EActionCenter.FlatAppearance.MouseOverBackColor = $hovercolor
+$steam                   = New-Object system.Windows.Forms.Button
+$steam.text              = "Steam Client"
+$steam.width             = 220
+$steam.height            = 30
+$steam.location          = New-Object System.Drawing.Point(0,185)
+$steam.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$steam.BackColor         = $frontcolor 
+$steam.ForeColor         = $backcolor
+$steam.FlatStyle         = "Flat"
+$steam.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$ECortana                        = New-Object system.Windows.Forms.Button
-$ECortana.text                   = "PLACEHOLDER 8"
-$ECortana.width                  = 220
-$ECortana.height                 = 30
-$ECortana.location               = New-Object System.Drawing.Point(0,220)
-$ECortana.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$ECortana.BackColor              = $frontcolor 
-$ECortana.ForeColor              = $backcolor
-$ECortana.FlatStyle              = "Flat"
-$ECortana.FlatAppearance.MouseOverBackColor = $hovercolor
+$discord                        = New-Object system.Windows.Forms.Button
+$discord.text                   = "Discord"
+$discord.width                  = 220
+$discord.height                 = 30
+$discord.location               = New-Object System.Drawing.Point(0,220)
+$discord.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$discord.BackColor              = $frontcolor 
+$discord.ForeColor              = $backcolor
+$discord.FlatStyle              = "Flat"
+$discord.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$placeholder1                    = New-Object system.Windows.Forms.Button
-$placeholder1.text               = "placeholder 1"
-$placeholder1.width              = 220
-$placeholder1.height             = 30
-$placeholder1.location           = New-Object System.Drawing.Point(0,255)
-$placeholder1.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$placeholder1.BackColor          = $frontcolor 
-$placeholder1.ForeColor          = $backcolor
-$placeholder1.FlatStyle          = "Flat"
-$placeholder1.FlatAppearance.MouseOverBackColor = $hovercolor
+$teamviewer                    = New-Object system.Windows.Forms.Button
+$teamviewer.text               = "Teamviewer"
+$teamviewer.width              = 220
+$teamviewer.height             = 30
+$teamviewer.location           = New-Object System.Drawing.Point(0,255)
+$teamviewer.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$teamviewer.BackColor          = $frontcolor 
+$teamviewer.ForeColor          = $backcolor
+$teamviewer.FlatStyle          = "Flat"
+$teamviewer.FlatAppearance.MouseOverBackColor = $hovercolor
+
+$epicgames                    = New-Object system.Windows.Forms.Button
+$epicgames.text               = "Epic Games Launcher"
+$epicgames.AutoSize           = $false
+$epicgames.width              = 220
+$epicgames.height             = 30
+$epicgames.location           = New-Object System.Drawing.Point(0,290)
+$epicgames.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$epicgames.BackColor              = $frontcolor 
+$epicgames.ForeColor              = $backcolor
+$epicgames.FlatStyle              = "Flat"
+$epicgames.FlatAppearance.MouseOverBackColor = $hovercolor
+
+$githubdesktop                        = New-Object system.Windows.Forms.Button
+$githubdesktop.text                   = "Github Desktop"
+$githubdesktop.width                  = 220
+$githubdesktop.height                 = 30
+$githubdesktop.location               = New-Object System.Drawing.Point(0,325)
+$githubdesktop.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$githubdesktop.BackColor              = $frontcolor 
+$githubdesktop.ForeColor              = $backcolor
+$githubdesktop.FlatStyle              = "Flat"
+$githubdesktop.FlatAppearance.MouseOverBackColor = $hovercolor
+
+$visualstudiocode                       = New-Object system.Windows.Forms.Button
+$visualstudiocode.text                  = "Visual Studio Code"
+$visualstudiocode.width                 = 220
+$visualstudiocode.height                = 30
+$visualstudiocode.location              = New-Object System.Drawing.Point(0,360)
+$visualstudiocode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$visualstudiocode.BackColor             = $frontcolor 
+$visualstudiocode.ForeColor             = $backcolor
+$visualstudiocode.FlatStyle             = "Flat"
+$visualstudiocode.FlatAppearance.MouseOverBackColor = $hovercolor
+
+$qbittorrent                   = New-Object system.Windows.Forms.Button
+$qbittorrent.text              = "qBittorrent"
+$qbittorrent.width             = 220
+$qbittorrent.height            = 30
+$qbittorrent.location          = New-Object System.Drawing.Point(0,395)
+$qbittorrent.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$qbittorrent.BackColor         = $frontcolor 
+$qbittorrent.ForeColor         = $backcolor
+$qbittorrent.FlatStyle         = "Flat"
+$qbittorrent.FlatAppearance.MouseOverBackColor = $hovercolor
+
 
 #######################################################################################################
-# Extras ends here
-#######################################################################################################
-# Visual tweaks starts here
-#######################################################################################################
-
-$placeholder12                    = New-Object system.Windows.Forms.Button
-$placeholder12.text               = "Placeholder 12"
-$placeholder12.AutoSize           = $false
-$placeholder12.width              = 220
-$placeholder12.height             = 35
-$placeholder12.location           = New-Object System.Drawing.Point(0,290)
-$placeholder12.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$placeholder12.BackColor              = $frontcolor 
-$placeholder12.ForeColor              = $backcolor
-$placeholder12.FlatStyle              = "Flat"
-$placeholder12.FlatAppearance.MouseOverBackColor = $hovercolor
-
-$placeholder13                        = New-Object system.Windows.Forms.Button
-$placeholder13.text                   = "Placeholder13"
-$placeholder13.width                  = 220
-$placeholder13.height                 = 30
-$placeholder13.location               = New-Object System.Drawing.Point(0,325)
-$placeholder13.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$placeholder13.BackColor              = $frontcolor 
-$placeholder13.ForeColor              = $backcolor
-$placeholder13.FlatStyle              = "Flat"
-$placeholder13.FlatAppearance.MouseOverBackColor = $hovercolor
-
-$placeholder14                       = New-Object system.Windows.Forms.Button
-$placeholder14.text                  = "Placeholder 14"
-$placeholder14.width                 = 220
-$placeholder14.height                = 30
-$placeholder14.location              = New-Object System.Drawing.Point(0,360)
-$placeholder14.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$placeholder14.BackColor             = $frontcolor 
-$placeholder14.ForeColor             = $backcolor
-$placeholder14.FlatStyle             = "Flat"
-$placeholder14.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $performancefx                   = New-Object system.Windows.Forms.Button
-    $performancefx.text              = "PLACEHOLDER 9"
-    $performancefx.width             = 220
-    $performancefx.height            = 30
-    $performancefx.location          = New-Object System.Drawing.Point(0,395)
-    $performancefx.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    $performancefx.BackColor         = $frontcolor 
-    $performancefx.ForeColor         = $backcolor
-    $performancefx.FlatStyle         = "Flat"
-    $performancefx.FlatAppearance.MouseOverBackColor = $hovercolor
-
-
-    $appearancefx                    = New-Object system.Windows.Forms.Button
-    $appearancefx.text               = "PLACEHOLDER 10"
-    $appearancefx.width              = 220
-    $appearancefx.height             = 30
-    $appearancefx.location           = New-Object System.Drawing.Point(0,395)
-    $appearancefx.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-    $appearancefx.BackColor          = $frontcolor 
-    $appearancefx.ForeColor          = $backcolor
-    $appearancefx.FlatStyle          = "Flat"
-    $appearancefx.FlatAppearance.MouseOverBackColor = $hovercolor
-
-#######################################################################################################
-# Visual tweaks ends here
+# Install Apps ends here
 #######################################################################################################
 # Result/Current Status box starts here
 #######################################################################################################
@@ -747,29 +729,44 @@ $Panel3.controls.AddRange(@(
     $ultimateclean,
     $visualtweaks,#header for the bellow selection
     $darkmode,
-    $lightmode,
-    $performancefx,
-    $appearancefx
+    $lightmode
 ))
 
 $Panel4.controls.AddRange(@(
     $extras,#header for the bellow selection
-    $placeholder11,
-    $EClipboardHistory,
-    $ELocation,
-    $EHibernation,
-    $placeholder1,
-    $EActionCenter,
-    $ECortana,
-    $placeholder12, 
-    $placeholder13,
-    $placeholder14
+    $bravebrowser,
+    $dropbox,
+    $7zip,
+    $malwarebytes,
+    $teamviewer,
+    $steam,
+    $discord,
+    $epicgames, 
+    $githubdesktop,
+    $visualstudiocode,
+    $qbittorrent
 ))
 
 $Panel5.controls.AddRange(@(
     $ResultText
     #$currentstatus
 ))
+
+    # GUI Specs
+    $ResultText.text = "`r`n" +"`r`n" + "  Checking Winget..."
+
+    # Check if winget is installed
+    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe){
+        $ResultText.text = "`r`n" +"`r`n" + "  Winget Already Installed - Ready for Next Task"
+    }  
+    else{
+        # Installing winget from the Microsoft Store
+        $ResultText.text = "`r`n" +"`r`n" + "  Installing Winget... Please Wait"
+        Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+        $nid = (Get-Process AppInstaller).Id
+        Wait-Process -Id $nid
+        $ResultText.text = "`r`n" +"`r`n" + "  Winget Installed - Ready for Next Task"
+    }
 
 
 ##DNS CHANGER TEST HERE
@@ -824,16 +821,6 @@ $changedns.add_SelectedIndexChanged({
             $ResultText.text = "`r`n" +"  You need to press an option to change the DNS Address to your liking :)"
         }
     }
-})
-
-$EActionCenter.Add_Click({
-})
-
-$ECortana.Add_Click({
-})
-
-
-$placeholder11.Add_Click({
 })
     
 $errorscanner.Add_Click({
@@ -1319,9 +1306,6 @@ if (Test-Path "$env:systemroot\SoftwareDistribution.bak") {
     }
     $ResultText.text = "`r`n" + "  Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n  Ready for Next Task!" 
     $Form.text                       = "WinTool by Alerion"
-})
-
-$ultimatepower.Add_Click({
 })
 
 $laptopnumlock.Add_Click({
@@ -2119,13 +2103,6 @@ $securitywindowsupdate.Add_Click({
     Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
 })
-
-$performancefx.Add_Click({
-  
-})
-
-$appearancefx.Add_Click({
-  })
 
 $gamingtweaks.Add_Click({
     $Form.text                       = "WinTool by Alerion - Initializing Gaming Tweaks..."
@@ -2981,18 +2958,6 @@ $lightmode.Add_Click({
     $ResultText.text = "`r`n" + "  Enabled Light Mode. `r`n  Ready for Next Task!"
 })
 
-$EClipboardHistory.Add_Click({
-})
-
-$ELocation.Add_Click({
-	
-})
-
-
-$EHibernation.Add_Click({
-    
-})
-
 $InstallOneDrive.Add_Click({
     $Form.text                       = "WinTool by Alerion - Reinstalling OneDrive..."
     $ResultText.text = "`r`n" + "  Installing Onedrive. Please Wait..."
@@ -3012,14 +2977,6 @@ $DisableNumLock.Add_Click({
     }
     $ResultText.text = "`r`n" + "  Disable NumLock after startup. `r`n  Ready for Next Task!"
 })
-
-#Add secondary en-US keyboard
-$addENkeyboard.Add_Click({
-})
-
-# Remove secondary en-US keyboard
-$removeENkeyboard.Add_Click({
-  })
 
 $killedge.Add_Click({
     $Form.text                       = "WinTool by Alerion - Removing Microsoft Edge..."
@@ -3069,9 +3026,6 @@ $olddevicemanager.Add_Click({
 $oldprinters.Add_Click({
     $ResultText.text = "`r`n" + "  Opened Devices/Printers..."
     cmd /c control printers
-})
-
-$restorepower.Add_Click({
 })
 
 $NFS.Add_Click({
@@ -3201,6 +3155,116 @@ $windowsupdatefix.Add_Click({
     Start-Sleep -s 1
     $ResultText.text = "`r`n" + "  Windows Update has been repaired, please reboot your computer..."
     $Form.text                       = "WinTool by Alerion - Windows Update has been repaired, please reboot your computer..."
+})
+
+$bravebrowser.Add_Click({
+    if (Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id Brave.Brave
+        $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Installed - Ready for Next Task"
+    }
+})
+
+$dropbox.Add_Click({
+    if (Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id Dropbox.Dropbox
+        $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Installed - Ready for Next Task"
+    }
+})
+
+$7zip.Add_Click({
+    if (Test-Path "C:\Program Files\7-Zip\7z.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id 7zip.7zip
+        $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Installed - Ready for Next Task"
+    }
+})
+
+$malwarebytes.Add_Click({  
+    if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id Malwarebytes.Malwarebytes
+        $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Installed - Ready for Next Task"
+    }
+})
+
+$steam.Add_Click({
+    if (Test-Path "C:\Program Files (x86)\Steam\steam.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id Valve.Steam
+        $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Installed - Ready for Next Task"
+    }
+})
+
+$discord.Add_Click({
+    if (Test-Path ~\AppData\Local\Discord\update.exe){
+        $ResultText.text = "`r`n" +"`r`n" + "  Discord Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id Discord.Discord
+        $ResultText.text = "`r`n" +"`r`n" + "  Discord Installed - Ready for Next Task"
+    }
+})
+
+$teamviewer.Add_Click({
+    if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id TeamViewer.TeamViewer
+        $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Installed - Ready for Next Task"
+    }
+})
+
+$epicgames.Add_Click({
+    if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id EpicGames.EpicGamesLauncher
+        $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Installed - Ready for Next Task"
+    }
+})
+
+$githubdesktop.Add_Click({
+    if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe){
+        $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id GitHub.GitHubDesktop
+        $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Installed - Ready for Next Task"
+    }
+})
+
+$visualstudiocode.Add_Click({
+    if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\"){
+        $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id Microsoft.VisualStudioCode
+        $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Installed - Ready for Next Task"
+    }
+})
+
+$qbittorrent.Add_Click({
+    if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
+        $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+    }  
+    else{
+        winget install -e --id qBittorrent.qBittorrent
+        $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+    }
 })
 
 $Form.ShowDialog() | Out-Null
