@@ -1,24 +1,18 @@
 Basic usage to setup a Gaming PC with this Script:
 
-Press "Essential Tweaks"
+Press essential tweaks, this now includes all needed for the optimal setup as long as you disabled all the tracking shit from Microsoft when you setup your OS.
 
-Press "Gaming Tweaks"
+Gaming Tweaks can be applied if you are configurating a GamingPC
 
-Press "Remove OneDrive"
+Patch Security is for paranoid people and will prolly be removed, it blocks alot of usefull stuff like running Scripts so i would avoid this myself.
 
-Press "Security Updates"
+Remove MS Store Apps is time consuming but will remove all the bloatware includes in a fresh Windows Install and also Unpin all those from the Start Menu.
 
-Press "Remove MS Store Apps"
-
-Press "Ultimate Power Plan"
-
-Press "Optimize Performance"
-
-
-Then at the end since Windows is a bit buggy press "Enable Action Centre" this will make sound, internet and notification area work again.
+Disabled the option to remove the notification area since this can be usefull and you can just set Alerts/Notifications to silent or alarms only.
 
 Alternativly you can use the Ultimate Cleaner to clean up (this is a feature i suggest to from time to time to clear variants of caches and themp files after some usage) 
 
+Also added Winget app installation so the software i recommend and use the most is easier available when setting up a fresh OS install.
 
 Paste this command into Powershell (admin):
 
