@@ -531,128 +531,140 @@ $extras.location                 = New-Object System.Drawing.Point(0,10)
 $extras.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10,[System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
 $extras.ForeColor                = $frontcolor 
 
-$bravebrowser                       = New-Object system.Windows.Forms.Button
+$bravebrowser                       = New-Object system.Windows.Forms.CheckBox
 $bravebrowser.text                  = "Brave Browser"
 $bravebrowser.width                 = 220
-$bravebrowser.height                = 30
-$bravebrowser.location              = New-Object System.Drawing.Point(0,45)
+$bravebrowser.location              = New-Object System.Drawing.Point(0,40)
 $bravebrowser.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$bravebrowser.BackColor             = $frontcolor 
-$bravebrowser.ForeColor             = $backcolor
-$bravebrowser.FlatStyle             = "Flat"
-$bravebrowser.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$dropbox               = New-Object system.Windows.Forms.Button
+$dropbox               = New-Object system.Windows.Forms.CheckBox
 $dropbox.text          = "Dropbox"
 $dropbox.width         = 220
-$dropbox.height        = 30
-$dropbox.location      = New-Object System.Drawing.Point(0,80)
+$dropbox.location      = New-Object System.Drawing.Point(0,60)
 $dropbox.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$dropbox.BackColor     = $frontcolor 
-$dropbox.ForeColor     = $backcolor
-$dropbox.FlatStyle     = "Flat"
-$dropbox.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$7zip                       = New-Object system.Windows.Forms.Button
+$7zip                       = New-Object system.Windows.Forms.CheckBox
 $7zip.text                  = "7-Zip"
 $7zip.width                 = 220
-$7zip.height                = 30
-$7zip.location              = New-Object System.Drawing.Point(0,115)
+$7zip.location              = New-Object System.Drawing.Point(0,80)
 $7zip.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$7zip.BackColor             = $frontcolor 
-$7zip.ForeColor             = $backcolor
-$7zip.FlatStyle             = "Flat"
-$7zip.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$malwarebytes                    = New-Object system.Windows.Forms.Button
+$malwarebytes                    = New-Object system.Windows.Forms.CheckBox
 $malwarebytes.text               = "Malwarebytes"
 $malwarebytes.width              = 220
-$malwarebytes.height             = 30
-$malwarebytes.location           = New-Object System.Drawing.Point(0,150)
+$malwarebytes.location           = New-Object System.Drawing.Point(0,100)
 $malwarebytes.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$malwarebytes.BackColor          = $frontcolor 
-$malwarebytes.ForeColor          = $backcolor
-$malwarebytes.FlatStyle          = "Flat"
-$malwarebytes.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$steam                   = New-Object system.Windows.Forms.Button
+$steam                   = New-Object system.Windows.Forms.CheckBox
 $steam.text              = "Steam Client"
 $steam.width             = 220
-$steam.height            = 30
-$steam.location          = New-Object System.Drawing.Point(0,185)
+$steam.location          = New-Object System.Drawing.Point(0,120)
 $steam.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$steam.BackColor         = $frontcolor 
-$steam.ForeColor         = $backcolor
-$steam.FlatStyle         = "Flat"
-$steam.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$discord                        = New-Object system.Windows.Forms.Button
+$discord                        = New-Object system.Windows.Forms.CheckBox
 $discord.text                   = "Discord"
 $discord.width                  = 220
-$discord.height                 = 30
-$discord.location               = New-Object System.Drawing.Point(0,220)
+$discord.location               = New-Object System.Drawing.Point(0,140)
 $discord.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$discord.BackColor              = $frontcolor 
-$discord.ForeColor              = $backcolor
-$discord.FlatStyle              = "Flat"
-$discord.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$teamviewer                    = New-Object system.Windows.Forms.Button
+$teamviewer                    = New-Object system.Windows.Forms.CheckBox
 $teamviewer.text               = "Teamviewer"
 $teamviewer.width              = 220
-$teamviewer.height             = 30
-$teamviewer.location           = New-Object System.Drawing.Point(0,255)
+$teamviewer.location           = New-Object System.Drawing.Point(0,160)
 $teamviewer.Font               = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$teamviewer.BackColor          = $frontcolor 
-$teamviewer.ForeColor          = $backcolor
-$teamviewer.FlatStyle          = "Flat"
-$teamviewer.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$epicgames                    = New-Object system.Windows.Forms.Button
+$epicgames                    = New-Object system.Windows.Forms.CheckBox
 $epicgames.text               = "Epic Games Launcher"
-$epicgames.AutoSize           = $false
 $epicgames.width              = 220
-$epicgames.height             = 30
-$epicgames.location           = New-Object System.Drawing.Point(0,290)
+$epicgames.location           = New-Object System.Drawing.Point(0,180)
 $epicgames.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$epicgames.BackColor              = $frontcolor 
-$epicgames.ForeColor              = $backcolor
-$epicgames.FlatStyle              = "Flat"
-$epicgames.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$githubdesktop                        = New-Object system.Windows.Forms.Button
+$githubdesktop                        = New-Object system.Windows.Forms.CheckBox
 $githubdesktop.text                   = "Github Desktop"
 $githubdesktop.width                  = 220
-$githubdesktop.height                 = 30
-$githubdesktop.location               = New-Object System.Drawing.Point(0,325)
+$githubdesktop.location               = New-Object System.Drawing.Point(0,200)
 $githubdesktop.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$githubdesktop.BackColor              = $frontcolor 
-$githubdesktop.ForeColor              = $backcolor
-$githubdesktop.FlatStyle              = "Flat"
-$githubdesktop.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$visualstudiocode                       = New-Object system.Windows.Forms.Button
+$visualstudiocode                       = New-Object system.Windows.Forms.CheckBox
 $visualstudiocode.text                  = "Visual Studio Code"
 $visualstudiocode.width                 = 220
-$visualstudiocode.height                = 30
-$visualstudiocode.location              = New-Object System.Drawing.Point(0,360)
+$visualstudiocode.location              = New-Object System.Drawing.Point(0,220)
 $visualstudiocode.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$visualstudiocode.BackColor             = $frontcolor 
-$visualstudiocode.ForeColor             = $backcolor
-$visualstudiocode.FlatStyle             = "Flat"
-$visualstudiocode.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$qbittorrent                   = New-Object system.Windows.Forms.Button
+$qbittorrent                   = New-Object System.Windows.Forms.CheckBox
 $qbittorrent.text              = "qBittorrent"
 $qbittorrent.width             = 220
-$qbittorrent.height            = 30
-$qbittorrent.location          = New-Object System.Drawing.Point(0,395)
+$qbittorrent.location          = New-Object System.Drawing.Point(0,240)
 $qbittorrent.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$qbittorrent.BackColor         = $frontcolor 
-$qbittorrent.ForeColor         = $backcolor
-$qbittorrent.FlatStyle         = "Flat"
-$qbittorrent.FlatAppearance.MouseOverBackColor = $hovercolor
 
+$notepad                   = New-Object System.Windows.Forms.CheckBox
+$notepad.text              = "Notepad++"
+$notepad.width             = 220
+$notepad.location          = New-Object System.Drawing.Point(0,260)
+$notepad.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$foxit                   = New-Object System.Windows.Forms.CheckBox
+$foxit.text              = "Foxit PDF Reader"
+$foxit.width             = 220
+$foxit.location          = New-Object System.Drawing.Point(0,280)
+$foxit.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$placeholder4                   = New-Object System.Windows.Forms.CheckBox
+$placeholder4.text              = "Placeholder"
+$placeholder4.width             = 220
+$placeholder4.location          = New-Object System.Drawing.Point(0,300)
+$placeholder4.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$placeholder5                   = New-Object System.Windows.Forms.CheckBox
+$placeholder5.text              = "Placeholder"
+$placeholder5.width             = 220
+$placeholder5.location          = New-Object System.Drawing.Point(0,320)
+$placeholder5.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$placeholder6                   = New-Object System.Windows.Forms.CheckBox
+$placeholder6.text              = "Placeholder"
+$placeholder6.width             = 220
+$placeholder6.location          = New-Object System.Drawing.Point(0,340)
+$placeholder6.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$placeholder7                   = New-Object System.Windows.Forms.CheckBox
+$placeholder7.text              = "Placeholder"
+$placeholder7.width             = 220
+$placeholder7.location          = New-Object System.Drawing.Point(0,360)
+$placeholder7.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+
+$updatebutton                       = New-Object system.Windows.Forms.Button
+$updatebutton.text                  = "Update Installed Apps"
+$updatebutton.width                 = 220
+$updatebutton.height                = 30
+$updatebutton.location              = New-Object System.Drawing.Point(0,360)
+$updatebutton.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$updatebutton.BackColor             = $frontcolor 
+$updatebutton.ForeColor             = $backcolor
+$updatebutton.FlatStyle             = "Flat"
+$updatebutton.FlatAppearance.MouseOverBackColor = $hovercolor
+
+$okbutton                       = New-Object system.Windows.Forms.Button
+$okbutton.text                  = "Ok"
+$okbutton.width                 = 105
+$okbutton.height                = 30
+$okbutton.location              = New-Object System.Drawing.Point(0,395)
+$okbutton.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$okbutton.BackColor             = $frontcolor 
+$okbutton.ForeColor             = $backcolor
+$okbutton.FlatStyle             = "Flat"
+$okbutton.FlatAppearance.MouseOverBackColor = $hovercolor
+
+$resetbutton                       = New-Object system.Windows.Forms.Button
+$resetbutton.text                  = "Reset"
+$resetbutton.width                 = 105
+$resetbutton.height                = 30
+$resetbutton.location              = New-Object System.Drawing.Point(115,395)
+$resetbutton.Font                  = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$resetbutton.BackColor             = $frontcolor 
+$resetbutton.ForeColor             = $backcolor
+$resetbutton.FlatStyle             = "Flat"
+$resetbutton.FlatAppearance.MouseOverBackColor = $hovercolor
 
 #######################################################################################################
 # Install Apps ends here
@@ -744,7 +756,16 @@ $Panel4.controls.AddRange(@(
     $epicgames, 
     $githubdesktop,
     $visualstudiocode,
-    $qbittorrent
+    $qbittorrent,
+    $updatebutton,
+    $okbutton,
+    $resetbutton,
+    $notepad,
+    $foxit,
+    $placeholder3,
+    $placeholder4,
+    $placeholder5,
+    $placeholder6
 ))
 
 $Panel5.controls.AddRange(@(
@@ -3157,114 +3178,213 @@ $windowsupdatefix.Add_Click({
     $Form.text                       = "WinTool by Alerion - Windows Update has been repaired, please reboot your computer..."
 })
 
-$bravebrowser.Add_Click({
-    if (Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id Brave.Brave
-        $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Installed - Ready for Next Task"
+$resetbutton.Add_Click({
+    $bravebrowser.Checked = $false
+    $dropbox.Checked = $false
+    $7zip.Checked = $false
+    $malwarebytes.Checked = $false
+    $steam.Checked = $false
+    $discord.Checked = $false
+    $teamviewer.Checked = $false
+    $epicgames.Checked = $false
+    $githubdesktop.Checked = $false
+    $visualstudiocode.Checked = $false
+    $qbittorrent.Checked = $false
+    $placeholder1.Checked = $false
+    $placeholder2.Checked = $false
+    $placeholder3.Checked = $false
+    $placeholder4.Checked = $false
+    $placeholder5.Checked = $false
+    $placeholder6.Checked = $false
+})
+
+$updatebutton.Add_Click({
+    [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+    $wingetup = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Update installed apps with Winget?" , 4)
+    if ($wingetup -eq 'Yes') {
+        $wingetup = {
+            $name='Winget Update Process - Please wait...'
+            $host.ui.RawUI.WindowTitle = $name
+            cmd /c winget upgrade
+        }
+
+        Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $wingetup"
+        $ResultText.text = "`r`n" +"`r`n" + "  Updating all applications already installed, please wait..."
     }
 })
 
-$dropbox.Add_Click({
-    if (Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id Dropbox.Dropbox
-        $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Installed - Ready for Next Task"
+$okbutton.Add_Click({
+    if($bravebrowser.Checked){
+        if (Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id Brave.Brave
+            $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Installed - Ready for Next Task"
+        }
     }
-})
+    
+    if($dropbox.Checked){
+        if (Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id Dropbox.Dropbox
+            $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Installed - Ready for Next Task"
+        }
+    }
+    
+    if($7zip.Checked){
+        if (Test-Path "C:\Program Files\7-Zip\7z.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id 7zip.7zip
+            $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Installed - Ready for Next Task"
+        }
+    }
+    
+    if($malwarebytes.Checked){  
+        if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id Malwarebytes.Malwarebytes
+            $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Installed - Ready for Next Task"
+        }
+    }
+    
+    if($steam.Checked){
+        if (Test-Path "C:\Program Files (x86)\Steam\steam.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id Valve.Steam
+            $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Installed - Ready for Next Task"
+        }
+    }
+    
+    if($discord.Checked){
+        if (Test-Path ~\AppData\Local\Discord\update.exe){
+            $ResultText.text = "`r`n" +"`r`n" + "  Discord Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id Discord.Discord
+            $ResultText.text = "`r`n" +"`r`n" + "  Discord Installed - Ready for Next Task"
+        }
+    }
+    
+    if($teamviewer.Checked){
+        if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id TeamViewer.TeamViewer
+            $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Installed - Ready for Next Task"
+        }
+    }
+    
+    if($epicgames.Checked){
+        if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id EpicGames.EpicGamesLauncher
+            $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Installed - Ready for Next Task"
+        }
+    }
+    
+    if($githubdesktop.Checked){
+        if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe){
+            $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id GitHub.GitHubDesktop
+            $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Installed - Ready for Next Task"
+        }
+    }
+    
+    if($visualstudiocode.Checked){
+        if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id Microsoft.VisualStudioCode
+            $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Installed - Ready for Next Task"
+        }
+    }
+    
+    if($qbittorrent.Checked){
+        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id qBittorrent.qBittorrent
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+        }
+    }
 
-$7zip.Add_Click({
-    if (Test-Path "C:\Program Files\7-Zip\7z.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id 7zip.7zip
-        $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Installed - Ready for Next Task"
+    if($notepad.Checked){
+        if (Test-Path "C:\Program Files\Notepad++\notepad++.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Notepad++ Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install --id=Notepad++.Notepad++  -e
+            $ResultText.text = "`r`n" +"`r`n" + "  Notepad++ Installed - Ready for Next Task"
+        }
     }
-})
 
-$malwarebytes.Add_Click({  
-    if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id Malwarebytes.Malwarebytes
-        $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Installed - Ready for Next Task"
+    if($foxit.Checked){
+        if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Foxit PDF Reader Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install --id=Foxit.FoxitReader  -e
+            $ResultText.text = "`r`n" +"`r`n" + "  Foxit PDF Reader Installed - Ready for Next Task"
+        }
     }
-})
 
-$steam.Add_Click({
-    if (Test-Path "C:\Program Files (x86)\Steam\steam.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id Valve.Steam
-        $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Installed - Ready for Next Task"
+    if($qbittorrent.Checked){
+        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id qBittorrent.qBittorrent
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+        }
     }
-})
 
-$discord.Add_Click({
-    if (Test-Path ~\AppData\Local\Discord\update.exe){
-        $ResultText.text = "`r`n" +"`r`n" + "  Discord Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id Discord.Discord
-        $ResultText.text = "`r`n" +"`r`n" + "  Discord Installed - Ready for Next Task"
+    if($qbittorrent.Checked){
+        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id qBittorrent.qBittorrent
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+        }
     }
-})
 
-$teamviewer.Add_Click({
-    if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id TeamViewer.TeamViewer
-        $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Installed - Ready for Next Task"
+    if($qbittorrent.Checked){
+        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id qBittorrent.qBittorrent
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+        }
     }
-})
 
-$epicgames.Add_Click({
-    if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id EpicGames.EpicGamesLauncher
-        $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Installed - Ready for Next Task"
+    if($qbittorrent.Checked){
+        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+        }  
+        else{
+            winget install -e --id qBittorrent.qBittorrent
+            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+        }
     }
-})
 
-$githubdesktop.Add_Click({
-    if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe){
-        $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id GitHub.GitHubDesktop
-        $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Installed - Ready for Next Task"
-    }
-})
-
-$visualstudiocode.Add_Click({
-    if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\"){
-        $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id Microsoft.VisualStudioCode
-        $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Installed - Ready for Next Task"
-    }
-})
-
-$qbittorrent.Add_Click({
-    if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
-        $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
-    }  
-    else{
-        winget install -e --id qBittorrent.qBittorrent
-        $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
-    }
 })
 
 $Form.ShowDialog() | Out-Null
