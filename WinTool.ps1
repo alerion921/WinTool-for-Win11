@@ -609,29 +609,23 @@ $foxit.width             = 220
 $foxit.location          = New-Object System.Drawing.Point(0,280)
 $foxit.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$placeholder4                   = New-Object System.Windows.Forms.CheckBox
-$placeholder4.text              = "Placeholder"
-$placeholder4.width             = 220
-$placeholder4.location          = New-Object System.Drawing.Point(0,300)
-$placeholder4.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$spotify                   = New-Object System.Windows.Forms.CheckBox
+$spotify.text              = "Spotify"
+$spotify.width             = 220
+$spotify.location          = New-Object System.Drawing.Point(0,300)
+$spotify.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$placeholder5                   = New-Object System.Windows.Forms.CheckBox
-$placeholder5.text              = "Placeholder"
-$placeholder5.width             = 220
-$placeholder5.location          = New-Object System.Drawing.Point(0,320)
-$placeholder5.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$ds4windows                   = New-Object System.Windows.Forms.CheckBox
+$ds4windows.text              = "DS4Windows"
+$ds4windows.width             = 220
+$ds4windows.location          = New-Object System.Drawing.Point(0,320)
+$ds4windows.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
-$placeholder6                   = New-Object System.Windows.Forms.CheckBox
-$placeholder6.text              = "Placeholder"
-$placeholder6.width             = 220
-$placeholder6.location          = New-Object System.Drawing.Point(0,340)
-$placeholder6.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-
-$placeholder7                   = New-Object System.Windows.Forms.CheckBox
-$placeholder7.text              = "Placeholder"
-$placeholder7.width             = 220
-$placeholder7.location          = New-Object System.Drawing.Point(0,360)
-$placeholder7.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$bakkes                   = New-Object System.Windows.Forms.CheckBox
+$bakkes.text              = "Bakkesmod"
+$bakkes.width             = 220
+$bakkes.location          = New-Object System.Drawing.Point(0,340)
+$bakkes.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
 
 $updatebutton                       = New-Object system.Windows.Forms.Button
 $updatebutton.text                  = "Update Installed Apps"
@@ -762,10 +756,9 @@ $Panel4.controls.AddRange(@(
     $resetbutton,
     $notepad,
     $foxit,
-    $placeholder3,
-    $placeholder4,
-    $placeholder5,
-    $placeholder6
+    $spotify,
+    $ds4windows,
+    $bakkes
 ))
 
 $Panel5.controls.AddRange(@(
@@ -3190,12 +3183,11 @@ $resetbutton.Add_Click({
     $githubdesktop.Checked = $false
     $visualstudiocode.Checked = $false
     $qbittorrent.Checked = $false
-    $placeholder1.Checked = $false
-    $placeholder2.Checked = $false
-    $placeholder3.Checked = $false
-    $placeholder4.Checked = $false
-    $placeholder5.Checked = $false
-    $placeholder6.Checked = $false
+    $notepad.Checked = $false
+    $foxit.Checked = $false
+    $spotify.Checked = $false
+    $ds4windows.Checked = $false
+    $bakkes.Checked = $false
 })
 
 $updatebutton.Add_Click({
@@ -3345,46 +3337,39 @@ $okbutton.Add_Click({
         }
     }
 
-    if($qbittorrent.Checked){
-        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+    if($spotify.Checked){
+        if (Test-Path "~\AppData\Roaming\Spotify\Spotify.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Spotify Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id qBittorrent.qBittorrent
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+            $path = [Environment]::GetFolderPath("Desktop")
+            Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$path\SpotifySetup.exe"
+            $ResultText.text = "`r`n" +"`r`n" + "  SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
         }
     }
 
-    if($qbittorrent.Checked){
-        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+    if($ds4windows.Checked){
+        if (Test-Path "C:\Users\$user\Downloads\DS4Windows_3.2.17_x64.7z"){
+            $ResultText.text = "`r`n" +"`r`n" + "  DS4Windows Already Downloaded - Ready for Next Task"
         }  
         else{
-            winget install -e --id qBittorrent.qBittorrent
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+            $path = [Environment]::GetFolderPath("MyDocuments")
+            Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$path\DS4Windows.7z"
+            $ResultText.text = "`r`n" +"`r`n" + "  DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
         }
     }
 
-    if($qbittorrent.Checked){
-        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+    if($bakkes.Checked){
+        if (Test-Path "C:\Users\$user\Downloads\BakkesModSetup.zip"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Bakkesmod Already Downloaded - Ready for Next Task"
         }  
         else{
-            winget install -e --id qBittorrent.qBittorrent
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
+            $path = [Environment]::GetFolderPath("MyDocuments")
+            Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$path\Bakkesmod.zip"
+
+            $ResultText.text = "`r`n" +"`r`n" + "  Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
         }
     }
-
-    if($qbittorrent.Checked){
-        if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe"){
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
-        }  
-        else{
-            winget install -e --id qBittorrent.qBittorrent
-            $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
-        }
-    }
-
 })
 
 $Form.ShowDialog() | Out-Null
