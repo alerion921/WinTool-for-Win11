@@ -3338,33 +3338,39 @@ $okbutton.Add_Click({
     }
 
     if($spotify.Checked){
-        if (Test-Path "~\AppData\Roaming\Spotify\Spotify.exe"){
-            $ResultText.text = "`r`n" +"`r`n" + "  Spotify Already Installed - Ready for Next Task"
+
+        $path = [Environment]::GetFolderPath("Desktop")
+
+        if (Test-Path "$path\SpotifySetup.exe"){
+            $ResultText.text = "`r`n" +"`r`n" + "  Spotify Already Downloaded - Ready for Next Task"
         }  
         else{
-            $path = [Environment]::GetFolderPath("Desktop")
             Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$path\SpotifySetup.exe"
             $ResultText.text = "`r`n" +"`r`n" + "  SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
         }
     }
 
     if($ds4windows.Checked){
-        if (Test-Path "C:\Users\$user\Downloads\DS4Windows_3.2.17_x64.7z"){
+
+        $path = [Environment]::GetFolderPath("MyDocuments")
+
+        if (Test-Path "$path\DS4Windows.7z"){
             $ResultText.text = "`r`n" +"`r`n" + "  DS4Windows Already Downloaded - Ready for Next Task"
         }  
         else{
-            $path = [Environment]::GetFolderPath("MyDocuments")
             Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$path\DS4Windows.7z"
             $ResultText.text = "`r`n" +"`r`n" + "  DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
         }
     }
 
     if($bakkes.Checked){
-        if (Test-Path "C:\Users\$user\Downloads\BakkesModSetup.zip"){
+
+        $path = [Environment]::GetFolderPath("MyDocuments")
+        
+        if (Test-Path "$path\Bakkesmod.zip"){
             $ResultText.text = "`r`n" +"`r`n" + "  Bakkesmod Already Downloaded - Ready for Next Task"
         }  
         else{
-            $path = [Environment]::GetFolderPath("MyDocuments")
             Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$path\Bakkesmod.zip"
 
             $ResultText.text = "`r`n" +"`r`n" + "  Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
