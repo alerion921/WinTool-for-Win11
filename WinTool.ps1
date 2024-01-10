@@ -692,26 +692,26 @@ Function MakeForm {
     # placeholder starts here
     #######################################################################################################
 
-    $placeholder1 = New-Object system.Windows.Forms.Label
-    $placeholder1.text = "Placeholder Title"
-    $placeholder1.AutoSize = $false
-    $placeholder1.width = 220
-    $placeholder1.height = 35
-    $placeholder1.TextAlign = "MiddleCenter"
-    $placeholder1.location = New-Object System.Drawing.Point(0, 10)
-    $placeholder1.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $placeholder1.ForeColor = $frontcolor 
+    $Mischeader = New-Object system.Windows.Forms.Label
+    $Mischeader.text = "Misc"
+    $Mischeader.AutoSize = $false
+    $Mischeader.width = 220
+    $Mischeader.height = 35
+    $Mischeader.TextAlign = "MiddleCenter"
+    $Mischeader.location = New-Object System.Drawing.Point(0, 10)
+    $Mischeader.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+    $Mischeader.ForeColor = $frontcolor 
 
-    $placeholder2 = New-Object system.Windows.Forms.Button
-    $placeholder2.text = "Placeholder"
-    $placeholder2.width = 220
-    $placeholder2.height = 30
-    $placeholder2.location = New-Object System.Drawing.Point(0, 45)
-    $placeholder2.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder2.BackColor = $frontcolor 
-    $placeholder2.ForeColor = $backcolor
-    $placeholder2.FlatStyle = "Flat"
-    $placeholder2.FlatAppearance.MouseOverBackColor = $hovercolor
+    $ClearRAMcache = New-Object system.Windows.Forms.Button
+    $ClearRAMcache.text = "Clear RAM Cache"
+    $ClearRAMcache.width = 220
+    $ClearRAMcache.height = 30
+    $ClearRAMcache.location = New-Object System.Drawing.Point(0, 45)
+    $ClearRAMcache.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $ClearRAMcache.BackColor = $frontcolor 
+    $ClearRAMcache.ForeColor = $backcolor
+    $ClearRAMcache.FlatStyle = "Flat"
+    $ClearRAMcache.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $placeholder3 = New-Object system.Windows.Forms.Button
     $placeholder3.text = "Placeholder"
@@ -902,8 +902,8 @@ Function MakeForm {
         ))
 
     $Panel5.controls.AddRange(@(
-            $placeholder1,
-            $placeholder2,
+            $Mischeader,
+            $ClearRAMcache,
             $placeholder3,
             $placeholder4,
             $placeholder5,
@@ -3537,6 +3537,15 @@ Function MakeForm {
                     $ResultText.text = "`r`n" + "`r`n" + "  Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
                 }
             }
+        })
+
+        $ClearRAMcache.Add_Click({
+            $WshShell = New-Object -comObject WScript.Shell
+            $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\Clear RAM Cache.lnk")
+            $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
+            $Shortcut.TargetPath = "%windir%system32rundll32.exe advapi32.dll,ProcessIdleTasks"
+            $Shortcut.WorkingDirectory = "C:\Windows\System32\"
+            $Shortcut.Save()
         })
 
     $Form.ShowDialog() | Out-Null
