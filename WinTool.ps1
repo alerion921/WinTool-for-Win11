@@ -267,16 +267,16 @@ $resetnetwork.ForeColor          = $backcolor
 $resetnetwork.FlatStyle          = "Flat"
 $resetnetwork.FlatAppearance.MouseOverBackColor = $hovercolor
 
-$laptopnumlock                   = New-Object system.Windows.Forms.Button
-$laptopnumlock.text              = "Laptop Numlock Fix"
-$laptopnumlock.width             = 220
-$laptopnumlock.height            = 30
-$laptopnumlock.location          = New-Object System.Drawing.Point(0,150)
-$laptopnumlock.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
-$laptopnumlock.BackColor         = $frontcolor 
-$laptopnumlock.ForeColor         = $backcolor
-$laptopnumlock.FlatStyle         = "Flat"
-$laptopnumlock.FlatAppearance.MouseOverBackColor = $hovercolor
+$forcenorkeyboard                = New-Object system.Windows.Forms.Button
+$forcenorkeyboard.text              = "Force NO/NB Language"
+$forcenorkeyboard.width             = 220
+$forcenorkeyboard.height            = 30
+$forcenorkeyboard.location          = New-Object System.Drawing.Point(0,150)
+$forcenorkeyboard.Font              = New-Object System.Drawing.Font('Microsoft Sans Serif',12)
+$forcenorkeyboard.BackColor         = $frontcolor 
+$forcenorkeyboard.ForeColor         = $backcolor
+$forcenorkeyboard.FlatStyle         = "Flat"
+$forcenorkeyboard.FlatAppearance.MouseOverBackColor = $hovercolor
 
 $dualboottime                 = New-Object system.Windows.Forms.Button
 $dualboottime.text            = "Set Time to UTC"
@@ -719,7 +719,7 @@ $Panel2.controls.AddRange(@(
     $changedns,
     $oldmenu,
     $resetnetwork,
-    $laptopnumlock,
+    $forcenorkeyboard,
     $dualboottime
 ))
 
@@ -771,7 +771,7 @@ $Panel5.controls.AddRange(@(
 
     # Check if winget is installed
     if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe){
-        $ResultText.text = "`r`n" +"`r`n" + "  Winget Already Installed - Ready for Next Task"
+        $ResultText.text = "`r`n" +"`r`n" + "  Winget Service is now running..."
     }  
     else{
         # Installing winget from the Microsoft Store
@@ -1322,16 +1322,22 @@ if (Test-Path "$env:systemroot\SoftwareDistribution.bak") {
     $Form.text                       = "WinTool by Alerion"
 })
 
-$laptopnumlock.Add_Click({
-    $ResultText.text = "`r`n" + "  Trying to disable numlock by force..."
-    Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
-    Add-Type -AssemblyName System.Windows.Forms
-    If (([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
-        $wsh = New-Object -ComObject WScript.Shell
-        $wsh.SendKeys('{NUMLOCK}')
-    }
-    Start-Sleep -Seconds 3
-    $ResultText.text = "`r`n" + "  Numlock bug has been fixed. `r`n  Ready for Next Task!"
+$forcenorkeyboard.Add_Click({
+    $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default."
+
+    Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
+
+    Start-Sleep -s 5
+
+    $1 = Get-WinUserLanguageList
+    $1.RemoveAll( { $args[0].LanguageTag -clike 'us*' } )
+    Set-WinUserLanguageList $1 -Force
+
+    $2 = Get-WinUserLanguageList
+    $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
+    Set-WinUserLanguageList $2 -Force
+
+    $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
 })
 
 $essentialtweaks.Add_Click({
@@ -1386,22 +1392,6 @@ $essentialtweaks.Add_Click({
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
 	}
 	Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
-
-    $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default."
-
-    Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
-
-    Start-Sleep -s 5
-
-    $1 = Get-WinUserLanguageList
-    $1.RemoveAll( { $args[0].LanguageTag -clike 'us*' } )
-    Set-WinUserLanguageList $1 -Force
-
-    $2 = Get-WinUserLanguageList
-    $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
-    Set-WinUserLanguageList $2 -Force
-
-    $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
 
     $ResultText.text = "`r`n" + "  Enabling and Activating Highest Performance Power Plan..."
 	Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
@@ -3206,33 +3196,37 @@ $updatebutton.Add_Click({
     }
 })
 
+$bravepath = Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+$dropboxpath = Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"
+$7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
+
 $okbutton.Add_Click({
     if($bravebrowser.Checked){
-        if (Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"){
+        if ($bravepath){
             $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id Brave.Brave
+            winget install -e --id=Brave.Brave --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Brave Browser Installed - Ready for Next Task"
         }
     }
     
     if($dropbox.Checked){
-        if (Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"){
+        if ($dropboxpath){
             $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id Dropbox.Dropbox
+            winget install -e --id=Dropbox.Dropbox --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Dropbox Installed - Ready for Next Task"
         }
     }
     
     if($7zip.Checked){
-        if (Test-Path "C:\Program Files\7-Zip\7z.exe"){
+        if ($7zippath){
             $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id 7zip.7zip
+            winget install -e --id=7zip.7zip --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  7-Zip Installed - Ready for Next Task"
         }
     }
@@ -3242,7 +3236,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id Malwarebytes.Malwarebytes
+            winget install -e --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Malwarebytes Installed - Ready for Next Task"
         }
     }
@@ -3252,7 +3246,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id Valve.Steam
+            winget install -e --id=Valve.Steam --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Steam Client Installed - Ready for Next Task"
         }
     }
@@ -3262,7 +3256,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Discord Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id Discord.Discord
+            winget install -e --id=Discord.Discord --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Discord Installed - Ready for Next Task"
         }
     }
@@ -3272,7 +3266,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id TeamViewer.TeamViewer
+            winget install -e --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Teamviewer Installed - Ready for Next Task"
         }
     }
@@ -3282,7 +3276,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id EpicGames.EpicGamesLauncher
+            winget install -e --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Epic Games Launcher Installed - Ready for Next Task"
         }
     }
@@ -3292,7 +3286,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id GitHub.GitHubDesktop
+            winget install -e --id=GitHub.GitHubDesktop --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Github Desktop Installed - Ready for Next Task"
         }
     }
@@ -3302,7 +3296,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id Microsoft.VisualStudioCode
+            winget install -e --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Visual Studio Code Installed - Ready for Next Task"
         }
     }
@@ -3312,7 +3306,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
         }  
         else{
-            winget install -e --id qBittorrent.qBittorrent
+            winget install -e --id=qBittorrent.qBittorrent --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  qBittorrent Installed - Ready for Next Task"
         }
     }
@@ -3322,7 +3316,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Notepad++ Already Installed - Ready for Next Task"
         }  
         else{
-            winget install --id=Notepad++.Notepad++  -e
+            winget install --id=Notepad++.Notepad++ --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Notepad++ Installed - Ready for Next Task"
         }
     }
@@ -3332,7 +3326,7 @@ $okbutton.Add_Click({
             $ResultText.text = "`r`n" +"`r`n" + "  Foxit PDF Reader Already Installed - Ready for Next Task"
         }  
         else{
-            winget install --id=Foxit.FoxitReader  -e
+            winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
             $ResultText.text = "`r`n" +"`r`n" + "  Foxit PDF Reader Installed - Ready for Next Task"
         }
     }
