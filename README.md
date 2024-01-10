@@ -51,7 +51,7 @@ Light Mode - Does the same as the above but with light mode instead.
 
 Install apps---
 
-Added a couple of my favorite apps for easy access to this list, Spotify, DS4 and Bakkesmod is instead downloaded straight into the documents folder since the would require user interactions anways.
+Added a couple of my favorite apps for easy access to this list, Spotify setup is downloaded to Desktop and DS4 + Bakkesmod are downloaded to C:/Users/[YOURUSERNAME]/documents/ for storage and since they would require user interactions anways.
 
 Update apps---
 
