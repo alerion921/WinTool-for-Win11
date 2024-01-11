@@ -3543,7 +3543,8 @@ Function MakeForm {
             $WshShell = New-Object -comObject WScript.Shell
             $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\Clear RAM Cache.lnk")
             $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
-            $Shortcut.TargetPath = "%windir%system32rundll32.exe advapi32.dll,ProcessIdleTasks"
+            $Shortcut.TargetPath = "%windir%\system32\rundll32.exe"
+            $Shortcut.Arguments = "advapi32.dll,ProcessIdleTasks"
             $Shortcut.WorkingDirectory = "C:\Windows\System32\"
             $Shortcut.Save()
         })
