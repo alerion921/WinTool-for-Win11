@@ -713,27 +713,27 @@ Function MakeForm {
     $ClearRAMcache.FlatStyle = "Flat"
     $ClearRAMcache.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $placeholder3 = New-Object system.Windows.Forms.Button
-    $placeholder3.text = "Placeholder"
-    $placeholder3.width = 220
-    $placeholder3.height = 30
-    $placeholder3.location = New-Object System.Drawing.Point(0, 80)
-    $placeholder3.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder3.BackColor = $frontcolor 
-    $placeholder3.ForeColor = $backcolor
-    $placeholder3.FlatStyle = "Flat"
-    $placeholder3.FlatAppearance.MouseOverBackColor = $hovercolor
+    $SystemInfo = New-Object system.Windows.Forms.Button
+    $SystemInfo.text = "System Info"
+    $SystemInfo.width = 220
+    $SystemInfo.height = 30
+    $SystemInfo.location = New-Object System.Drawing.Point(0, 80)
+    $SystemInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $SystemInfo.BackColor = $frontcolor 
+    $SystemInfo.ForeColor = $backcolor
+    $SystemInfo.FlatStyle = "Flat"
+    $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $placeholder4 = New-Object system.Windows.Forms.Button
-    $placeholder4.text = "Placeholder"
-    $placeholder4.width = 220
-    $placeholder4.height = 30
-    $placeholder4.location = New-Object System.Drawing.Point(0, 115)
-    $placeholder4.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder4.BackColor = $frontcolor 
-    $placeholder4.ForeColor = $backcolor
-    $placeholder4.FlatStyle = "Flat"
-    $placeholder4.FlatAppearance.MouseOverBackColor = $hovercolor
+    $HardwareInfo = New-Object system.Windows.Forms.Button
+    $HardwareInfo.text = "Hardware Info"
+    $HardwareInfo.width = 220
+    $HardwareInfo.height = 30
+    $HardwareInfo.location = New-Object System.Drawing.Point(0, 115)
+    $HardwareInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $HardwareInfo.BackColor = $frontcolor 
+    $HardwareInfo.ForeColor = $backcolor
+    $HardwareInfo.FlatStyle = "Flat"
+    $HardwareInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $placeholder5 = New-Object system.Windows.Forms.Button
     $placeholder5.text = "Placeholder"
@@ -904,8 +904,8 @@ Function MakeForm {
     $Panel5.controls.AddRange(@(
             $Mischeader,
             $ClearRAMcache,
-            $placeholder3,
-            $placeholder4,
+            $SystemInfo,
+            $HardwareInfo,
             $placeholder5,
             $placeholder6,
             $placeholder7,
@@ -3547,6 +3547,22 @@ Function MakeForm {
             $Shortcut.Arguments = "advapi32.dll,ProcessIdleTasks"
             $Shortcut.WorkingDirectory = "C:\Windows\System32\"
             $Shortcut.Save()
+        })
+
+        $SystemInfo.Add_Click({
+            $ResultText.text = "Username:  " + (Get-ChildItem Env:USERNAME).Value
+            #Current User name (logged in user)
+            #External IP
+            #Internal IP
+            #Domain Name
+            #Windows License
+        })
+
+        $HardwareInfo.Add_Click({
+            #Motherboard
+            #CPU
+            #RAM + Capacity
+            #GPU Info
         })
 
     $Form.ShowDialog() | Out-Null
