@@ -3576,6 +3576,8 @@ Function MakeForm {
                 "  OS: "                + $OSname + "`r`n" +  
                 "  OS Build: "          + $OSver + "`r`n" +  
                 "  CPU Architecture: "  + $OSbit + "`r`n"
+
+                #LAST WINDOWS UPDATE DATE IF POSSIBLE
         })
 
         $HardwareInfo.Add_Click({
@@ -3616,9 +3618,7 @@ Function MakeForm {
     
 
 
-            #Motherboard
-            #CPU
-            #RAM + Capacity
+            #LAST BIOS UPDATE DATE IF POSSIBLE
             #GPU Info
         })
     
