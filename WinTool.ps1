@@ -122,7 +122,7 @@ Function MakeForm {
     $Panel5.location = New-Object System.Drawing.Point(930, 0)
 
     $Panel6 = New-Object system.Windows.Forms.Panel
-    $Panel6.height = 110
+    $Panel6.height = 330
     $Panel6.width = 1130
     $Panel6.location = New-Object System.Drawing.Point(10, 440)
 
@@ -681,7 +681,7 @@ Function MakeForm {
     $ResultText.ReadOnly = $true
     $ResultText.AutoSize = $true
     $ResultText.width = 1130
-    $ResultText.height = 100
+    $ResultText.height = 320
     $ResultText.location = New-Object System.Drawing.Point(0, 0)
     $ResultText.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
     $ResultText.BorderStyle = "FixedSingle"
@@ -735,16 +735,16 @@ Function MakeForm {
     $HardwareInfo.FlatStyle = "Flat"
     $HardwareInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $placeholder5 = New-Object system.Windows.Forms.Button
-    $placeholder5.text = "Placeholder"
-    $placeholder5.width = 220
-    $placeholder5.height = 30
-    $placeholder5.location = New-Object System.Drawing.Point(0, 150)
-    $placeholder5.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder5.BackColor = $frontcolor 
-    $placeholder5.ForeColor = $backcolor
-    $placeholder5.FlatStyle = "Flat"
-    $placeholder5.FlatAppearance.MouseOverBackColor = $hovercolor
+    $antivirusInfo = New-Object system.Windows.Forms.Button
+    $antivirusInfo.text = "Anti-Virus Information"
+    $antivirusInfo.width = 220
+    $antivirusInfo.height = 30
+    $antivirusInfo.location = New-Object System.Drawing.Point(0, 150)
+    $antivirusInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $antivirusInfo.BackColor = $frontcolor 
+    $antivirusInfo.ForeColor = $backcolor
+    $antivirusInfo.FlatStyle = "Flat"
+    $antivirusInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $placeholder6 = New-Object system.Windows.Forms.Button
     $placeholder6.text = "Placeholder"
@@ -906,7 +906,7 @@ Function MakeForm {
             $ClearRAMcache,
             $SystemInfo,
             $HardwareInfo,
-            $placeholder5,
+            $antivirusInfo,
             $placeholder6,
             $placeholder7,
             $placeholder8,
@@ -925,11 +925,17 @@ Function MakeForm {
 
     # Check if winget is installed
     if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-        $ResultText.text = "`r`n" + "`r`n" + "  Winget Service is now running..."
+        $ResultText.text = "`r`n" + "`r`n" + "  Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
+        `r`n  List of things that are required in order for this to run smoothly:
+        --->  Winget Service
+        --->  Administrator Elevation
+        --->  Windows 10 or Windows 11
+        
+        Enjoy this free tool!"
     }  
     else {
         # Installing winget from the Microsoft Store
-        $ResultText.text = "`r`n" + "`r`n" + "  Installing Winget... Please Wait"
+        $ResultText.text = "`r`n" + "`r`n" + "  Winget is installing please stand by until the GUI becomes responsive again..."
         Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
         $nid = (Get-Process AppInstaller).Id
         Wait-Process -Id $nid
@@ -3550,20 +3556,102 @@ Function MakeForm {
         })
 
         $SystemInfo.Add_Click({
-            $ResultText.text = "Username:  " + (Get-ChildItem Env:USERNAME).Value
-            #Current User name (logged in user)
-            #External IP
-            #Internal IP
-            #Domain Name
-            #Windows License
+            $OSname = (Get-WmiObject Win32_OperatingSystem).caption
+            $OSbit = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+            $OSver = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
+            $localIP = (Get-NetIPAddress | ?{ $_.AddressFamily -eq "IPv4"  -and !($_.IPAddress -match "169") -and !($_.IPaddress -match "127") }).IPAddress
+            $externalIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
+            $winLicence = (Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
+            $accountUsername = (Get-ChildItem Env:USERNAME).Value
+            $domainName = $env:USERDNSDOMAIN
+            $computerName = $env:computername
+        
+            $ResultText.text =  "`r`n" + 
+                "  Username: "          + $accountUsername + "`r`n" + 
+                "  Computer Name: "     + $computerName + "`r`n" + 
+                "  Domain: "            + $domainName + "`r`n" + 
+                "  Local IP: "          + $localIP + "`r`n" +
+                "  External IP: "       + $externalIP + "`r`n" +
+                "  Windows Licence: "   + $winLicence + "`r`n" + 
+                "  OS: "                + $OSname + "`r`n" +  
+                "  OS Build: "          + $OSver + "`r`n" +  
+                "  CPU Architecture: "  + $OSbit + "`r`n"
         })
 
         $HardwareInfo.Add_Click({
+
+            $manufacturer = get-wmiobject Win32_ComputerSystem -Namespace "root\CIMV2"
+            $computerBrand = $manufacturer.Manufacturer
+            $model           = $manufacturer.Model
+            
+            
+            $cpuInfo = Get-WmiObject -Class Win32_Processor -ComputerName. | Select-Object -Property [a-z]*
+            $cpuName = $cpuInfo.Name
+            $cores           = $cpuInfo[0].NumberOfLogicalProcessors
+            
+            $disk = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" |
+            Select-Object Size,FreeSpace
+
+            $TotMem          = "$([string]([System.Math]::Round($manufacturer.TotalPhysicalMemory/1gb,2))) GB"
+
+            $bios = Get-WmiObject Win32_BIOS -Namespace "root\CIMV2"
+            $biosName        = $bios.Manufacturer
+            $biosDesc        = $bios.Description
+            $biosVer         = $bios.SMBIOSBIOSVersion+"."+$bios.SMBIOSMajorVersion+"."+$bios.SMBIOSMinorVersion
+            $biosSerial      = $bios.SerialNumber
+             
+
+            $ResultText.text =  "`r`n" + 
+                "  Manufacturer: "          + $computerBrand + "`r`n" + 
+                "  Model: "                 + $model + "`r`n `r`n" + 
+                "  CPU: "                   + $cpuName + "`r`n" + 
+                "  CPU Cores: "             + $cores + "`r`n `r`n" +
+                "  Total RAM: "             + $TotMem + "`r`n `r`n" + 
+                "  Disk Size: "       + [Math]::Round($Disk.Size / 1GB) + "GB `r`n" +  
+                "  Free Space: " + [Math]::Round($Disk.Freespace / 1GB) + "GB `r`n `r`n" +
+                "  Bios: "                  + $biosName + "`r`n" +
+                "  Bios Description: "      + $biosDesc + "`r`n" +
+                "  Bios Version: "          + $biosVer + "`r`n" +
+                "  Bios Serial: "           + $biosSerial + "`r`n"
+    
+
+
             #Motherboard
             #CPU
             #RAM + Capacity
             #GPU Info
         })
+    
+        $antivirusInfo.Add_Click({
+            $AntiVirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct
+
+            foreach($AntiVirusProduct in $AntiVirusProducts){
+                #Switch to determine the status of antivirus definitions and real-time protection.
+                #The values in this switch-statement are retrieved from the following website: http://community.kaseya.com/resources/m/knowexch/1020.aspx
+                switch ($AntiVirusProduct.productState) {
+                "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                    "262160" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                    "266240" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
+                    "266256" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                    "393216" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                    "393232" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                    "393488" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                    "397312" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
+                    "397328" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                    "397584" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                default {$defstatus = "Unknown" ;$rtstatus = "Unknown"}
+                    }
+                }
+
+                $ResultText.text =  "`r`n" + 
+                "  Name: "          + $AntiVirusProduct.displayName + "`r`n" + 
+                "  Product GUID: "     + $AntiVirusProduct.instanceGuid + "`r`n" + 
+                "  Product Executable: "            + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
+                "  Reporting Exe: "          + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
+                "  Definition Status: "       + $defstatus + "`r`n" +
+                "  Real-time Protection Status: "   + $rtstatus + "`r`n"
+            
+        }) 
 
     $Form.ShowDialog() | Out-Null
 }
