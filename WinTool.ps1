@@ -257,8 +257,7 @@ Function MakeForm {
     $changedns.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
     $changedns.BackColor = $frontcolor 
     $changedns.ForeColor = $backcolor
-    $changedns.FlatStyle = "Flat"
-    $changedns.BorderStyle = "Flat"
+    $changedns.BorderStyle = 0
     $changedns.ReadOnly = $true
     $changedns.SelectionLength = 0;
 
@@ -666,28 +665,34 @@ Function MakeForm {
     #######################################################################################################
     # Install Apps ends here
     #######################################################################################################
-    # Result/Current Status box starts here
+    # Result box starts here
     #######################################################################################################
-    $currentstatus = New-Object system.Windows.Forms.Label
-    $currentstatus.text = "* Current Status *"
-    $currentstatus.AutoSize = $true
-    $currentstatus.width = 25
-    $currentstatus.height = 10
-    $currentstatus.location = New-Object System.Drawing.Point(350, 455)
-    $currentstatus.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 24)
+
+    $ResultTextWrapper = New-Object system.Windows.Forms.TextBox
+    $ResultTextWrapper.multiline = $true
+    $ResultTextWrapper.ReadOnly = $true
+    $ResultTextWrapper.AutoSize = $true
+    $ResultTextWrapper.width = 1130
+    $ResultTextWrapper.height = 320
+    $ResultTextWrapper.location = New-Object System.Drawing.Point(0, 0)
+    $ResultTextWrapper.BorderStyle = "FixedSingle"
+    $ResultTextWrapper.BackColor = $backcolor 
+    $ResultTextWrapper.ForeColor = $frontcolor 
 
     $ResultText = New-Object system.Windows.Forms.TextBox
     $ResultText.multiline = $true
     $ResultText.ReadOnly = $true
     $ResultText.AutoSize = $true
-    $ResultText.width = 1130
-    $ResultText.height = 320
-    $ResultText.location = New-Object System.Drawing.Point(0, 0)
+    $ResultText.width = 1110 #This needs to patch the padding so substract if needed
+    $ResultText.height = 300 #This needs to patch the padding so substract if needed
+    $ResultText.location = New-Object System.Drawing.Point(10, 10) #Padding is defined here
     $ResultText.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
-    $ResultText.BorderStyle = "FixedSingle"
+    $ResultText.BorderStyle = 0
     $ResultText.BackColor = $backcolor 
     $ResultText.ForeColor = $frontcolor 
 
+    #######################################################################################################
+    # Result box ends here
     #######################################################################################################
     # placeholder starts here
     #######################################################################################################
@@ -825,8 +830,6 @@ Function MakeForm {
     #######################################################################################################
     # Placeholder ends here
     #######################################################################################################
-    # Result/Current Status box ends here
-    #######################################################################################################
 
     $Form.controls.AddRange(@(
             $Panel1, 
@@ -917,7 +920,8 @@ Function MakeForm {
         ))
 
     $Panel6.controls.AddRange(@(
-            $ResultText
+            $ResultText,
+            $ResultTextWrapper
         ))
 
     # GUI Specs
@@ -3582,54 +3586,56 @@ Function MakeForm {
 
         $HardwareInfo.Add_Click({
 
-            $manufacturer = get-wmiobject Win32_ComputerSystem -Namespace "root\CIMV2"
+            $manufacturer = Get-WmiObject -Class Win32_ComputerSystem -Namespace "root\CIMV2"
             $computerBrand = $manufacturer.Manufacturer
             $model           = $manufacturer.Model
             
             
             $cpuInfo = Get-WmiObject -Class Win32_Processor -ComputerName. | Select-Object -Property [a-z]*
             $cpuName = $cpuInfo.Name
-            $cores           = $cpuInfo[0].NumberOfLogicalProcessors
+            $cores   = $cpuInfo[0].NumberOfLogicalProcessors
+
+            $GPU = Get-WmiObject -Class Win32_VideoController -Filter "AdapterCompatibility != 'DisplayLink'" #AdapterDACType = Internal can also be used but need to verify that this works with external GPUs too first
+            $GPUname = $GPU.Name
+            $GPUdescription = $GPU.VideoProcessor
+            $GPUvram = [Math]::Round($GPU.AdapterRAM / 1GB)
+            $GPUrefreshrate = $GPU.CurrentRefreshRate
             
-            $disk = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" |
+            $disk = Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'" |
             Select-Object Size,FreeSpace
 
             $TotMem          = "$([string]([System.Math]::Round($manufacturer.TotalPhysicalMemory/1gb,2))) GB"
 
-            $bios = Get-WmiObject Win32_BIOS -Namespace "root\CIMV2"
+            $bios = Get-WmiObject -Class Win32_BIOS -Namespace "root\CIMV2"
             $biosName        = $bios.Manufacturer
             $biosDesc        = $bios.Description
-            $biosVer         = $bios.SMBIOSBIOSVersion+"."+$bios.SMBIOSMajorVersion+"."+$bios.SMBIOSMinorVersion
             $biosSerial      = $bios.SerialNumber
              
 
-            $ResultText.text =  "`r`n" + 
-                "  Manufacturer: "          + $computerBrand + "`r`n" + 
-                "  Model: "                 + $model + "`r`n `r`n" + 
-                "  CPU: "                   + $cpuName + "`r`n" + 
-                "  CPU Cores: "             + $cores + "`r`n `r`n" +
-                "  Total RAM: "             + $TotMem + "`r`n `r`n" + 
-                "  Disk Size: "       + [Math]::Round($Disk.Size / 1GB) + "GB `r`n" +  
-                "  Free Space: " + [Math]::Round($Disk.Freespace / 1GB) + "GB `r`n `r`n" +
-                "  Bios: "                  + $biosName + "`r`n" +
-                "  Bios Description: "      + $biosDesc + "`r`n" +
-                "  Bios Version: "          + $biosVer + "`r`n" +
-                "  Bios Serial: "           + $biosSerial + "`r`n"
+            $ResultText.text =
+                "  Manufacturer: "              + $computerBrand + "`r`n" + 
+                "  Model: "                     + $model + "`r`n `r`n" + 
+                "  CPU: "                       + $cpuName + "`r`n" + 
+                "  CPU Cores: "                 + $cores + "`r`n `r`n" +
+                "  GPU Name: "                  + $GPUname + "`r`n" + 
+                "  GPU Description: "           + $GPUdescription + "`r`n" + 
+                "  GPU VRAM: "                  + $GPUvram + " GB `r`n" + 
+                "  Refresh Rate: "              + $GPUrefreshrate + "`r`n `r`n" +
+                "  Total RAM: "                 + $TotMem + "`r`n `r`n" + 
+                "  OS Disk Size: "              + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
+                "  OS Disk Free Space: "        + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n `r`n" +
+                "  Bios: "                      + $biosName + "`r`n" +
+                "  Bios Description: "          + $biosDesc + "`r`n" +
+                "  Bios Serial: "               + $biosSerial + "`r`n"
     
-
-
-            #LAST BIOS UPDATE DATE IF POSSIBLE
-            #GPU Info
         })
     
         $antivirusInfo.Add_Click({
             $AntiVirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct
 
             foreach($AntiVirusProduct in $AntiVirusProducts){
-                #Switch to determine the status of antivirus definitions and real-time protection.
-                #The values in this switch-statement are retrieved from the following website: http://community.kaseya.com/resources/m/knowexch/1020.aspx
                 switch ($AntiVirusProduct.productState) {
-                "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                    "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
                     "262160" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
                     "266240" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
                     "266256" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
@@ -3640,8 +3646,8 @@ Function MakeForm {
                     "397328" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
                     "397584" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
                 default {$defstatus = "Unknown" ;$rtstatus = "Unknown"}
-                    }
                 }
+            }
 
                 $ResultText.text =  "`r`n" + 
                 "  Name: "          + $AntiVirusProduct.displayName + "`r`n" + 
