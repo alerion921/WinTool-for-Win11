@@ -28,7 +28,10 @@ Function MakeForm {
     $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
     Invoke-WebRequest -Uri $url -OutFile $iconPath
 
-    #Creates the shortcut for the script to be run easily
+    #DISCLAIMER
+    # - Creating shortcuts will not work on computers that use OneDrive as a storage location, i might fix this later but for now i think its best this way!
+
+    #Creates a shortcut for the script to be run easily from the Desktop
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
     $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
@@ -36,6 +39,14 @@ Function MakeForm {
     $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
     $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
     $Shortcut.Save()
+
+    #Creates a shortcut directly to the github repo
+    $WshShell = CreateObject("WScript.Shell")
+    $strDesktop = WshShell.SpecialFolders("Desktop")
+    $oUrlLink = WshShell.CreateShortcut($strDesktop+"\Alerion921's Github.URL")
+    $oUrlLink.TargetPath = "https://github.com/alerion921/WinTool-for-Win11"
+    $oUrlLink.IconLocation = "C:\Windows\heart.ico" # icon index 0
+    $oUrlLink.Save
 
     #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
     $bytes = [System.IO.File]::ReadAllBytes("$Home\Desktop\WinTool.lnk")
