@@ -47,9 +47,6 @@ Function MakeForm {
     ##FFE082 - yellow
     ##F8BBD0 - light pink
 
-    $working = [System.Drawing.ColorTranslator]::FromHtml("#FF0000")
-    $success = [System.Drawing.ColorTranslator]::FromHtml("#00FF00")
-
     if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
         $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
         $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
@@ -83,7 +80,7 @@ Function MakeForm {
     $Form.AutoScaleMode = "Dpi"
     $Form.AutoSize = $True
     $Form.AutoScroll = $True
-    $Form.FormBorderStyle = 'FixedSingle'
+    $Form.FormBorderStyle = 0
 
     # GUI Icon
     $iconBase64 = [Convert]::ToBase64String((Get-Content "C:\Windows\heart.ico" -Encoding Byte))
@@ -96,35 +93,50 @@ Function MakeForm {
     $Form.MinimizeBox = $false;
     $Form.MaximizeBox = $false;
 
+    #$FORM TITLE OR LOGO
+    #$FORM LOGO
+    #$LAST UPDATE DATE
+
+    $xButton = New-Object system.Windows.Forms.Button
+    $xButton.text = "X"
+    $xButton.width = 25
+    $xButton.height = 25
+    $xButton.location = New-Object System.Drawing.Point(1125, 10)
+    $xButton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $xButton.BackColor = $frontcolor 
+    $xButton.ForeColor = $backcolor
+    $xButton.FlatStyle = "Flat"
+    $xButton.FlatAppearance.MouseOverBackColor = $hovercolor
+
     $Panel1 = New-Object system.Windows.Forms.Panel
     $Panel1.height = 440
     $Panel1.width = 220
-    $Panel1.location = New-Object System.Drawing.Point(10, 0)
+    $Panel1.location = New-Object System.Drawing.Point(10, 50)
 
     $Panel2 = New-Object system.Windows.Forms.Panel
     $Panel2.height = 440
     $Panel2.width = 220
-    $Panel2.location = New-Object System.Drawing.Point(240, 0)
+    $Panel2.location = New-Object System.Drawing.Point(240, 50)
 
     $Panel3 = New-Object system.Windows.Forms.Panel
     $Panel3.height = 440
     $Panel3.width = 220
-    $Panel3.location = New-Object System.Drawing.Point(470, 0)
+    $Panel3.location = New-Object System.Drawing.Point(470, 50)
 
     $Panel4 = New-Object system.Windows.Forms.Panel
     $Panel4.height = 440
     $Panel4.width = 230
-    $Panel4.location = New-Object System.Drawing.Point(700, 0)
+    $Panel4.location = New-Object System.Drawing.Point(700, 50)
 
     $Panel5 = New-Object system.Windows.Forms.Panel
     $Panel5.height = 440
     $Panel5.width = 230
-    $Panel5.location = New-Object System.Drawing.Point(930, 0)
+    $Panel5.location = New-Object System.Drawing.Point(930, 50)
 
     $Panel6 = New-Object system.Windows.Forms.Panel
     $Panel6.height = 330
-    $Panel6.width = 1130
-    $Panel6.location = New-Object System.Drawing.Point(10, 440)
+    $Panel6.width = 1140
+    $Panel6.location = New-Object System.Drawing.Point(10, 490)
 
     #######################################################################################################
     # Tweaks starts here
@@ -672,7 +684,7 @@ Function MakeForm {
     $ResultTextWrapper.multiline = $true
     $ResultTextWrapper.ReadOnly = $true
     $ResultTextWrapper.AutoSize = $true
-    $ResultTextWrapper.width = 1130
+    $ResultTextWrapper.width = 1140
     $ResultTextWrapper.height = 320
     $ResultTextWrapper.location = New-Object System.Drawing.Point(0, 0)
     $ResultTextWrapper.BorderStyle = "FixedSingle"
@@ -832,6 +844,7 @@ Function MakeForm {
     #######################################################################################################
 
     $Form.controls.AddRange(@(
+            $xButton,
             $Panel1, 
             $Panel2, 
             $Panel3, 
@@ -1117,7 +1130,7 @@ Function MakeForm {
 
             if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
                 # Delete Microsoft Teams Previous Version files
-                $ResultText.text = "`r`n" + " Clearing Microsoft Teams previous versions..." 
+                $ResultText.text = "Clearing Microsoft Teams previous versions..." 
                 Foreach ($user in $Users) {
                     if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Teams\") {
                         Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1129,7 +1142,7 @@ Function MakeForm {
 
             if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
                 # Delete SnagIt Crash Dump files
-                $ResultText.text = "`r`n" + " Clearing SnagIt crash dumps..." 
+                $ResultText.text = "Clearing SnagIt crash dumps..." 
                 Foreach ($user in $Users) {
                     if (Test-Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt") {
                         Remove-Item -Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1143,7 +1156,7 @@ Function MakeForm {
                 $Dropboxclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete all Dropbox Caches?" , 4)
                 if ($Dropboxclean -eq 'Yes') {
                     # Clear Dropbox Cache
-                    $ResultText.text = "`r`n" + " Clearing Dropbox Cache..." 
+                    $ResultText.text = "Clearing Dropbox Cache..." 
                     Foreach ($user in $Users) {
                         if (Test-Path "C:\Users\$user\Dropbox\") {
                             Remove-Item -Path "C:\Users\$user\Dropbox\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1155,7 +1168,7 @@ Function MakeForm {
             }
             else {
                 Start-Sleep -s 2
-                $ResultText.text = "`r`n" + " No Dropbox installation can be found.. Skipping clean..." 
+                $ResultText.text = "No Dropbox installation can be found.. Skipping clean..." 
             }
 
             # Clear HP Support Assistant Installation Folder
@@ -1166,7 +1179,7 @@ Function MakeForm {
             $DeleteOldDownloads = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete User files from Download folder?" , 4)
             # Delete files from Downloads folder
             if ($DeleteOldDownloads -eq 'Yes') { 
-                $ResultText.text = "`r`n" + " Deleting files from User Download folder..." 
+                $ResultText.text = "Deleting files from User Download folder..." 
                 Foreach ($user in $Users) {
                     $UserDownloads = "C:\Users\$user\Downloads"
                     $OldFiles = Get-ChildItem -Path "$UserDownloads\" -Recurse -File -ErrorAction SilentlyContinue
@@ -1180,7 +1193,7 @@ Function MakeForm {
 
             # Delete files from Azure Log folder
             if (Test-Path "C:\WindowsAzure\Logs") {
-                $ResultText.text = "`r`n" + " Deleting files from Azure Log folder..." 
+                $ResultText.text = "Deleting files from Azure Log folder..." 
                 $AzureLogs = "C:\WindowsAzure\Logs"
                 $OldFiles = Get-ChildItem -Path "$AzureLogs\" -Recurse -File -ErrorAction SilentlyContinue
                 foreach ($file in $OldFiles) {
@@ -1515,7 +1528,7 @@ Function MakeForm {
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
-            $ResultText.text = "`r`n" + "  Adjusting visual effects for performance..."
+            $ResultText.text = " Adjusting visual effects for performance..."
             Start-Sleep -s 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
@@ -1527,9 +1540,9 @@ Function MakeForm {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
-            $ResultText.text = "`r`n" + "  Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance."
+            $ResultText.text = " Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance."
 
-            $ResultText.text += "`r`n" + "  Disabling Cortana..."
+            $ResultText.text += " Disabling Cortana..."
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Force | Out-Null
             }
@@ -1548,55 +1561,55 @@ Function MakeForm {
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
 
-            $ResultText.text += "`r`n" + "  Disabling Background application access..."
+            $ResultText.text += " Disabling Background application access..."
             Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
                 Set-ItemProperty -Path $_.PsPath -Name "Disabled" -Type DWord -Value 1
                 Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Type DWord -Value 1
             }S
 
-            $ResultText.text += "`r`n" + "  Uninstalling Linux Subsystem..."
+            $ResultText.text += " Uninstalling Linux Subsystem..."
             If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
             }
             Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-            $ResultText.text = "`r`n" + "  Enabling and Activating Highest Performance Power Plan..."
+            $ResultText.text = " Enabling and Activating Highest Performance Power Plan..."
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
             powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
             powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-            $ResultText.text = "`r`n" + "  Enabled & Activated Highest Performance Power Plan."
+            $ResultText.text = " Enabled & Activated Highest Performance Power Plan."
 
-            $ResultText.text += "`r`n" + "  Enabling Windows 10 context menu..."
+            $ResultText.text += " Enabling Windows 10 context menu..."
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force
             Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
     
-            $ResultText.text += "`r`n" + "  Removing recently added apps from Start Menu..."
+            $ResultText.text += " Removing recently added apps from Start Menu..."
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
-            $ResultText.text += "`r`n" + "  Disabling UAC..."
+            $ResultText.text += " Disabling UAC..."
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
 
-            $ResultText.text += "`r`n" + "  Disabling Sticky Keys..."
+            $ResultText.text += " Disabling Sticky Keys..."
             Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
 
-            $ResultText.text += "`r`n" + "  Hiding Task View button..."
+            $ResultText.text += " Hiding Task View button..."
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
 
-            $ResultText.text += "`r`n" + "  Hiding People icon..."
+            $ResultText.text += " Hiding People icon..."
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
 
-            $ResultText.text += "`r`n" + "  Show tray icons..."
+            $ResultText.text += " Show tray icons..."
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
 
-            $ResultText.text += "`r`n" + "  Disabling Widgets, Chat, Search and Setting Start Button to left side..."
+            $ResultText.text += " Disabling Widgets, Chat, Search and Setting Start Button to left side..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
-            $ResultText.text += "`r`n" + "  Disable News and Interests"
+            $ResultText.text += " Disable News and Interests"
             New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -Force
 
             #Removes Widgets/Split apps bs from taskbar
@@ -1620,7 +1633,7 @@ Function MakeForm {
             # Remove "News and Interest" from taskbar
             Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2s
 
-            $ResultText.text += "`r`n" + "  Showing known file extensions..."
+            $ResultText.text += " Showing known file extensions..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
 
             #Restart Explorer so that the taskbar can update and not look break :D
@@ -1628,28 +1641,28 @@ Function MakeForm {
             Start-Sleep -s 5
             Start-Process -name explorer
 
-            $ResultText.text = "`r`n" + "  Essential Tweaks Done. `r`n  Ready for Next Task!"
+            $ResultText.text = " Essential Tweaks Done. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $dualboottime.Add_Click({
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $ResultText.text = "`r`n" + "  Time set to UTC for consistent time in Dual Boot Systems. `r`n  Ready for Next Task!"
+            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n  Ready for Next Task!"
         })
 
     $essentialundo.Add_Click({
             $Form.text = "WinTool by Alerion - Initializing Essentials Undo..."
-            $ResultText.text = "`r`n" + "  Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong..."
+            $ResultText.text = " Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong..."
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-EssentialTweaksUndo-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
-            $ResultText.text += "`r`n" + "  Disabling Windows 10 context menu..."
+            $ResultText.text += " Disabling Windows 10 context menu..."
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Force
 
-            $ResultText.text += "`r`n" + "  Enabling recently added apps from Start Menu..."
+            $ResultText.text += " Enabling recently added apps from Start Menu..."
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 0
 
-            $ResultText.text += "`r`n" + "  Re-Installing Linux Subsystem..."
+            $ResultText.text += " Re-Installing Linux Subsystem..."
             If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
                 # 1607 needs developer mode to be enabled
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 1
@@ -1657,7 +1670,7 @@ Function MakeForm {
             }
             Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-            $ResultText.text = "`r`n" + "  Enabling Cortana..."
+            $ResultText.text = " Enabling Cortana..."
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
@@ -1675,9 +1688,9 @@ Function MakeForm {
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")) { powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a }
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")) { powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e }
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")) { powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 }
-            $ResultText.text = "`r`n" + "  Restored all power plans: Power Saver, Balanced, and Ultimate Performance."
+            $ResultText.text = " Restored all power plans: Power Saver, Balanced, and Ultimate Performance."
 
-            $ResultText.text = "`r`n" + "  Adjusting visual effects for appearance..."
+            $ResultText.text = " Adjusting visual effects for appearance..."
             Start-Sleep -s 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
@@ -1689,23 +1702,23 @@ Function MakeForm {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-            $ResultText.text = "`r`n" + "  Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss."
+            $ResultText.text = " Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss."
 
 
-            $ResultText.text = "`r`n" + "  Raising UAC level..."
+            $ResultText.text = " Raising UAC level..."
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
 
             $ResultText.text += "`r`n" + "Enabling Sticky Keys..."
             Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 510
 
-            $ResultText.text = "`r`n" + "  Hiding known file extensions..."
+            $ResultText.text = " Hiding known file extensions..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
 
-            $ResultText.text = "`r`n" + "  Hide tray icons..."
+            $ResultText.text = " Hide tray icons..."
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
 
-            $ResultText.text += "`r`n" + "  Re-Enabling Chat, Widgets and Centering Start Menu..."
+            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu..."
 
             # Restores Widgets to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
@@ -1727,39 +1740,39 @@ Function MakeForm {
             Start-Sleep -s 5
             Start-Process -name explorer
 
-            $ResultText.text = "`r`n" + "  Essential Undo Completed. `r`n  Ready for Next Task!"
+            $ResultText.text = " Essential Undo Completed. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     #Valuable Windows 10 AppX apps that most people want to keep. Protected from DeBloat All.
     #Credit to /u/GavinEke for a modified version of my whitelist code
     $global:WhiteListedApps = @(
-        "Microsoft.WindowsCalculator"               # Microsoft removed legacy calculator
-        "Microsoft.WindowsStore"                    # Issue 1
-        "Microsoft.Windows.Photos"                  # Microsoft disabled/hid legacy photo viewer
-        "CanonicalGroupLimited.UbuntuonWindows"     # Issue 10
-        "Microsoft.Xbox.TCUI"                       # Issue 25, 91  Many home users want to play games
+        "Microsoft.WindowsCalculator"             # Microsoft removed legacy calculator
+        "Microsoft.WindowsStore"                  # Issue 1
+        "Microsoft.Windows.Photos"                # Microsoft disabled/hid legacy photo viewer
+        "CanonicalGroupLimited.UbuntuonWindows"   # Issue 10
+        "Microsoft.Xbox.TCUI"                     # Issue 25, 91  Many home users want to play games
         "Microsoft.XboxApp"
         "Microsoft.XboxGameOverlay"
-        "Microsoft.XboxGamingOverlay"               # Issue 25, 91  Many home users want to play games
-        "Microsoft.XboxIdentityProvider"            # Issue 25, 91  Many home users want to play games
+        "Microsoft.XboxGamingOverlay"             # Issue 25, 91  Many home users want to play games
+        "Microsoft.XboxIdentityProvider"          # Issue 25, 91  Many home users want to play games
         "Microsoft.XboxSpeechToTextOverlay"
-        "Microsoft.MicrosoftStickyNotes"            # Issue 33  New functionality.
-        "Microsoft.MSPaint"                         # Issue 32  This is Paint3D, legacy paint still exists in Windows 10
-        "Microsoft.WindowsCamera"                   # Issue 65  New functionality.
+        "Microsoft.MicrosoftStickyNotes"          # Issue 33  New functionality.
+        "Microsoft.MSPaint"                       # Issue 32  This is Paint3D, legacy paint still exists in Windows 10
+        "Microsoft.WindowsCamera"                 # Issue 65  New functionality.
         "\.NET"
-        "Microsoft.HEIFImageExtension"              # Issue 68
-        "Microsoft.ScreenSketch"                    # Issue 55: Looks like Microsoft will be axing snipping tool and using Snip & Sketch going forward
-        "Microsoft.StorePurchaseApp"                # Issue 68
-        "Microsoft.VP9VideoExtensions"              # Issue 68
-        "Microsoft.WebMediaExtensions"              # Issue 68
-        "Microsoft.WebpImageExtension"              # Issue 68
-        "Microsoft.DesktopAppInstaller"             # Issue 68
-        "WindSynthBerry"                            # Issue 68
-        "MIDIBerry"                                 # Issue 68
-        "Slack"                                     # Issue 83
-        "*Nvidia*"                                  # Issue 198
-        "Microsoft.MixedReality.Portal"             # Issue 195
+        "Microsoft.HEIFImageExtension"            # Issue 68
+        "Microsoft.ScreenSketch"                  # Issue 55: Looks like Microsoft will be axing snipping tool and using Snip & Sketch going forward
+        "Microsoft.StorePurchaseApp"              # Issue 68
+        "Microsoft.VP9VideoExtensions"            # Issue 68
+        "Microsoft.WebMediaExtensions"            # Issue 68
+        "Microsoft.WebpImageExtension"            # Issue 68
+        "Microsoft.DesktopAppInstaller"           # Issue 68
+        "WindSynthBerry"                          # Issue 68
+        "MIDIBerry"                               # Issue 68
+        "Slack"                                   # Issue 83
+        "*Nvidia*"                                # Issue 198
+        "Microsoft.MixedReality.Portal"           # Issue 195
     )
 
     #NonRemovable Apps that where getting attempted and the system would reject the uninstall, speeds up debloat and prevents 'initalizing' overlay when removing apps
@@ -1793,19 +1806,19 @@ Function MakeForm {
             "Microsoft.Windows.CloudExperienceHost"
             "Microsoft.Windows.ContentDeliveryManager"
             "Microsoft.Windows.Cortana"
-            "Microsoft.Windows.HolographicFirstRun"         # Added 1709
+            "Microsoft.Windows.HolographicFirstRun"       # Added 1709
             "Microsoft.Windows.NarratorQuickStart"
-            "Microsoft.Windows.OOBENetworkCaptivePortal"    # Added 1709
-            "Microsoft.Windows.OOBENetworkConnectionFlow"   # Added 1709
+            "Microsoft.Windows.OOBENetworkCaptivePortal"  # Added 1709
+            "Microsoft.Windows.OOBENetworkConnectionFlow" # Added 1709
             "Microsoft.Windows.ParentalControls"
             "Microsoft.Windows.PeopleExperienceHost"
             "Microsoft.Windows.PinningConfirmationDialog"
-            "Microsoft.Windows.SecHealthUI"                 # Issue 117 Windows Defender
-            "Microsoft.Windows.SecondaryTileExperience"     # Added 1709
+            "Microsoft.Windows.SecHealthUI"               # Issue 117 Windows Defender
+            "Microsoft.Windows.SecondaryTileExperience"   # Added 1709
             "Microsoft.Windows.SecureAssessmentBrowser"
             "Microsoft.Windows.ShellExperienceHost"
             "Microsoft.Windows.XGpuEjectDialog"
-            "Microsoft.XboxGameCallableUI"                  # Issue 91
+            "Microsoft.XboxGameCallableUI"                # Issue 91
             "Windows.CBSPreview"
             "windows.immersivecontrolpanel"
             "Windows.PrintDialog"
@@ -1838,23 +1851,23 @@ Function MakeForm {
         "Microsoft.MicrosoftOfficeHub"
         "Microsoft.MicrosoftSolitaireCollection"
         "Microsoft.NetworkSpeedTest"
-        "Microsoft.News"    
+        "Microsoft.News"  
         "Microsoft.Office.Lens"
         "Microsoft.Office.Sway"
-        "Microsoft.Office.Lens"                             # Issue 77
+        "Microsoft.Office.Lens"                           # Issue 77
         "Microsoft.Office.OneNote"
         "Microsoft.Office.Sway"
         "Microsoft.OneConnect"
         "Microsoft.People"
         "Microsoft.Print3D"
         "Microsoft.Paint"
-        "Microsoft.RemoteDesktop"                           # Issue 120
+        "Microsoft.RemoteDesktop"                         # Issue 120
         "Microsoft.SkypeApp"
         "Microsoft.Wallet"
         "Microsoft.Whiteboard"
         "Microsoft.StorePurchaseApp"
-        "Microsoft.Office.Todo.List"                        # Issue 77
-        "Microsoft.Whiteboard"                              # Issue 77
+        "Microsoft.Office.Todo.List"                      # Issue 77
+        "Microsoft.Whiteboard"                            # Issue 77
         "Microsoft.WindowsAlarms"
         "microsoft.windowscommunicationsapps"
         "Microsoft.WindowsFeedbackHub"
@@ -1914,14 +1927,14 @@ Function MakeForm {
 
     $removebloat.Add_Click({
             $Form.text = "WinTool by Alerion - Removing Bloatware..."
-            $ResultText.text = "`r`n" + "  Hang on while Windows Bloatware is being removed"
+            $ResultText.text = " Hang on while Windows Bloatware is being removed"
             $ErrorActionPreference = 'SilentlyContinue'
 
             Function SystemPrep {
 
-                $ResultText.text = "`r`n" + "  Starting Sysprep Fixes"
+                $ResultText.text = " Starting Sysprep Fixes"
    
-                $ResultText.text = "`r`n" + "  Adding Registry key to disable Windows Store Automatic Updates"
+                $ResultText.text = " Adding Registry key to disable Windows Store Automatic Updates"
                 $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
                 If (!(Test-Path $registryPath)) {
                     Mkdir $registryPath
@@ -1929,9 +1942,9 @@ Function MakeForm {
                 }
                 Set-ItemProperty $registryPath AutoDownload -Value 2
 
-                $ResultText.text = "`r`n" + "  Stopping InstallService"
+                $ResultText.text = " Stopping InstallService"
                 Stop-Service InstallService
-                $ResultText.text = "`r`n" + "  Setting InstallService Startup to Disabled"
+                $ResultText.text = " Setting InstallService Startup to Disabled"
                 Set-Service InstallService -StartupType Disabled
             }
         
@@ -1952,7 +1965,7 @@ Function MakeForm {
                 foreach ($Bloat in $Bloatware) {
                     Get-AppxPackage -Name $Bloat | Remove-AppxPackage
                     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
-                    $ResultText.text = "`r`n" + "  Trying to remove $Bloat."
+                    $ResultText.text = " Trying to remove $Bloat."
                 }
             }
 
@@ -1995,7 +2008,7 @@ Function MakeForm {
       
                 #This writes the output of each key it is removing and also removes the keys listed above.
                 ForEach ($Key in $Keys) {
-                    $ResultText.text = "`r`n" + "  Removing $Key from registry"
+                    $ResultText.text = " Removing $Key from registry"
                     Remove-Item $Key -Recurse
                 }
             }
@@ -2006,13 +2019,13 @@ Function MakeForm {
                 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
           
                 #Disables Windows Feedback Experience
-                $ResultText.text = "`r`n" + "  Disabling Windows Feedback Experience program"
+                $ResultText.text = " Disabling Windows Feedback Experience program"
                 $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
                 If (Test-Path $Advertising) {
                     Set-ItemProperty $Advertising Enabled -Value 0
                 }
             
-                $ResultText.text = "`r`n" + "  Adding Registry key to prevent bloatware apps from returning"
+                $ResultText.text = " Adding Registry key to prevent bloatware apps from returning"
                 #Prevents bloatware applications from returning
                 $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
                 If (!(Test-Path $registryPath)) {
@@ -2020,21 +2033,21 @@ Function MakeForm {
                     New-ItemProperty $registryPath DisableWindowsConsumerFeatures -Value 1 
                 }          
       
-                $ResultText.text = "`r`n" + "  Setting Mixed Reality Portal value to 0 so that you can uninstall it in Settings"
+                $ResultText.text = " Setting Mixed Reality Portal value to 0 so that you can uninstall it in Settings"
                 $Holo = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic'    
                 If (Test-Path $Holo) {
                     Set-ItemProperty $Holo FirstRunSucceeded -Value 0
                 }
       
                 #Disables live tiles
-                $ResultText.text = "`r`n" + "  Disabling live tiles"
+                $ResultText.text = " Disabling live tiles"
                 $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
                 If (!(Test-Path $Live)) {
                     mkdir $Live  
                     New-ItemProperty $Live NoTileApplicationNotification -Value 1
                 }
       
-                $ResultText.text = "`r`n" + "  Removing CloudStore from registry if it exists"
+                $ResultText.text = " Removing CloudStore from registry if it exists"
                 $CloudStore = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore'
                 If (Test-Path $CloudStore) {
                     Stop-Process Explorer.exe -Force
@@ -2051,7 +2064,7 @@ Function MakeForm {
                 reg unload HKU\Default_User
       
                 #Disables scheduled tasks that are considered unnecessary 
-                $ResultText.text = "`r`n" + "  Disabling scheduled tasks"
+                $ResultText.text = " Disabling scheduled tasks"
                 #Get-ScheduledTask -TaskName XblGameSaveTaskLogon | Disable-ScheduledTask
                 Get-ScheduledTask -TaskName XblGameSaveTask | Disable-ScheduledTask
                 Get-ScheduledTask -TaskName Consolidator | Disable-ScheduledTask
@@ -2128,36 +2141,36 @@ Function MakeForm {
                 }
             }
   
-            $ResultText.text = "`r`n" + "  Initiating Sysprep.."
+            $ResultText.text = " Initiating Sysprep.."
             SystemPrep
 
-            $ResultText.text = "`r`n" + "  Removing bloatware apps(This might take more than 10 minutes)"
+            $ResultText.text = " Removing bloatware apps(This might take more than 10 minutes)"
             RemoveMassiveBloat
             DebloatAll
 
-            $ResultText.text = "`r`n" + "  Removing leftover bloatware registry keys."
+            $ResultText.text = " Removing leftover bloatware registry keys."
             Remove-Keys
 
-            $ResultText.text = "`r`n" + "  Checking to see if any Allowlisted Apps were removed, and if so re-adding them."
+            $ResultText.text = " Checking to see if any Allowlisted Apps were removed, and if so re-adding them."
             FixWhitelistedApps
 
-            $ResultText.text = "`r`n" + "  Disabling unneccessary scheduled tasks, and preventing bloatware from returning."
+            $ResultText.text = " Disabling unneccessary scheduled tasks, and preventing bloatware from returning."
             Protect-Privacy
 
-            $ResultText.text = "`r`n" + "  Unpinning tiles from the Start Menu."
+            $ResultText.text = " Unpinning tiles from the Start Menu."
             UnpinStart
 
-            $ResultText.text = "`r`n" + "  Setting the 'InstallService' Windows service back to 'Started' and the Startup Type 'Automatic'."
+            $ResultText.text = " Setting the 'InstallService' Windows service back to 'Started' and the Startup Type 'Automatic'."
             CheckDMWService
             CheckInstallService
 
-            $ResultText.text = "`r`n" + "  Finished removing bloatware apps. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished removing bloatware apps. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $reinstallbloat.Add_Click({
             $Form.text = "WinTool by Alerion - Reinstalling MS Store Apps and activating deactivated features..."
-            $ResultText.text = "`r`n" + "  Reinstalling MS Store Apps and activating deactivated features for MS Store..."
+            $ResultText.text = " Reinstalling MS Store Apps and activating deactivated features for MS Store..."
             $ErrorActionPreference = 'SilentlyContinue'
             #This function will revert the changes you made when running the Start-Debloat function.
 
@@ -2165,14 +2178,14 @@ Function MakeForm {
             Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
 
             #Tells Windows to enable your advertising information.    
-            $ResultText.text = "`r`n" + "  Re-enabling key to show advertisement information"
+            $ResultText.text = " Re-enabling key to show advertisement information"
             $Advertising = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"
             If (Test-Path $Advertising) {
                 Set-ItemProperty $Advertising  Enabled -Value 1
             }
 
             #Enables bloatware applications               
-            $ResultText.text = "`r`n" + "  Adding Registry key to allow bloatware apps to return"
+            $ResultText.text = " Adding Registry key to allow bloatware apps to return"
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
             If (!(Test-Path $registryPath)) {
                 New-Item $registryPath 
@@ -2180,14 +2193,14 @@ Function MakeForm {
             Set-ItemProperty $registryPath  DisableWindowsConsumerFeatures -Value 0 
     
             #Changes Mixed Reality Portal Key 'FirstRunSucceeded' to 1
-            $ResultText.text = "`r`n" + "  Setting Mixed Reality Portal value to 1"
+            $ResultText.text = " Setting Mixed Reality Portal value to 1"
             $Holo = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic"
             If (Test-Path $Holo) {
                 Set-ItemProperty $Holo  FirstRunSucceeded -Value 1 
             }
     
             #Re-enables live tiles
-            $ResultText.text = "`r`n" + "  Enabling live tiles"
+            $ResultText.text = " Enabling live tiles"
             $Live = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
             If (!(Test-Path $Live)) {
                 New-Item $Live 
@@ -2195,7 +2208,7 @@ Function MakeForm {
             Set-ItemProperty $Live  NoTileApplicationNotification -Value 0 
    
             #Re-enables scheduled tasks that were disabled when running the Debloat switch
-            $ResultText.text = "`r`n" + "  Enabling scheduled tasks that were disabled"
+            $ResultText.text = " Enabling scheduled tasks that were disabled"
             Get-ScheduledTask XblGameSaveTaskLogon | Enable-ScheduledTask 
             Get-ScheduledTask  XblGameSaveTask | Enable-ScheduledTask 
             Get-ScheduledTask  Consolidator | Enable-ScheduledTask 
@@ -2203,19 +2216,19 @@ Function MakeForm {
             Get-ScheduledTask  DmClient | Enable-ScheduledTask 
             Get-ScheduledTask  DmClientOnScenarioDownload | Enable-ScheduledTask 
 
-            $ResultText.text = "`r`n" + "  Re-enabling and starting WAP Push Service"
+            $ResultText.text = " Re-enabling and starting WAP Push Service"
             #Enable and start WAP Push Service
             Set-Service "dmwappushservice" -StartupType Automatic
             Start-Service "dmwappushservice"
 
-            $ResultText.text = "`r`n" + "  Re-enabling and starting the Diagnostics Tracking Service"
+            $ResultText.text = " Re-enabling and starting the Diagnostics Tracking Service"
             #Enabling the Diagnostics Tracking Service
             Set-Service "DiagTrack" -StartupType Automatic
             Start-Service "DiagTrack"
-            $ResultText.text = "`r`n" + "  Done reverting changes!"
+            $ResultText.text = " Done reverting changes!"
 
             #
-            $ResultText.text = "`r`n" + "  Restoring 3D Objects from Explorer 'My Computer' submenu"
+            $ResultText.text = " Restoring 3D Objects from Explorer 'My Computer' submenu"
             $Objects32 = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
             $Objects64 = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
             If (!(Test-Path $Objects32)) {
@@ -2225,29 +2238,29 @@ Function MakeForm {
                 New-Item $Objects64
             }
 
-            $ResultText.text = "`r`n" + "  Finished Reinstalling Bloatware Apps. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished Reinstalling Bloatware Apps. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $defaultwindowsupdate.Add_Click({
-            $ResultText.text = "`r`n" + "  Enabling driver offering through Windows Update..."
+            $ResultText.text = " Enabling driver offering through Windows Update..."
             Start-Sleep -s 1
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
-            $ResultText.text = "`r`n" + "  Enabling Windows Update automatic restart..."
+            $ResultText.text = " Enabling Windows Update automatic restart..."
             Start-Sleep -s 1
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
-            $ResultText.text = "`r`n" + "  Enabled driver offering through Windows Update"
+            $ResultText.text = " Enabled driver offering through Windows Update"
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  Windows Update has been set to Default Settings. `r`n  Ready for Next Task!"
+            $ResultText.text = " Windows Update has been set to Default Settings. `r`n  Ready for Next Task!"
         })
 
     $securitywindowsupdate.Add_Click({
-            $ResultText.text = "`r`n" + "  Disabling driver offering through Windows Update..."
+            $ResultText.text = " Disabling driver offering through Windows Update..."
             Start-Sleep -s 1
             If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
@@ -2263,22 +2276,22 @@ Function MakeForm {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
-            $ResultText.text = "`r`n" + "  Disabling Windows Update automatic restart..."
+            $ResultText.text = " Disabling Windows Update automatic restart..."
             Start-Sleep -s 1
             If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
-            $ResultText.text = "`r`n" + "  Disabled driver offering through Windows Update"
+            $ResultText.text = " Disabled driver offering through Windows Update"
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
+            $ResultText.text = " Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
         })
 
     $gamingtweaks.Add_Click({
             $Form.text = "WinTool by Alerion - Initializing Gaming Tweaks..."
 
-            $ResultText.text = "`r`n" + "  Disabling Fullscreen Optimization..."
+            $ResultText.text = " Disabling Fullscreen Optimization..."
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehaviorMode" -Type DWord -Value 2
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehavior" -Type DWord -Value 2
@@ -2287,14 +2300,14 @@ Function MakeForm {
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_DSEBehavior" -Type DWord -Value 2
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" -Name "AppCaptureEnabled" -Type DWord -Value 0
 
-            $ResultText.text = "`r`n" + "  Apply Gaming Optimization Fixes..."
+            $ResultText.text = " Apply Gaming Optimization Fixes..."
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "GPU Priority" -Type DWord -Value 8
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Priority" -Type DWord -Value 6
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "SFIO Priority" -Type String -Value "High"
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "IRQ8Priority" -Type DWord -Value 1
 
-            $ResultText.text = "`r`n" + "  Forcing RAW Mouse Input and Disabling Enhance Pointer Precision..."
+            $ResultText.text = " Forcing RAW Mouse Input and Disabling Enhance Pointer Precision..."
             Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value "0"
             Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value "0"
             Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value "0"
@@ -2325,7 +2338,7 @@ Function MakeForm {
 
             $checkscreenscale = [Math]::round([DPI]::scaling(), 2) * 100
             if ($checkscreenscale -eq "100") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 100%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 100%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,C0,CC,0C,00,00,00,00,00,80,99,19,00,00,00,00,00,40,66,26,00,00,00,00,00,00,33,33,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2335,7 +2348,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "125") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 125%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 125%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,00,00,10,00,00,00,00,00,00,00,20,00,00,00,00,00,00,00,30,00,00,00,00,00,00,00,40,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2345,7 +2358,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "150") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 150%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 150%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,30,33,13,00,00,00,00,00,60,66,26,00,00,00,00,00,90,99,39,00,00,00,00,00,C0,CC,4C,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2355,7 +2368,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "175") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 175%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 175%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,60,66,16,00,00,00,00,00,C0,CC,2C,00,00,00,00,00,20,33,43,00,00,00,00,00,80,99,59,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2365,7 +2378,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "200") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 200%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 200%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,90,99,19,00,00,00,00,00,20,33,33,00,00,00,00,00,B0,CC,4C,00,00,00,00,00,40,66,66,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2375,7 +2388,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "225") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 225%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 225%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,C0,CC,1C,00,00,00,00,00,80,99,39,00,00,00,00,00,40,66,56,00,00,00,00,00,00,33,73,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2385,7 +2398,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "250") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 250%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 250%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,00,00,20,00,00,00,00,00,00,00,40,00,00,00,00,00,00,00,60,00,00,00,00,00,00,00,80,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2395,7 +2408,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "300") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 300%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 300%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,60,66,26,00,00,00,00,00,C0,CC,4C,00,00,00,00,00,20,33,73,00,00,00,00,00,80,99,99,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2405,7 +2418,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             elseif ($checkscreenscale -eq "350") {
-                $ResultText.text = "`r`n" + "  Windows screen scale is Detected as 350%, Applying Mouse Fix for it..."
+                $ResultText.text = " Windows screen scale is Detected as 350%, Applying Mouse Fix for it..."
                 $YourInputX = "00,00,00,00,00,00,00,00,C0,CC,2C,00,00,00,00,00,80,99,59,00,00,00,00,00,40,66,86,00,00,00,00,00,00,33,B3,00,00,00,00,00"
                 $YourInputY = "00,00,00,00,00,00,00,00,00,00,38,00,00,00,00,00,00,00,70,00,00,00,00,00,00,00,A8,00,00,00,00,00,00,00,E0,00,00,00,00,00"
                 $RegPath = 'HKCU:\Control Panel\Mouse'
@@ -2415,25 +2428,25 @@ Function MakeForm {
                 Set-ItemProperty -Path "$RegPath" -Name "SmoothMouseYCurve" -Type Binary -Value (([byte[]]$hexifiedY))
             }
             else {
-                $ResultText.text = "`r`n" + "  Screen scale is not set to traditional value, nothing has been set!"
+                $ResultText.text = " Screen scale is not set to traditional value, nothing has been set!"
             }
 
-            $ResultText.text = "`r`n" + "  Enabling Gaming Mode..."
+            $ResultText.text = " Enabling Gaming Mode..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "ShowStartupPanel" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "GamePanelStartupTipIndex" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameBarEnabled" -Type DWord -Value 0
 
-            $ResultText.text = "`r`n" + "  Enabling HAGS..."
+            $ResultText.text = " Enabling HAGS..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "HwSchMode" -Type DWord -Value 2
 
-            $ResultText.text = "`r`n" + "  Disabling Core Parking on current PowerPlan Ultimate Performance..."
+            $ResultText.text = " Disabling Core Parking on current PowerPlan Ultimate Performance..."
             powercfg -attributes SUB_PROCESSOR CPMINCORES -ATTRIB_HIDE | Out-Null
             Powercfg -setacvalueindex scheme_current sub_processor CPMINCORES 100 | Out-Null
             Powercfg -setactive scheme_current | Out-Null
 
-            $ResultText.text = "`r`n" + "  Optimizing Network, applying Tweaks for no throttle and maximum speed..."
+            $ResultText.text = " Optimizing Network, applying Tweaks for no throttle and maximum speed..."
             New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -ErrorAction SilentlyContinue | Out-Null
             New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\QoS" -ErrorAction SilentlyContinue | Out-Null
             New-Item -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters" -ErrorAction SilentlyContinue | Out-Null
@@ -2496,14 +2509,14 @@ Function MakeForm {
 
             $NetworkIDS = @((Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\*").PSChildName)
 
-            $ResultText.text = "`r`n" + "  Disabling Nagles Algorithm..."
+            $ResultText.text = " Disabling Nagles Algorithm..."
 
             foreach ($NetworkID in $NetworkIDS) {
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$NetworkID" -Name "TcpAckFrequency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$NetworkID" -Name "TCPNoDelay" -Type DWord -Value 1
             }
 
-            $ResultText.text = "`r`n" + "  Forcing Windows to stop tolerating high DPC/ISR latencies..."
+            $ResultText.text = " Forcing Windows to stop tolerating high DPC/ISR latencies..."
             New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" | Out-Null -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "ExitLatency" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "ExitLatencyCheckEnabled" -Type DWord -Value 1
@@ -2540,13 +2553,13 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Power" -Name "MonitorRefreshLatencyTolerance" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Power" -Name "TransitionLatency" -Type DWord -Value 1
 
-            $ResultText.text = "`r`n" + "  Decreasing mouse and keyboard buffer sizes..."
+            $ResultText.text = " Decreasing mouse and keyboard buffer sizes..."
             New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" | Out-Null -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" -Name "MouseDataQueueSize" -Type DWord -Value 0x00000010
             New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" | Out-Null -ErrorAction SilentlyContinue
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" -Name "KeyboardDataQueueSize" -Type DWord -Value 0x00000010
 
-            $ResultText.text = "`r`n" + "  Disabling DMA memory protection and cores isolation..."
+            $ResultText.text = " Disabling DMA memory protection and cores isolation..."
             bcdedit /set vsmlaunchtype Off | Out-Null
             bcdedit /set vm No | Out-Null
             New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" | Out-Null -ErrorAction SilentlyContinue
@@ -2555,22 +2568,22 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard" -Name "HVCIMATRequired" -Type DWord -Value 0
 
-            $ResultText.text = "`r`n" + "  Disabling Process and Kernel Mitigations... (Throws an error, im unsure of why)"
+            $ResultText.text = " Disabling Process and Kernel Mitigations... (Throws an error, im unsure of why)"
             ForEach ($v in (Get-Command -Name "Set-ProcessMitigation").Parameters["Disable"].Attributes.ValidValues) { Set-ProcessMitigation -System -Disable $v.ToString() -ErrorAction SilentlyContinue }
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" -Name "DisableExceptionChainValidation" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" -Name "KernelSEHOPEnabled" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "EnableCfg" -Type DWord -Value 0
 
-            $ResultText.text = "`r`n" + "  Disabling drivers get paged into virtual memory..."
+            $ResultText.text = " Disabling drivers get paged into virtual memory..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "DisablePagingExecutive" -Type DWord -Value 1
 
-            $ResultText.text = "`r`n" + "  Enabling big system memory caching to improve microstuttering..."
+            $ResultText.text = " Enabling big system memory caching to improve microstuttering..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "LargeSystemCache" -Type DWord -Value 1
 
-            $ResultText.text = "`r`n" + "  Forcing contiguous memory allocation in the DirectX Graphics Kernel..."
+            $ResultText.text = " Forcing contiguous memory allocation in the DirectX Graphics Kernel..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "DpiMapIommuContiguous" -Type DWord -Value 1
 
-            $ResultText.text = "`r`n" + "  Disabling High Precision Event Timer..."
+            $ResultText.text = " Disabling High Precision Event Timer..."
             Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-Win11/blob/main/Files/SetTimerResolutionService.exe" -OutFile "$Env:windir\system32\SetTimerResolutionService.exe" -ErrorAction SilentlyContinue
             New-Service -name "SetTimerResolutionService" -BinaryPathName "$Env:windir\system32\SetTimerResolutionService.exe" -StartupType Automatic | Out-Null -ErrorAction SilentlyContinue
             bcdedit /set x2apicpolicy Enable | Out-Null
@@ -2593,7 +2606,7 @@ Function MakeForm {
 
             $CheckGPU = wmic path win32_VideoController get name
             if (($CheckGPU -like "*GTX*") -or ($CheckGPU -like "*RTX*")) {
-                $ResultText.text = "`r`n" + "  NVIDIA GTX/RTX Card Detected! Applying Nvidia Power Tweaks..."
+                $ResultText.text = " NVIDIA GTX/RTX Card Detected! Applying Nvidia Power Tweaks..."
                 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/BaseProfile.nip" -OutFile "$Env:windir\system32\BaseProfile.nip" -ErrorAction SilentlyContinue
                 Invoke-WebRequest -Uri "https://github.com/alerion921/WinTool-for-Win11/blob/main/Files/nvidiaProfileInspector.exe" -OutFile "$Env:windir\system32\nvidiaProfileInspector.exe" -ErrorAction SilentlyContinue
                 Push-Location
@@ -2602,7 +2615,7 @@ Function MakeForm {
                 Pop-Location
             }
             else {
-                $ResultText.text = "`r`n" + "  Nvidia GTX/RTX Card Not Detected! Skipping..."
+                $ResultText.text = " Nvidia GTX/RTX Card Not Detected! Skipping..."
             } 
 
             $CheckGPURegistryKey0 = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000").DriverDesc
@@ -2611,7 +2624,7 @@ Function MakeForm {
             $CheckGPURegistryKey3 = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0003").DriverDesc
 
             if (($CheckGPURegistryKey0 -like "*GTX*") -or ($CheckGPURegistryKey0 -like "*RTX*")) {
-                $ResultText.text = "`r`n" + "  Nvidia GTX/RTX Card Registry Path 0000 Detected! Applying Nvidia Latency Tweaks..."
+                $ResultText.text = " Nvidia GTX/RTX Card Registry Path 0000 Detected! Applying Nvidia Latency Tweaks..."
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" -Name "D3PCLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" -Name "F1TransitionLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" -Name "LOWLATENCY" -Type DWord -Value 1
@@ -2633,7 +2646,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" -Name "vrrDeflickerMaxUs" -Type DWord -Value 1
             }
             elseif (($CheckGPURegistryKey1 -like "*GTX*") -or ($CheckGPURegistryKey1 -like "*RTX*")) {
-                $ResultText.text = "`r`n" + "  Nvidia GTX/RTX Card Registry Path 0001 Detected! Applying Nvidia Latency Tweaks..."
+                $ResultText.text = " Nvidia GTX/RTX Card Registry Path 0001 Detected! Applying Nvidia Latency Tweaks..."
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0001" -Name "D3PCLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0001" -Name "F1TransitionLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0001" -Name "LOWLATENCY" -Type DWord -Value 1
@@ -2655,7 +2668,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0001" -Name "vrrDeflickerMaxUs" -Type DWord -Value 1
             }
             elseif (($CheckGPURegistryKey2 -like "*GTX*") -or ($CheckGPURegistryKey2 -like "*RTX*")) {
-                $ResultText.text = "`r`n" + "  Nvidia GTX/RTX Card Registry Path 0002 Detected! Applying Nvidia Latency Tweaks..."
+                $ResultText.text = " Nvidia GTX/RTX Card Registry Path 0002 Detected! Applying Nvidia Latency Tweaks..."
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0002" -Name "D3PCLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0002" -Name "F1TransitionLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0002" -Name "LOWLATENCY" -Type DWord -Value 1
@@ -2677,7 +2690,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0002" -Name "vrrDeflickerMaxUs" -Type DWord -Value 1
             }
             elseif (($CheckGPURegistryKey3 -like "*GTX*") -or ($CheckGPURegistryKey3 -like "*RTX*")) {
-                $ResultText.text = "`r`n" + "  Nvidia GTX/RTX Card Registry Path 0003 Detected! Applying Nvidia Latency Tweaks..."
+                $ResultText.text = " Nvidia GTX/RTX Card Registry Path 0003 Detected! Applying Nvidia Latency Tweaks..."
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0003" -Name "D3PCLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0003" -Name "F1TransitionLatency" -Type DWord -Value 1
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0003" -Name "LOWLATENCY" -Type DWord -Value 1
@@ -2699,34 +2712,34 @@ Function MakeForm {
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0003" -Name "vrrDeflickerMaxUs" -Type DWord -Value 1
             }
             else {
-                $ResultText.text = "`r`n" + "  No NVIDIA GTX/RTX Card Registry entry Found! Skipping..."
+                $ResultText.text = " No NVIDIA GTX/RTX Card Registry entry Found! Skipping..."
             }
 
-            $ResultText.text = "`r`n" + "  Disabling VBS..."
+            $ResultText.text = " Disabling VBS..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
     
-            $ResultText.text = "`r`n" + "  Gaming Tweaks Applied. `r`n  Ready for Next Task!"
+            $ResultText.text = " Gaming Tweaks Applied. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $securitypatches.Add_Click({
             $Form.text = "WinTool by Alerion - Patching known Security Exploits..."
-            $ResultText.text = "`r`n" + "  Applying Security Patches to disable known exploits"
+            $ResultText.text = " Applying Security Patches to disable known exploits"
 
-            $ResultText.text = "`r`n" + "  Disabling Spectre Meltdown vulnerability on this system"
+            $ResultText.text = " Disabling Spectre Meltdown vulnerability on this system"
             #####SPECTRE MELTDOWN#####
             #https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "FeatureSettingsOverride" -Type DWord -Value 72 -Force
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "FeatureSettingsOverrideMask" -Type DWord -Value 3 -Force
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Virtualization" -Name "MinVmVersionForCpuBasedMitigations" -Type String -Value 1.0 -Force
 
-            $ResultText.text = "`r`n" + "  Disabling LLMNR for additional security.."
+            $ResultText.text = " Disabling LLMNR for additional security.."
             #Disable LLMNR
             #https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
             New-Item -Path "HKLM:\Software\policies\Microsoft\Windows NT\" -Name "DNSClient" -Force
             Set-ItemProperty -Path "HKLM:\Software\policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Type DWord -Value 0 -Force
 
-            $ResultText.text = "`r`n" + "  Disabling NetBIOS.."
+            $ResultText.text = " Disabling NetBIOS.."
             #Disable NetBIOS by updating Registry
             #http://blog.dbsnet.fr/disable-netbios-with-powershell#:~:text=Disabling%20NetBIOS%20over%20TCP%2FIP,connection%2C%20then%20set%20NetbiosOptions%20%3D%202
             $key = "HKLM:SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces"
@@ -2740,17 +2753,17 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" -Name "DisableExceptionChainValidation" -Type "DWORD" -Value 0 -Force
 
             #Disable TCP Timestamps
-            $ResultText.text = "`r`n" + "  TCP Timestamps deactivated.."
+            $ResultText.text = " TCP Timestamps deactivated.."
             netsh int tcp set global timestamps=disabled
 
             #Enable DEP
-            $ResultText.text = "`r`n" + "  Enabling DEP.."
+            $ResultText.text = " Enabling DEP.."
             BCDEDIT /set "{current}" nx OptOut
             Set-Processmitigation -System -Enable DEP
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "NoDataExecutionPrevention" -Type "DWORD" -Value 0 -Force
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "DisableHHDEP" -Type "DWORD" -Value 0 -Force
 
-            $ResultText.text = "`r`n" + "  Disabling WPAD.."
+            $ResultText.text = " Disabling WPAD.."
             #Disable WPAD
             #https://adsecurity.org/?p=3299
             New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\" -Name "Wpad" -Force
@@ -2758,29 +2771,29 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type "DWORD" -Value 1 -Force
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type "DWORD" -Value 1 -Force
 
-            $ResultText.text = "`r`n" + "  Enable LSA Protection/Auditing.."
+            $ResultText.text = " Enable LSA Protection/Auditing.."
             #Enable LSA Protection/Auditing
             #https://adsecurity.org/?p=3299
             New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\" -Name "LSASS.exe" -Force
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\LSASS.exe" -Name "AuditLevel" -Type "DWORD" -Value 8 -Force
 
-            $ResultText.text = "`r`n" + "  Disabling Windows Script Host.."
+            $ResultText.text = " Disabling Windows Script Host.."
             #Disable Windows Script Host
             #https://adsecurity.org/?p=3299
             New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows Script Host\" -Name "Settings" -Force
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Script Host\Settings" -Name "Enabled" -Type "DWORD" -Value 0 -Force
     
-            $ResultText.text = "`r`n" + "  Disabling WDigest.."
+            $ResultText.text = " Disabling WDigest.."
             #Disable WDigest
             #https://adsecurity.org/?p=3299
             Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\Wdigest" -Name "UseLogonCredential" -Type "DWORD" -Value 0 -Force
 
-            $ResultText.text = "`r`n" + "  Blocked Untrusted Fonts.."
+            $ResultText.text = " Blocked Untrusted Fonts.."
             #Block Untrusted Fonts
             #https://adsecurity.org/?p=3299
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Kernel\" -Name "MitigationOptions" -Type "QWORD" -Value "1000000000000" -Force
     
-            $ResultText.text = "`r`n" + "  Disabling Office OLE.."
+            $ResultText.text = " Disabling Office OLE.."
             #Disable Office OLE
             #https://adsecurity.org/?p=3299
             $officeversions = '16.0', '15.0', '14.0', '12.0'
@@ -2791,10 +2804,10 @@ Function MakeForm {
                 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Office\$officeversion\Outlook\Security\" -Name "ShowOLEPackageObj" -Type "DWORD" -Value "0" -Force
             }
 
-            $ResultText.text = "`r`n" + "  Disabling SMB 1.0 protocol.."
+            $ResultText.text = " Disabling SMB 1.0 protocol.."
             Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
 
-            $ResultText.text = "`r`n" + "  Disabling SMB Server.."
+            $ResultText.text = " Disabling SMB Server.."
             Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
             Set-SmbServerConfiguration -EnableSMB2Protocol $false -Force
             #Windows Defender Configuration Files
@@ -2811,61 +2824,61 @@ Function MakeForm {
                 #Windows Defender Hardening
                 #https://www.powershellgallery.com/packages/WindowsDefender_InternalEvaluationSetting
                 #Enable real-time monitoring
-                $ResultText.text = "`r`n" + "  Enable real-time monitoring"
+                $ResultText.text = " Enable real-time monitoring"
                 Set-MpPreference -DisableRealtimeMonitoring 0
                 #Enable sample submission
-                $ResultText.text = "`r`n" + "  Enable sample submission"
+                $ResultText.text = " Enable sample submission"
                 Set-MpPreference -SubmitSamplesConsent 2
                 #Enable checking signatures before scanning
-                $ResultText.text = "`r`n" + "  Enable checking signatures before scanning"
+                $ResultText.text = " Enable checking signatures before scanning"
                 Set-MpPreference -CheckForSignaturesBeforeRunningScan 1
                 #Enable behavior monitoring
-                $ResultText.text = "`r`n" + "  Enable behavior monitoring"
+                $ResultText.text = " Enable behavior monitoring"
                 Set-MpPreference -DisableBehaviorMonitoring 0
                 #Enable IOAV protection
-                $ResultText.text = "`r`n" + "  Enable IOAV protection"
+                $ResultText.text = " Enable IOAV protection"
                 Set-MpPreference -DisableIOAVProtection 0
                 #Enable script scanning
-                $ResultText.text = "`r`n" + "  Enable script scanning"
+                $ResultText.text = " Enable script scanning"
                 Set-MpPreference -DisableScriptScanning 0
                 #Enable removable drive scanning
-                $ResultText.text = "`r`n" + "  Enable removable drive scanning"
+                $ResultText.text = " Enable removable drive scanning"
                 Set-MpPreference -DisableRemovableDriveScanning 0
                 #Enable Block at first sight
-                $ResultText.text = "`r`n" + "  Enable Block at first sight"
+                $ResultText.text = " Enable Block at first sight"
                 Set-MpPreference -DisableBlockAtFirstSeen 0
                 #Enable potentially unwanted 
-                $ResultText.text = "`r`n" + "  Enable potentially unwanted apps"
+                $ResultText.text = " Enable potentially unwanted apps"
                 Set-MpPreference -PUAProtection Enabled
                 #Schedule signature updates every 8 hours
-                $ResultText.text = "`r`n" + "  Schedule signature updates every 8 hours"
+                $ResultText.text = " Schedule signature updates every 8 hours"
                 Set-MpPreference -SignatureUpdateInterval 8
                 #Enable archive scanning
-                $ResultText.text = "`r`n" + "  Enable archive scanning"
+                $ResultText.text = " Enable archive scanning"
                 Set-MpPreference -DisableArchiveScanning 0
                 #Enable email scanning
-                $ResultText.text = "`r`n" + "  Enable email scanning"
+                $ResultText.text = " Enable email scanning"
                 Set-MpPreference -DisableEmailScanning 0
                 #Enable File Hash Computation
-                $ResultText.text = "`r`n" + "  Enable File Hash Computation"
+                $ResultText.text = " Enable File Hash Computation"
                 Set-MpPreference -EnableFileHashComputation 1
                 #Enable Intrusion Prevention System
-                $ResultText.text = "`r`n" + "  Enable Intrusion Prevention System"
+                $ResultText.text = " Enable Intrusion Prevention System"
                 Set-MpPreference -DisableIntrusionPreventionSystem $false
                 #Enable Windows Defender Exploit Protection
-                $ResultText.text = "`r`n" + "  Enabling Exploit Protection"
+                $ResultText.text = " Enabling Exploit Protection"
                 Set-ProcessMitigation -PolicyFilePath C:\temp\"Windows Defender"\DOD_EP_V3.xml
                 #Set cloud block level to 'High'
-                $ResultText.text = "`r`n" + "  Set cloud block level to 'High'"
+                $ResultText.text = " Set cloud block level to 'High'"
                 Set-MpPreference -CloudBlockLevel High
                 #Set cloud block timeout to 1 minute
-                $ResultText.text = "`r`n" + "  Set cloud block timeout to 1 minute"
+                $ResultText.text = " Set cloud block timeout to 1 minute"
                 Set-MpPreference -CloudExtendedTimeout 50
-                $ResultText.text = "`r`n" + "  Updating Windows Defender Exploit Guard settings"
+                $ResultText.text = " Updating Windows Defender Exploit Guard settings"
                 #Enabling Controlled Folder Access and setting to block mode
                 #Set-MpPreference -EnableControlledFolderAccess Enabled 
                 #Enabling Network Protection and setting to block mode
-                $ResultText.text = "`r`n" + "  Enabling Network Protection and setting to block mode"
+                $ResultText.text = " Enabling Network Protection and setting to block mode"
                 Set-MpPreference -EnableNetworkProtection Enabled
     
                 #Enable Cloud-delivered Protections
@@ -2906,7 +2919,7 @@ Function MakeForm {
                 #Block persistence through WMI event subscription
                 Add-MpPreference -AttackSurfaceReductionRules_Ids e6db77e5-3df2-4cf1-b95a-636979351e5b -AttackSurfaceReductionRules_Actions Enabled
     
-                $ResultText.text = "`r`n" + "  Windows defender security patches has been applied..."
+                $ResultText.text = " Windows defender security patches has been applied..."
             }
 
             Start-Job -Name "SSL Hardening" -ScriptBlock {
@@ -3051,7 +3064,7 @@ Function MakeForm {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319" -Force -Name SchUseStrongCrypto -Type "DWORD" -Value 0x00000001
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319" -Force -Name SystemDefaultTlsVersions -Type "DWORD" -Value 0x00000001
     
-                $ResultText.text = "`r`n" + "  SSL Hardening Activated..."
+                $ResultText.text = " SSL Hardening Activated..."
             }
     
             Start-Job -Name "SMB Optimizations and Hardening" -ScriptBlock {
@@ -3088,21 +3101,21 @@ Function MakeForm {
                 Set-SmbServerConfiguration -EncryptData $True -Force 
                 Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force 
 
-                $ResultText.text = "`r`n" + "  SMB Optimized and Hardening Activated..."
+                $ResultText.text = " SMB Optimized and Hardening Activated..."
             }
 
-            $ResultText.text = "`r`n" + "  All known security exploits have been patched successfully & additional system hardening has been applied. `r`n  Ready for Next Task!"
+            $ResultText.text = " All known security exploits have been patched successfully & additional system hardening has been applied. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $onedrive.Add_Click({
             $Form.text = "WinTool by Alerion - Removing OneDrive..."
-            $ResultText.text = "`r`n" + "  Disabling OneDrive..."
+            $ResultText.text = " Disabling OneDrive..."
             If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
-            $ResultText.text = "`r`n" + "  Uninstalling OneDrive..."
+            $ResultText.text = " Uninstalling OneDrive..."
             Stop-Process -Name "OneDrive" -ErrorAction SilentlyContinue
             Start-Sleep -s 2
             $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
@@ -3113,7 +3126,7 @@ Function MakeForm {
             Start-Sleep -s 2
             Stop-Process -Name "explorer" -ErrorAction SilentlyContinue
             Start-Sleep -s 2
-            $ResultText.text = "`r`n" + "  Removing extra OneDrive leftovers..."
+            $ResultText.text = " Removing extra OneDrive leftovers..."
             Remove-Item -Path "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
             Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
             Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
@@ -3123,47 +3136,47 @@ Function MakeForm {
             }
             Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
             Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-            $ResultText.text = "`r`n" + "  Deleted and Disabled OneDrive. `r`n  Ready for Next Task!"
+            $ResultText.text = " Deleted and Disabled OneDrive. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $darkmode.Add_Click({
-            $ResultText.text = "`r`n" + "  Setting dark mode to active"
+            $ResultText.text = " Setting dark mode to active"
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value "0"
-            $ResultText.text = "`r`n" + "  Dark mode successfully activated. `r`n  Ready for Next Task!"
+            $ResultText.text = " Dark mode successfully activated. `r`n  Ready for Next Task!"
         })
 
     $lightmode.Add_Click({
-            $ResultText.text = "`r`n" + "  Switching Back to Light Mode"
+            $ResultText.text = " Switching Back to Light Mode"
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
-            $ResultText.text = "`r`n" + "  Enabled Light Mode. `r`n  Ready for Next Task!"
+            $ResultText.text = " Enabled Light Mode. `r`n  Ready for Next Task!"
         })
 
     $InstallOneDrive.Add_Click({
             $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
-            $ResultText.text = "`r`n" + "  Installing Onedrive. Please Wait..."
+            $ResultText.text = " Installing Onedrive. Please Wait..."
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
             %systemroot%\SysWOW64\OneDriveSetup.exe
-            $ResultText.text = "`r`n" + "  Finished Reinstalling OneDrive. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished Reinstalling OneDrive. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $DisableNumLock.Add_Click({
-            $ResultText.text = "`r`n" + "  Disable NumLock after startup..."
+            $ResultText.text = " Disable NumLock after startup..."
             Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
             Add-Type -AssemblyName System.Windows.Forms
             If (([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
                 $wsh = New-Object -ComObject WScript.Shell
                 $wsh.SendKeys('{NUMLOCK}')
             }
-            $ResultText.text = "`r`n" + "  Disable NumLock after startup. `r`n  Ready for Next Task!"
+            $ResultText.text = " Disable NumLock after startup. `r`n  Ready for Next Task!"
         })
 
     $killedge.Add_Click({
             $Form.text = "WinTool by Alerion - Removing Microsoft Edge..."
-            $ResultText.text = "`r`n" + "  Removing Microsoft Edge..."
+            $ResultText.text = " Removing Microsoft Edge..."
             Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/killedge.bat | Invoke-Expression
 
             #removes shortcut from programdata
@@ -3172,42 +3185,42 @@ Function MakeForm {
                 Remove-Item $_.FullName
             }
 
-            $ResultText.text = "`r`n" + "  Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n  Ready for Next Task!"
+            $ResultText.text = " Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n  Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $ncpa.Add_Click({ #Network cards interface
-            $ResultText.text = "`r`n" + "  Opened Network Connections..."
+            $ResultText.text = " Opened Network Connections..."
             cmd /c ncpa.cpl
         })
 
     $oldsoundpanel.Add_Click({ #Old sound control panel
-            $ResultText.text = "`r`n" + "  Opened Sound Properties..."
+            $ResultText.text = " Opened Sound Properties..."
             cmd /c mmsys.cpl
         })
 
     $oldcontrolpanel.Add_Click({ #Old controlpanel
-            $ResultText.text = "`r`n" + "  Opened Control Panel..."
+            $ResultText.text = " Opened Control Panel..."
             cmd /c control
         })
 
     $oldsystempanel.Add_Click({ #Old system panel
-            $ResultText.text = "`r`n" + "  Opened System Properties..."
+            $ResultText.text = " Opened System Properties..."
             cmd /c sysdm.cpl
         })
 
     $oldpower.Add_Click({
-            $ResultText.text = "`r`n" + "  Opened Advanced Power Options..."
+            $ResultText.text = " Opened Advanced Power Options..."
             cmd /c powercfg.cpl
         })
 
     $olddevicemanager.Add_Click({
-            $ResultText.text = "`r`n" + "  Opened Device Manager..."
+            $ResultText.text = " Opened Device Manager..."
             cmd /c devmgmt.msc
         })
 
     $oldprinters.Add_Click({
-            $ResultText.text = "`r`n" + "  Opened Devices/Printers..."
+            $ResultText.text = " Opened Devices/Printers..."
             cmd /c control printers
         })
 
@@ -3220,56 +3233,56 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
             nfsadmin client start
             nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-            $ResultText.text = "`r`n" + "  NFS is now setup for user based NFS mounts `r`n  Ready for Next Task!"
+            $ResultText.text = " NFS is now setup for user based NFS mounts `r`n  Ready for Next Task!"
         })
 
     $resetnetwork.Add_Click({
             cmd /c netsh winsock reset
-            $ResultText.text = "`r`n" + "  1. Winsock reset!"
+            $ResultText.text = " 1. Winsock reset!"
             Start-Sleep -s 1
             cmd /c netsh int ip reset
-            $ResultText.text = "`r`n" + "  2. IP reset!"
+            $ResultText.text = " 2. IP reset!"
             Start-Sleep -s 1
             cmd /c netsh advfirewall reset
-            $ResultText.text = "`r`n" + "  3. Firewall reset!"
+            $ResultText.text = " 3. Firewall reset!"
             Start-Sleep -s 1
             cmd /c ipconfig /release
             cmd /c ipconfig /flushdns
-            $ResultText.text = "`r`n" + "  4. DNS Flushed!"
+            $ResultText.text = " 4. DNS Flushed!"
             Start-Sleep -s 1
             cmd /c ipconfig /renew
-            $ResultText.text = "`r`n" + "  5. IP renewed!"
+            $ResultText.text = " 5. IP renewed!"
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  Network settings restore to default, please reboot your computer.."
+            $ResultText.text = " Network settings restore to default, please reboot your computer.."
             $Form.text = "WinTool by Alerion - Network settings restore to default, please reboot your computer..."
         })
 
     $windowsupdatefix.Add_Click({
             $Form.text = "WinTool by Alerion - Initializing Windows Update Fix..."
-            $ResultText.text = "`r`n" + "  1. Stopping Windows Update Services..."
+            $ResultText.text = " 1. Stopping Windows Update Services..."
             Stop-Service -Name BITS 
             Stop-Service -Name wuauserv 
             Stop-Service -Name appidsvc 
             Stop-Service -Name cryptsvc 
             Start-Sleep -s 1
     
-            $ResultText.text = "`r`n" + "  2. Remove QMGR Data file..."
+            $ResultText.text = " 2. Remove QMGR Data file..."
             Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
             Start-Sleep -s 1
     
-            $ResultText.text = "`r`n" + "  3. Renaming the Software Distribution and CatRoot Folder..."
+            $ResultText.text = " 3. Renaming the Software Distribution and CatRoot Folder..."
             Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue #should probably delete these files with the ultimate cleaner but has not been setup yet
             Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue #should probably delete these files with the ultimate cleaner but has not been setup yet
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  4. Removing old Windows Update log..."
+            $ResultText.text = " 4. Removing old Windows Update log..."
             Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  5. Resetting the Windows Update Services to defualt settings..."
+            $ResultText.text = " 5. Resetting the Windows Update Services to defualt settings..."
             "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
             "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
             Set-Location $env:systemroot\system32 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  6. Registering usefull DLLs..."
+            $ResultText.text = " 6. Registering usefull DLLs..."
             regsvr32.exe /s atl.dll 
             regsvr32.exe /s urlmon.dll 
             regsvr32.exe /s mshtml.dll 
@@ -3307,19 +3320,19 @@ Function MakeForm {
             regsvr32.exe /s muweb.dll 
             regsvr32.exe /s wuwebv.dll 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  7. Removing WSUS client settings..."
+            $ResultText.text = " 7. Removing WSUS client settings..."
             REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v AccountDomainSid /f 
             REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v PingID /f 
             REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  8. Resetting the WinSock..."
+            $ResultText.text = " 8. Resetting the WinSock..."
             netsh winsock reset 
             netsh winhttp reset proxy 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  9. Delete all BITS jobs..."
+            $ResultText.text = " 9. Delete all BITS jobs..."
             Get-BitsTransfer | Remove-BitsTransfer 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  10. Attempting to install the Windows Update Agent..."
+            $ResultText.text = " 10. Attempting to install the Windows Update Agent..."
             if ($arch -eq 64) { 
                 wusa Windows8-RT-KB2937636-x64 /quiet 
             } 
@@ -3327,16 +3340,16 @@ Function MakeForm {
                 wusa Windows8-RT-KB2937636-x86 /quiet 
             } 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  11. Starting Windows Update Services..."
+            $ResultText.text = " 11. Starting Windows Update Services..."
             Start-Service -Name BITS 
             Start-Service -Name wuauserv 
             Start-Service -Name appidsvc 
             Start-Service -Name cryptsvc 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  12. Forcing discovery..."
+            $ResultText.text = " 12. Forcing discovery..."
             wuauclt /resetauthorization /detectnow 
             Start-Sleep -s 1
-            $ResultText.text = "`r`n" + "  Windows Update has been repaired, please reboot your computer..."
+            $ResultText.text = " Windows Update has been repaired, please reboot your computer..."
             $Form.text = "WinTool by Alerion - Windows Update has been repaired, please reboot your computer..."
         })
 
@@ -3371,7 +3384,7 @@ Function MakeForm {
                 }
 
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $wingetup"
-                $ResultText.text = "  Updating all applications already installed, please wait..."
+                $ResultText.text = "Updating all applications already installed, please wait..."
             }
         })
 
@@ -3382,131 +3395,131 @@ Function MakeForm {
     $okbutton.Add_Click({
             if ($bravebrowser.Checked) {
                 if ($bravepath) {
-                    $ResultText.text = "  Brave Browser Already Installed - Ready for Next Task"
+                    $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Brave.Brave --exact --accept-source-agreements
-                    $ResultText.text = "  Brave Browser Installed - Ready for Next Task"
+                    $ResultText.text = "Brave Browser Installed - Ready for Next Task"
                 }
             }
     
             if ($dropbox.Checked) {
                 if ($dropboxpath) {
-                    $ResultText.text = "  Dropbox Already Installed - Ready for Next Task"
+                    $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Dropbox.Dropbox --exact --accept-source-agreements
-                    $ResultText.text = "  Dropbox Installed - Ready for Next Task"
+                    $ResultText.text = "Dropbox Installed - Ready for Next Task"
                 }
             }
     
             if ($7zip.Checked) {
                 if ($7zippath) {
-                    $ResultText.text = "  7-Zip Already Installed - Ready for Next Task"
+                    $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=7zip.7zip --exact --accept-source-agreements
-                    $ResultText.text = "  7-Zip Installed - Ready for Next Task"
+                    $ResultText.text = "7-Zip Installed - Ready for Next Task"
                 }
             }
     
             if ($malwarebytes.Checked) {  
                 if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                    $ResultText.text = "  Malwarebytes Already Installed - Ready for Next Task"
+                    $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
-                    $ResultText.text = "  Malwarebytes Installed - Ready for Next Task"
+                    $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
                 }
             }
     
             if ($steam.Checked) {
                 if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                    $ResultText.text = "  Steam Client Already Installed - Ready for Next Task"
+                    $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Valve.Steam --exact --accept-source-agreements
-                    $ResultText.text = "  Steam Client Installed - Ready for Next Task"
+                    $ResultText.text = "Steam Client Installed - Ready for Next Task"
                 }
             }
     
             if ($discord.Checked) {
                 if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                    $ResultText.text = "  Discord Already Installed - Ready for Next Task"
+                    $ResultText.text = "Discord Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Discord.Discord --exact --accept-source-agreements
-                    $ResultText.text = "  Discord Installed - Ready for Next Task"
+                    $ResultText.text = "Discord Installed - Ready for Next Task"
                 }
             }
     
             if ($teamviewer.Checked) {
                 if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                    $ResultText.text = "  Teamviewer Already Installed - Ready for Next Task"
+                    $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
-                    $ResultText.text = "  Teamviewer Installed - Ready for Next Task"
+                    $ResultText.text = "Teamviewer Installed - Ready for Next Task"
                 }
             }
     
             if ($epicgames.Checked) {
                 if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                    $ResultText.text = "  Epic Games Launcher Already Installed - Ready for Next Task"
+                    $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
-                    $ResultText.text = "  Epic Games Launcher Installed - Ready for Next Task"
+                    $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
                 }
             }
     
             if ($githubdesktop.Checked) {
                 if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                    $ResultText.text = "  Github Desktop Already Installed - Ready for Next Task"
+                    $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=GitHub.GitHubDesktop --exact --accept-source-agreements
-                    $ResultText.text = "  Github Desktop Installed - Ready for Next Task"
+                    $ResultText.text = "Github Desktop Installed - Ready for Next Task"
                 }
             }
     
             if ($visualstudiocode.Checked) {
                 if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                    $ResultText.text = "  Visual Studio Code Already Installed - Ready for Next Task"
+                    $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
-                    $ResultText.text = "  Visual Studio Code Installed - Ready for Next Task"
+                    $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
                 }
             }
     
             if ($qbittorrent.Checked) {
                 if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                    $ResultText.text = "  qBittorrent Already Installed - Ready for Next Task"
+                    $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=qBittorrent.qBittorrent --exact --accept-source-agreements
-                    $ResultText.text = "  qBittorrent Installed - Ready for Next Task"
+                    $ResultText.text = "qBittorrent Installed - Ready for Next Task"
                 }
             }
 
             if ($notepad.Checked) {
                 if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                    $ResultText.text = "  Notepad++ Already Installed - Ready for Next Task"
+                    $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install --id=Notepad++.Notepad++ --exact --accept-source-agreements
-                    $ResultText.text = "  Notepad++ Installed - Ready for Next Task"
+                    $ResultText.text = "Notepad++ Installed - Ready for Next Task"
                 }
             }
 
             if ($foxit.Checked) {
                 if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
-                    $ResultText.text = "  Foxit PDF Reader Already Installed - Ready for Next Task"
+                    $ResultText.text = "Foxit PDF Reader Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
-                    $ResultText.text = "  Foxit PDF Reader Installed - Ready for Next Task"
+                    $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
                 }
             }
 
@@ -3515,11 +3528,11 @@ Function MakeForm {
                 $path = [Environment]::GetFolderPath("Desktop")
 
                 if (Test-Path "$path\SpotifySetup.exe") {
-                    $ResultText.text = "  Spotify Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "Spotify Already Downloaded - Ready for Next Task"
                 }  
                 else {
                     Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$path\SpotifySetup.exe"
-                    $ResultText.text = "  SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
+                    $ResultText.text = "SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
                 }
             }
 
@@ -3528,11 +3541,11 @@ Function MakeForm {
                 $path = [Environment]::GetFolderPath("MyDocuments")
 
                 if (Test-Path "$path\DS4Windows.7z") {
-                    $ResultText.text = "  DS4Windows Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "DS4Windows Already Downloaded - Ready for Next Task"
                 }  
                 else {
                     Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$path\DS4Windows.7z"
-                    $ResultText.text = "  DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
+                    $ResultText.text = "DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
                 }
             }
 
@@ -3541,12 +3554,12 @@ Function MakeForm {
                 $path = [Environment]::GetFolderPath("MyDocuments")
         
                 if (Test-Path "$path\Bakkesmod.zip") {
-                    $ResultText.text = "  Bakkesmod Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "Bakkesmod Already Downloaded - Ready for Next Task"
                 }  
                 else {
                     Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$path\Bakkesmod.zip"
 
-                    $ResultText.text = "  Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
+                    $ResultText.text = "Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
                 }
             }
         })
@@ -3565,23 +3578,23 @@ Function MakeForm {
             $OSname = (Get-WmiObject Win32_OperatingSystem).caption
             $OSbit = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
             $OSver = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
-            $localIP = (Get-NetIPAddress | ?{ $_.AddressFamily -eq "IPv4"  -and !($_.IPAddress -match "169") -and !($_.IPaddress -match "127") }).IPAddress
+            $localIP = (Get-NetIPAddress | Where-Object{ $_.AddressFamily -eq "IPv4"-and !($_.IPAddress -match "169") -and !($_.IPaddress -match "127") }).IPAddress
             $externalIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
             $winLicence = (Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
             $accountUsername = (Get-ChildItem Env:USERNAME).Value
             $domainName = $env:USERDNSDOMAIN
             $computerName = $env:computername
         
-            $ResultText.text =  "`r`n" + 
-                "  Username: "          + $accountUsername + "`r`n" + 
-                "  Computer Name: "     + $computerName + "`r`n" + 
-                "  Domain: "            + $domainName + "`r`n" + 
-                "  Local IP: "          + $localIP + "`r`n" +
-                "  External IP: "       + $externalIP + "`r`n" +
-                "  Windows Licence: "   + $winLicence + "`r`n" + 
-                "  OS: "                + $OSname + "`r`n" +  
-                "  OS Build: "          + $OSver + "`r`n" +  
-                "  CPU Architecture: "  + $OSbit + "`r`n"
+            $ResultText.text =
+                "Username: "        + $accountUsername + "`r`n" + 
+                "Computer Name: "   + $computerName + "`r`n" + 
+                "Domain: "          + $domainName + "`r`n" + 
+                "Local IP: "        + $localIP + "`r`n" +
+                "External IP: "     + $externalIP + "`r`n" +
+                "Windows Licence: " + $winLicence + "`r`n" + 
+                "OS: "              + $OSname + "`r`n" +  
+                "OS Build: "        + $OSver + "`r`n" +  
+                "CPU Architecture: "+ $OSbit + "`r`n"
 
                 #LAST WINDOWS UPDATE DATE IF POSSIBLE
         })
@@ -3615,20 +3628,20 @@ Function MakeForm {
              
 
             $ResultText.text =
-                "  Manufacturer: "              + $computerBrand + "`r`n" + 
-                "  Model: "                     + $model + "`r`n `r`n" + 
-                "  CPU: "                       + $cpuName + "`r`n" + 
-                "  CPU Cores: "                 + $cores + "`r`n `r`n" +
-                "  GPU Name: "                  + $GPUname + "`r`n" + 
-                "  GPU Description: "           + $GPUdescription + "`r`n" + 
-                "  GPU VRAM: "                  + $GPUvram + " GB `r`n" + 
-                "  Refresh Rate: "              + $GPUrefreshrate + "`r`n `r`n" +
-                "  Total RAM: "                 + $TotMem + "`r`n `r`n" + 
-                "  OS Disk Size: "              + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
-                "  OS Disk Free Space: "        + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n `r`n" +
-                "  Bios: "                      + $biosName + "`r`n" +
-                "  Bios Description: "          + $biosDesc + "`r`n" +
-                "  Bios Serial: "               + $biosSerial + "`r`n"
+                "Manufacturer: "            + $computerBrand + "`r`n" + 
+                "Model: "                   + $model + "`r`n `r`n" + 
+                "CPU: "                     + $cpuName + "`r`n" + 
+                "CPU Cores: "               + $cores + "`r`n `r`n" +
+                "GPU Name: "                + $GPUname + "`r`n" + 
+                "GPU Description: "         + $GPUdescription + "`r`n" + 
+                "GPU VRAM: "                + $GPUvram + " GB `r`n" + 
+                "Refresh Rate: "            + $GPUrefreshrate + "`r`n `r`n" +
+                "Total RAM: "               + $TotMem + "`r`n `r`n" + 
+                "OS Disk Size: "            + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
+                "OS Disk Free Space: "      + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n `r`n" +
+                "Bios: "                    + $biosName + "`r`n" +
+                "Bios Description: "        + $biosDesc + "`r`n" +
+                "Bios Serial: "             + $biosSerial + "`r`n"
     
         })
     
@@ -3651,15 +3664,19 @@ Function MakeForm {
                 }
             }
 
-                $ResultText.text =  "`r`n" + 
-                "  Name: "          + $AntiVirusProduct.displayName + "`r`n" + 
-                "  Product GUID: "     + $AntiVirusProduct.instanceGuid + "`r`n" + 
-                "  Product Executable: "            + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
-                "  Reporting Exe: "          + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
-                "  Definition Status: "       + $defstatus + "`r`n" +
-                "  Real-time Protection Status: "   + $rtstatus + "`r`n"
+                $ResultText.text =
+                "Name: "        + $AntiVirusProduct.displayName + "`r`n" + 
+                "Product GUID: "   + $AntiVirusProduct.instanceGuid + "`r`n" + 
+                "Product Executable: "          + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
+                "Reporting Exe: "        + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
+                "Definition Status: "     + $defstatus + "`r`n" +
+                "Real-time Protection Status: " + $rtstatus + "`r`n"
             
         }) 
+
+        $xButton.Add_Click({
+            $form.Close()
+        })
 
     $Form.ShowDialog() | Out-Null
 }
