@@ -20,39 +20,8 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 Function MakeForm {
 
     #Sets the information inside "About this computer"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
-
-    #Downloads my heart icon from my github to be able to use it as an app icon and a shortcut icon :)
-    $iconPath = 'C:\Windows\heart.ico'
-    $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
-    Invoke-WebRequest -Uri $url -OutFile $iconPath
-
-    #DISCLAIMER
-    # - Creating shortcuts will not work on computers that use OneDrive as a storage location, i might fix this later but for now i think its best this way!
-
-    #Creates a shortcut for the script to be run easily from the Desktop
-    $WshShell = New-Object -comObject WScript.Shell
-    $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
-    $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
-    $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-    $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
-    $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
-    $Shortcut.Save()
-
-    #Creates a shortcut directly to the github repo
-    $WshShell = CreateObject("WScript.Shell")
-    $strDesktop = WshShell.SpecialFolders("Desktop")
-    $oUrlLink = WshShell.CreateShortcut($strDesktop+"\Alerion921's Github.URL")
-    $oUrlLink.TargetPath = "https://github.com/alerion921/WinTool-for-Win11"
-    $oUrlLink.IconLocation = "C:\Windows\heart.ico" # icon index 0
-    $oUrlLink.Save
-
-    #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
-    $bytes = [System.IO.File]::ReadAllBytes("$Home\Desktop\WinTool.lnk")
-    $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
-    [System.IO.File]::WriteAllBytes("$Home\Desktop\WinTool.lnk", $bytes)
-
+    #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
+    #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
 
     ##C40E61 - bright pink
     ##FFE082 - yellow
@@ -117,37 +86,62 @@ Function MakeForm {
     $xButton.BackColor = $frontcolor 
     $xButton.ForeColor = $backcolor
     $xButton.FlatStyle = "Flat"
+    $xbutton.BorderStyle = 0
     $xButton.FlatAppearance.MouseOverBackColor = $hovercolor
+
+    $createShortcutGit = New-Object system.Windows.Forms.Button
+    $createShortcutGit.text = "WinTool Github Shortcut"
+    $createShortcutGit.width = 200
+    $createShortcutGit.height = 25
+    $createShortcutGit.location = New-Object System.Drawing.Point(925, 10)
+    $createShortcutGit.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $createShortcutGit.BackColor = $frontcolor 
+    $createShortcutGit.ForeColor = $backcolor
+    $createShortcutGit.FlatStyle = "Flat"
+    $createShortcutGit.BorderStyle = 0
+    $createShortcutGit.FlatAppearance.MouseOverBackColor = $hovercolor
+
+    $CreateShortcutTool = New-Object system.Windows.Forms.Button
+    $CreateShortcutTool.text = "WinTool Desktop Shortcut"
+    $CreateShortcutTool.width = 200
+    $CreateShortcutTool.height = 25
+    $CreateShortcutTool.location = New-Object System.Drawing.Point(500, 10)
+    $CreateShortcutTool.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $CreateShortcutTool.BackColor = $frontcolor 
+    $CreateShortcutTool.ForeColor = $backcolor
+    $CreateShortcutTool.FlatStyle = "Flat"
+    $CreateShortcutTool.BorderStyle = 0
+    $CreateShortcutTool.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $Panel1 = New-Object system.Windows.Forms.Panel
     $Panel1.height = 440
     $Panel1.width = 220
-    $Panel1.location = New-Object System.Drawing.Point(10, 50)
+    $Panel1.location = New-Object System.Drawing.Point(10, 100)
 
     $Panel2 = New-Object system.Windows.Forms.Panel
     $Panel2.height = 440
     $Panel2.width = 220
-    $Panel2.location = New-Object System.Drawing.Point(240, 50)
+    $Panel2.location = New-Object System.Drawing.Point(240, 100)
 
     $Panel3 = New-Object system.Windows.Forms.Panel
     $Panel3.height = 440
     $Panel3.width = 220
-    $Panel3.location = New-Object System.Drawing.Point(470, 50)
+    $Panel3.location = New-Object System.Drawing.Point(470, 100)
 
     $Panel4 = New-Object system.Windows.Forms.Panel
     $Panel4.height = 440
     $Panel4.width = 230
-    $Panel4.location = New-Object System.Drawing.Point(700, 50)
+    $Panel4.location = New-Object System.Drawing.Point(700, 100)
 
     $Panel5 = New-Object system.Windows.Forms.Panel
     $Panel5.height = 440
     $Panel5.width = 230
-    $Panel5.location = New-Object System.Drawing.Point(930, 50)
+    $Panel5.location = New-Object System.Drawing.Point(930, 100)
 
     $Panel6 = New-Object system.Windows.Forms.Panel
     $Panel6.height = 330
     $Panel6.width = 1140
-    $Panel6.location = New-Object System.Drawing.Point(10, 490)
+    $Panel6.location = New-Object System.Drawing.Point(10, 540)
 
     #######################################################################################################
     # Tweaks starts here
@@ -856,6 +850,8 @@ Function MakeForm {
 
     $Form.controls.AddRange(@(
             $xButton,
+            $createShortcutGit,
+            $CreateShortcutTool,
             $Panel1, 
             $Panel2, 
             $Panel3, 
@@ -3687,6 +3683,37 @@ Function MakeForm {
 
         $xButton.Add_Click({
             $form.Close()
+        })
+
+        $createShortcutTool.Add_Click({
+            $iconPath = 'C:\Windows\heart.ico'
+            $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
+            Invoke-WebRequest -Uri $url -OutFile $iconPath
+
+            $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
+
+            #Creates a shortcut for the script to be run easily from the Desktop
+            $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
+            $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
+            $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+            $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
+            $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
+            $Shortcut.Save()
+
+            #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
+            $bytes = [System.IO.File]::ReadAllBytes("$Home\Desktop\WinTool.lnk")
+            $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
+            [System.IO.File]::WriteAllBytes("$Home\Desktop\WinTool.lnk", $bytes)
+        })
+
+        $createShortcutGit.Add_Click({
+            $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
+            #Creates a shortcut directly to the github repo
+            $strDesktop = $WshShell.SpecialFolders("Desktop")
+            $oUrlLink = $WshShell.CreateShortcut($strDesktop+"\Alerion921's Github.URL")
+            $oUrlLink.IconLocation = "C:\Windows\heart.ico" # icon index 0
+            $oUrlLink.TargetPath = "https://github.com/alerion921/WinTool-for-Win11"
+            $oUrlLink.Save()
         })
 
     $Form.ShowDialog() | Out-Null
