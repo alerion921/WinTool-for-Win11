@@ -925,25 +925,27 @@ Function MakeForm {
         ))
 
     # GUI Specs
-    $ResultText.text = "`r`n" + "`r`n" + "  Checking Winget..."
+    $ResultText.text = "Checking Winget..."
 
     # Check if winget is installed
     if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-        $ResultText.text = "`r`n" + "`r`n" + "  Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
+        $ResultText.text = 
+        "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
         `r`n  List of things that are required in order for this to run smoothly:
         --->  Winget Service
         --->  Administrator Elevation
         --->  Windows 10 or Windows 11
         
-        Enjoy this free tool!"
+        Enjoy this free tool!
+        "
     }  
     else {
         # Installing winget from the Microsoft Store
-        $ResultText.text = "`r`n" + "`r`n" + "  Winget is installing please stand by until the GUI becomes responsive again..."
+        $ResultText.text = "Winget is installing please stand by until the GUI becomes responsive again..."
         Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
         $nid = (Get-Process AppInstaller).Id
         Wait-Process -Id $nid
-        $ResultText.text = "`r`n" + "`r`n" + "  Winget Installed - Ready for Next Task"
+        $ResultText.text = "Winget Installed - Ready for Next Task"
     }
 
 
@@ -953,7 +955,7 @@ Function MakeForm {
 
             switch ($selected) {
                 1 {
-                    $ResultText.text = "`r`n" + "  DNS set to Google on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Google on all network adapters. `r`n  Ready for Next Task!"
                     $DNS1 = "8.8.8.8"
                     $DNS2 = "8.8.4.4"
                     $dns = "$DNS1", "$DNS2"
@@ -961,7 +963,7 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 2 {
-                    $ResultText.text = "`r`n" + "  DNS set to Cloudflare on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n  Ready for Next Task!"
                     $DNS1 = "1.1.1.1"
                     $DNS2 = "1.0.0.1"
                     $dns = "$DNS1", "$DNS2"
@@ -969,7 +971,7 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 3 {
-                    $ResultText.text = "`r`n" + "  DNS set to Level3 on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Level3 on all network adapters. `r`n  Ready for Next Task!"
                     $DNS1 = "4.2.2.2"
                     $DNS2 = "4.2.2.1"
                     $dns = "$DNS1", "$DNS2"
@@ -977,7 +979,7 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 4 {
-                    $ResultText.text = "`r`n" + "  DNS set to OpenDNS on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n  Ready for Next Task!"
                     $DNS1 = "208.67.222.222"
                     $DNS2 = "208.67.220.220"
                     $dns = "$DNS1", "$DNS2"
@@ -985,24 +987,24 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 5 {
-                    $ResultText.text = "`r`n" + "  Not sure why this would be needed since Cloudflare provides the fastest DNS connection..."
+                    $ResultText.text = "Not sure why this would be needed since Cloudflare provides the fastest DNS connection..."
                     $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Reset DNS to Windows Default, this will break any VPNs too?" , 4)
                     if ($regcachclean -eq 'Yes') {
                         $Interface = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
                         $interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
                         $interface | Set-NetIPInterface -Dhcp Enabled
                         $interface | Set-DnsClientServerAddress -ResetServerAddresses
-                        $ResultText.text = "`r`n" + "  The Network Adapters has been reset properly. `r`n  Ready for Next Task!"
+                        $ResultText.text = "The Network Adapters has been reset properly. `r`n  Ready for Next Task!"
                     }
                 }
                 default {
-                    $ResultText.text = "`r`n" + "  You need to press an option to change the DNS Address to your liking :)"
+                    $ResultText.text = "You need to press an option to change the DNS Address to your liking :)"
                 }
             }
         })
     
     $errorscanner.Add_Click({
-            $ResultText.text = "`r`n" + "  System error scan has started, select your options then, Please Wait..." 
+            $ResultText.text = "System error scan has started, select your options then, Please Wait..." 
     
             [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
@@ -1030,33 +1032,33 @@ Function MakeForm {
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
             }
     
-            if ($?) { $ResultText.text = "`r`n" + "  System error scans has been initiated wait for it to complete then do a restart. `r`n  Ready for Next Task!" }
+            if ($?) { $ResultText.text = "System error scans has been initiated wait for it to complete then do a restart. `r`n  Ready for Next Task!" }
         })
 
 
     $ultimateclean.Add_Click({
 	
-            $ResultText.text = "`r`n" + "  Cleaning initiated, empty folders will be skipped automaticly..." 
+            $ResultText.text = "Cleaning initiated, empty folders will be skipped automaticly..." 
 
             [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
             $Form.text = "WinTool by Alerion - Initializing Ultimate Cleaning..."
 
-            $ResultText.text = "`r`n" + "  Creating a restore point named: WinTool-Ultimate-Cleaning-Restorepoint, incase something bad happens.."
+            $ResultText.text = "Creating a restore point named: WinTool-Ultimate-Cleaning-Restorepoint, incase something bad happens.."
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-Ultimate-Cleaning-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
             $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean Shadow Copies cache and Windows Store Component cache?" , 4)
 
             if ($componentcache -eq 'Yes') {
-                $ResultText.text = "`r`n" + "  Windows Store Component cache is being cleaned please be patient..." 
+                $ResultText.text = "Windows Store Component cache is being cleaned please be patient..." 
                 Start-Sleep -Seconds 2
                 vssadmin delete shadows /all | Out-Null
-                $ResultText.text = "`r`n" + "  Shadowcopies deleted, moving on to deleting useless Windows Store caches please wait..." 
+                $ResultText.text = "Shadowcopies deleted, moving on to deleting useless Windows Store caches please wait..." 
                 Start-Sleep -Seconds 2
                 $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
                 $Form.text = "WinTool by Alerion - Please wait patiently Ultimate Cleaning is still deleting files..."
-                $ResultText.text = "`r`n" + "  Still deleting alot of unnecessary Windows crap..." 
+                $ResultText.text = "Still deleting alot of unnecessary Windows crap..." 
                 ForEach ($result in $Key) {
                     If ($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder") {}Else {
                         $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
@@ -1066,7 +1068,7 @@ Function MakeForm {
                 cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore
                 cmd /c DISM /Online /Cleanup-Image /spsuperseded
                 cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
-                $ResultText.text = "`r`n" + "  Shadow Copies cache and Windows Store Component cache cleaned..." 
+                $ResultText.text = "Shadow Copies cache and Windows Store Component cache cleaned..." 
                 Clear-BCCache -Force -ErrorAction SilentlyContinue
             }
 
@@ -1096,7 +1098,7 @@ Function MakeForm {
                 Start-Process explorer.exe	
 
                 Start-Sleep -s 3
-                $ResultText.text = "`r`n" + "  Windows registry junk files deleted successfully..." 
+                $ResultText.text = "Windows registry junk files deleted successfully..." 
             }
 
             $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
@@ -1104,13 +1106,13 @@ Function MakeForm {
 
             # Clear Inetpub Logs Folder
             if (Test-Path "C:\inetpub\logs\LogFiles\") {
-                $ResultText.text = "`r`n" + "  Clearing Inetpub Logs Folder..." 
+                $ResultText.text = "Clearing Inetpub Logs Folder..." 
                 $Folders = Get-ChildItem -Path "C:\inetpub\logs\LogFiles\" | Select-Object Name
                 foreach ($Folder in $Folders) {
                     $folder = $Folder.Name
                     Remove-Item -Path "C:\inetpub\logs\LogFiles\$Folder\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 }
-                $ResultText.text = "`r`n" + "  Deleted Inetpub Logs Folder..." 
+                $ResultText.text = "Deleted Inetpub Logs Folder..." 
             }
 
             if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
@@ -1122,7 +1124,7 @@ Function MakeForm {
                         Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                     } 
                 }
-                $ResultText.text = "`r`n" + "  Deleted old Microsoft Teams versions..." 
+                $ResultText.text = "Deleted old Microsoft Teams versions..." 
             }
 
             if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
@@ -1134,7 +1136,7 @@ Function MakeForm {
                     } 
                 }
         
-                $ResultText.text = "`r`n" + "  Deleted SnagIt crash dumps..." 
+                $ResultText.text = "Deleted SnagIt crash dumps..." 
             }
 
             if (Test-Path "C:\Program Files (x86)\Dropbox\Client") {
@@ -1148,7 +1150,7 @@ Function MakeForm {
                             Remove-Item -Path "C:\Users\$user\Dropbox*\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                         }
                     }
-                    $ResultText.text = "`r`n" + "  Dropbox caches deleted..." 
+                    $ResultText.text = "Dropbox caches deleted..." 
                 }
             }
             else {
@@ -1173,7 +1175,7 @@ Function MakeForm {
                     }
                 }
                 Start-Sleep -s 2
-                $ResultText.text = "`r`n" + "  All files in the User Download folder have been deleted..." 
+                $ResultText.text = "All files in the User Download folder have been deleted..." 
             }
 
             # Delete files from Azure Log folder
@@ -1184,12 +1186,12 @@ Function MakeForm {
                 foreach ($file in $OldFiles) {
                     Remove-Item -Path "$AzureLogs\$file" -Force -ErrorAction SilentlyContinue -Verbose
                 }
-                $ResultText.text = "`r`n" + "  Azure log files removed..." 
+                $ResultText.text = "Azure log files removed..." 
             } 
 
             if (Test-Path "$env:LocalAppData\Microsoft\Office") {
                 # Delete files from Office Cache Folder
-                $ResultText.text = "`r`n" + "  Clearing Office Cache Folder..." 
+                $ResultText.text = "Clearing Office Cache Folder..." 
                 Foreach ($user in $Users) {
                     $officecache = "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache"
                     if (Test-Path $officecache) {
@@ -1199,38 +1201,38 @@ Function MakeForm {
                         }
                     } 
                 }
-                $ResultText.text = "`r`n" + "  Office cache has been cleared..." 
+                $ResultText.text = "Office cache has been cleared..." 
             }
 
             # Delete files from LFSAgent Log folder https://www.lepide.com/
             if (Test-Path "$env:windir\LFSAgent\Logs") {
-                $ResultText.text = "`r`n" + "  Deleting files from LFSAgent Log folder..." 
+                $ResultText.text = "Deleting files from LFSAgent Log folder..." 
                 $LFSAgentLogs = "$env:windir\LFSAgent\Logs"
                 $OldFiles = Get-ChildItem -Path "$LFSAgentLogs\" -Recurse -File -ErrorAction SilentlyContinue
                 foreach ($file in $OldFiles) {
                     Remove-Item -Path "$LFSAgentLogs\$file" -Force -ErrorAction SilentlyContinue -Verbose
                 }
-                $ResultText.text = "`r`n" + "  LFSAgent log folder has been deleted..." 
+                $ResultText.text = "LFSAgent log folder has been deleted..." 
             }         
 
             # Delete SOTI MobiController Log files
             if (Test-Path "C:\Program Files (x86)\SOTI\MobiControl") {
-                $ResultText.text = "`r`n" + "  Deleting SOTI MobiController Log files..." 
+                $ResultText.text = "Deleting SOTI MobiController Log files..." 
                 $SotiLogFiles = Get-ChildItem -Path "C:\Program Files (x86)\SOTI\MobiControl" | Where-Object { ($_.name -like "*Device*.log" -or $_.name -like "*Server*.log" ) }
                 foreach ($File in $SotiLogFiles) {
                     Remove-Item -Path "C:\Program Files (x86)\SOTI\MobiControl\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
                 }
-                $ResultText.text = "`r`n" + "  SOTI MobiController log files removed..." 
+                $ResultText.text = "SOTI MobiController log files removed..." 
             }
 
             # Delete old Cylance Log files
             if (Test-Path "C:\Program Files\Cylance\Desktop") {
-                $ResultText.text = "`r`n" + "  Deleting Cylance Log files..." 
+                $ResultText.text = "Deleting Cylance Log files..." 
                 $OldCylanceLogFiles = Get-ChildItem -Path "C:\Program Files\Cylance\Desktop" | Where-Object name -Like "cylog-*.log"
                 foreach ($File in $OldCylanceLogFiles) {
                     Remove-Item -Path "C:\Program Files\Cylance\Desktop\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
                 }
-                $ResultText.text = "`r`n" + "  Cylance log files deleted..." 
+                $ResultText.text = "Cylance log files deleted..." 
             }
 
             $getSize = "{0:N2} " -f ((@(
@@ -1322,17 +1324,17 @@ Function MakeForm {
                     ) | Measure-Object -Sum).Sum / 1GB)
 
             if ($getSize -gt 0.1) {
-                $ResultText.text = "`r`n" + "  Folders for System, User and Common Temp Files contain: ", ("{0:N2} GB" -f $getSize) 
+                $ResultText.text = "Folders for System, User and Common Temp Files contain: ", ("{0:N2} GB" -f $getSize) 
                 $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $getSize) , "Clear all System, User and Common Temp Files?" , 4)
             }
             else {
                 Start-Sleep -s 3
-                $ResultText.text = "`r`n" + "  No need to clean the System, User and Common Temp folders right now..." 
+                $ResultText.text = "No need to clean the System, User and Common Temp folders right now..." 
             }
 
             if ($CleanKnownTemp -eq 'Yes') {
                 # Clear Common Temp Folders
-                $ResultText.text = "`r`n" + "  Clearing Common Temp Folders..." 
+                $ResultText.text = "Clearing Common Temp Folders..." 
                 Foreach ($user in $Users) {
                     Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                     Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1343,7 +1345,7 @@ Function MakeForm {
                 }
 
                 # Clear Windows Temp Folder
-                $ResultText.text = "`r`n" + "  Clearing Windows Temp, Logs and Prefetch Folders..." 
+                $ResultText.text = "Clearing Windows Temp, Logs and Prefetch Folders..." 
                 Remove-Item -Path "$env:systemroot\SoftwareDistribution.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "$env:systemroot\System32\Catroot2.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "$env:systemdrive\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
@@ -1374,7 +1376,7 @@ Function MakeForm {
                     Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
                 }
 
-                $ResultText.text = "`r`n" + "  All System, User and Common Temp Files have been deleted successfully..." 
+                $ResultText.text = "All System, User and Common Temp Files have been deleted successfully..." 
             } 
 
             # Get the size of the Windows Updates folder (SoftwareDistribution)
@@ -1382,16 +1384,16 @@ Function MakeForm {
 
             # Ask the user if they would like to clean the Windows Update folder
             if ($WUfoldersize -gt 0.2) {
-                $ResultText.text = "`r`n" + "  The Software Distribution folder is", ("{0:N2} GB" -f $WUFoldersize) 
+                $ResultText.text = "The Software Distribution folder is", ("{0:N2} GB" -f $WUFoldersize) 
                 $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $WUFoldersize) , "Do you want clean the Software Distribution folder?" , 4)
             }
             else {
                 Start-Sleep -s 3
-                $ResultText.text = "`r`n" + "  There is no need for cleaning Software Distribution folder right now..." 
+                $ResultText.text = "There is no need for cleaning Software Distribution folder right now..." 
             }
 
             if ($CleanWU -eq 'Yes') { 
-                $ResultText.text = "`r`n" + "  Restarting Windows Update Service and Deleting SoftwareDistribution Folder"
+                $ResultText.text = "Restarting Windows Update Service and Deleting SoftwareDistribution Folder"
                 # Stop the Windows Update service
                 try {
                     Stop-Service -Name wuauserv
@@ -1412,20 +1414,20 @@ Function MakeForm {
                     $ErrorMessage = $_.Exception.Message
                     Write-Warning "$ErrorMessage" 
                 }
-                $ResultText.text = "`r`n" + "  SoftwareDistribution folder removed, reinitiate Windows Update to reaquire updates..." 
+                $ResultText.text = "SoftwareDistribution folder removed, reinitiate Windows Update to reaquire updates..." 
             }
 
             $binfoldersize = (Get-ChildItem "C:\`$Recycle.Bin" -Recurse | Measure-Object Length -s).sum / 1Gb
             if ($binfoldersize -gt 0.2) {
-                $ResultText.text = "`r`n" + "  The Recycling Bing is", ("{0:N2} GB" -f $binfoldersize) 
+                $ResultText.text = "The Recycling Bing is", ("{0:N2} GB" -f $binfoldersize) 
                 $CleanBin = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $binfoldersize) , "Would you like to empty the Recycle Bin for All Users?" , 4)
             }
             else {
-                $ResultText.text = "`r`n" + "  There is no need for cleaning the Recycling Bin right now..." 
+                $ResultText.text = "There is no need for cleaning the Recycling Bin right now..." 
             }
 
             if ($Cleanbin -eq 'Yes') {
-                $ResultText.text = "`r`n" + "  Cleaning Recycle Bin..." 
+                $ResultText.text = "Cleaning Recycle Bin..." 
                 $ErrorActionPreference = 'SilentlyContinue'
                 $RecycleBin = "C:\`$Recycle.Bin"
                 $BinFolders = Get-ChildItem $RecycleBin -Directory -Force
@@ -1435,12 +1437,12 @@ Function MakeForm {
                     $objSID = New-Object System.Security.Principal.SecurityIdentifier ($folder)
                     try {
                         $objUser = $objSID.Translate( [System.Security.Principal.NTAccount])
-                        $ResultText.text = "`r`n" + "  Cleaning $objUser Recycle Bin..." 
+                        $ResultText.text = "Cleaning $objUser Recycle Bin..." 
                     }
                     # If SID cannot be Translated, Throw out the SID instead of error
                     catch {
                         $objUser = $objSID.Value
-                        $ResultText.text = "`r`n" + "  $objUser"
+                        $ResultText.text = "$objUser"
                     }
                     $Files = @()
 
@@ -1461,7 +1463,7 @@ Function MakeForm {
                     }
                     Write-Progress -Activity "Recycle Bin Clean-up" -Status "Complete" -Completed -Id 1
                 }
-                $ResultText.text = "`r`n" + "  Recycle Bin has been emptied..." 
+                $ResultText.text = "Recycle Bin has been emptied..." 
             }
 
             $SuperCleanOffload = [System.Windows.Forms.MessageBox]::Show('This may take over an hour to complete, are you sure you want to continue?', "Launch Superdeep Cleaner?" , 4)
@@ -1482,14 +1484,14 @@ Function MakeForm {
        
                 Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
 
-                $ResultText.text = "`r`n" + "  Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
+                $ResultText.text = "Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
             }
-            $ResultText.text = "`r`n" + "  Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n  Ready for Next Task!" 
+            $ResultText.text = "Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n  Ready for Next Task!" 
             $Form.text = "WinTool by Alerion"
         })
 
     $forcenorkeyboard.Add_Click({
-            $ResultText.text = "`r`n" + "  Removing secondary en-US keyboard settings nb-NO to default."
+            $ResultText.text = "Removing secondary en-US keyboard settings nb-NO to default."
 
             Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
 
@@ -1503,13 +1505,13 @@ Function MakeForm {
             $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
             Set-WinUserLanguageList $2 -Force
 
-            $ResultText.text = "`r`n" + "  Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
+            $ResultText.text = "Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
         })
 
     $essentialtweaks.Add_Click({
             $Form.text = "WinTool by Alerion - Initializing Essential Tweaks..."
-            $ResultText.text = "`r`n" + "  Activating Essential Tweaks... Please Wait"
-            $ResultText.text = "`r`n" + "  Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.."
+            $ResultText.text = "Activating Essential Tweaks... Please Wait"
+            $ResultText.text = "Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.."
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
@@ -3369,7 +3371,7 @@ Function MakeForm {
                 }
 
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $wingetup"
-                $ResultText.text = "`r`n" + "`r`n" + "  Updating all applications already installed, please wait..."
+                $ResultText.text = "  Updating all applications already installed, please wait..."
             }
         })
 
@@ -3380,131 +3382,131 @@ Function MakeForm {
     $okbutton.Add_Click({
             if ($bravebrowser.Checked) {
                 if ($bravepath) {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Brave Browser Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Brave Browser Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Brave.Brave --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Brave Browser Installed - Ready for Next Task"
+                    $ResultText.text = "  Brave Browser Installed - Ready for Next Task"
                 }
             }
     
             if ($dropbox.Checked) {
                 if ($dropboxpath) {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Dropbox Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Dropbox Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Dropbox.Dropbox --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Dropbox Installed - Ready for Next Task"
+                    $ResultText.text = "  Dropbox Installed - Ready for Next Task"
                 }
             }
     
             if ($7zip.Checked) {
                 if ($7zippath) {
-                    $ResultText.text = "`r`n" + "`r`n" + "  7-Zip Already Installed - Ready for Next Task"
+                    $ResultText.text = "  7-Zip Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=7zip.7zip --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  7-Zip Installed - Ready for Next Task"
+                    $ResultText.text = "  7-Zip Installed - Ready for Next Task"
                 }
             }
     
             if ($malwarebytes.Checked) {  
                 if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Malwarebytes Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Malwarebytes Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Malwarebytes Installed - Ready for Next Task"
+                    $ResultText.text = "  Malwarebytes Installed - Ready for Next Task"
                 }
             }
     
             if ($steam.Checked) {
                 if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Steam Client Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Steam Client Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Valve.Steam --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Steam Client Installed - Ready for Next Task"
+                    $ResultText.text = "  Steam Client Installed - Ready for Next Task"
                 }
             }
     
             if ($discord.Checked) {
                 if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Discord Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Discord Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Discord.Discord --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Discord Installed - Ready for Next Task"
+                    $ResultText.text = "  Discord Installed - Ready for Next Task"
                 }
             }
     
             if ($teamviewer.Checked) {
                 if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Teamviewer Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Teamviewer Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Teamviewer Installed - Ready for Next Task"
+                    $ResultText.text = "  Teamviewer Installed - Ready for Next Task"
                 }
             }
     
             if ($epicgames.Checked) {
                 if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Epic Games Launcher Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Epic Games Launcher Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Epic Games Launcher Installed - Ready for Next Task"
+                    $ResultText.text = "  Epic Games Launcher Installed - Ready for Next Task"
                 }
             }
     
             if ($githubdesktop.Checked) {
                 if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Github Desktop Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Github Desktop Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=GitHub.GitHubDesktop --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Github Desktop Installed - Ready for Next Task"
+                    $ResultText.text = "  Github Desktop Installed - Ready for Next Task"
                 }
             }
     
             if ($visualstudiocode.Checked) {
                 if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Visual Studio Code Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Visual Studio Code Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Visual Studio Code Installed - Ready for Next Task"
+                    $ResultText.text = "  Visual Studio Code Installed - Ready for Next Task"
                 }
             }
     
             if ($qbittorrent.Checked) {
                 if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  qBittorrent Already Installed - Ready for Next Task"
+                    $ResultText.text = "  qBittorrent Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install -e --id=qBittorrent.qBittorrent --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  qBittorrent Installed - Ready for Next Task"
+                    $ResultText.text = "  qBittorrent Installed - Ready for Next Task"
                 }
             }
 
             if ($notepad.Checked) {
                 if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Notepad++ Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Notepad++ Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install --id=Notepad++.Notepad++ --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Notepad++ Installed - Ready for Next Task"
+                    $ResultText.text = "  Notepad++ Installed - Ready for Next Task"
                 }
             }
 
             if ($foxit.Checked) {
                 if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Foxit PDF Reader Already Installed - Ready for Next Task"
+                    $ResultText.text = "  Foxit PDF Reader Already Installed - Ready for Next Task"
                 }  
                 else {
                     winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
-                    $ResultText.text = "`r`n" + "`r`n" + "  Foxit PDF Reader Installed - Ready for Next Task"
+                    $ResultText.text = "  Foxit PDF Reader Installed - Ready for Next Task"
                 }
             }
 
@@ -3513,11 +3515,11 @@ Function MakeForm {
                 $path = [Environment]::GetFolderPath("Desktop")
 
                 if (Test-Path "$path\SpotifySetup.exe") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Spotify Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "  Spotify Already Downloaded - Ready for Next Task"
                 }  
                 else {
                     Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$path\SpotifySetup.exe"
-                    $ResultText.text = "`r`n" + "`r`n" + "  SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
+                    $ResultText.text = "  SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
                 }
             }
 
@@ -3526,11 +3528,11 @@ Function MakeForm {
                 $path = [Environment]::GetFolderPath("MyDocuments")
 
                 if (Test-Path "$path\DS4Windows.7z") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  DS4Windows Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "  DS4Windows Already Downloaded - Ready for Next Task"
                 }  
                 else {
                     Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$path\DS4Windows.7z"
-                    $ResultText.text = "`r`n" + "`r`n" + "  DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
+                    $ResultText.text = "  DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
                 }
             }
 
@@ -3539,12 +3541,12 @@ Function MakeForm {
                 $path = [Environment]::GetFolderPath("MyDocuments")
         
                 if (Test-Path "$path\Bakkesmod.zip") {
-                    $ResultText.text = "`r`n" + "`r`n" + "  Bakkesmod Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "  Bakkesmod Already Downloaded - Ready for Next Task"
                 }  
                 else {
                     Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$path\Bakkesmod.zip"
 
-                    $ResultText.text = "`r`n" + "`r`n" + "  Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
+                    $ResultText.text = "  Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
                 }
             }
         })
