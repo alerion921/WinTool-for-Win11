@@ -73,10 +73,6 @@ Function MakeForm {
     $Form.MinimizeBox = $false;
     $Form.MaximizeBox = $false;
 
-    #$FORM TITLE OR LOGO
-    #$FORM LOGO
-    #$LAST UPDATE DATE
-
     $xButton = New-Object system.Windows.Forms.Button
     $xButton.text = "X"
     $xButton.width = 25
@@ -88,30 +84,54 @@ Function MakeForm {
     $xButton.FlatStyle = "Flat"
     $xbutton.BorderStyle = 0
     $xButton.FlatAppearance.MouseOverBackColor = $hovercolor
+    $xButton.TabStop = $false
+
+    $supportWintool = New-Object system.Windows.Forms.Button
+    $supportWintool.text = "Support WinTool!"
+    $supportWintool.width = 200
+    $supportWintool.height = 25
+    $supportWintool.location = New-Object System.Drawing.Point(925, 10)
+    $supportWintool.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $supportWintool.BackColor = $frontcolor 
+    $supportWintool.ForeColor = $backcolor
+    $supportWintool.FlatStyle = "Flat"
+    $supportWintool.BorderStyle = 0
+    $supportWintool.FlatAppearance.MouseOverBackColor = $hovercolor
+    $supportWintool.TabStop = $false
 
     $createShortcutGit = New-Object system.Windows.Forms.Button
-    $createShortcutGit.text = "WinTool Github Shortcut"
+    $createShortcutGit.text = "Create Github Shortcut"
     $createShortcutGit.width = 200
     $createShortcutGit.height = 25
-    $createShortcutGit.location = New-Object System.Drawing.Point(925, 10)
+    $createShortcutGit.location = New-Object System.Drawing.Point(725, 10)
     $createShortcutGit.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
     $createShortcutGit.BackColor = $frontcolor 
     $createShortcutGit.ForeColor = $backcolor
     $createShortcutGit.FlatStyle = "Flat"
     $createShortcutGit.BorderStyle = 0
     $createShortcutGit.FlatAppearance.MouseOverBackColor = $hovercolor
+    $createShortcutGit.TabStop = $false
 
     $CreateShortcutTool = New-Object system.Windows.Forms.Button
-    $CreateShortcutTool.text = "WinTool Desktop Shortcut"
+    $CreateShortcutTool.text = "Create Desktop Shortcut"
     $CreateShortcutTool.width = 200
     $CreateShortcutTool.height = 25
-    $CreateShortcutTool.location = New-Object System.Drawing.Point(500, 10)
+    $CreateShortcutTool.location = New-Object System.Drawing.Point(525, 10)
     $CreateShortcutTool.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
     $CreateShortcutTool.BackColor = $frontcolor 
     $CreateShortcutTool.ForeColor = $backcolor
     $CreateShortcutTool.FlatStyle = "Flat"
     $CreateShortcutTool.BorderStyle = 0
     $CreateShortcutTool.FlatAppearance.MouseOverBackColor = $hovercolor
+    $CreateShortcutTool.TabStop = $false
+
+    $wintoollogo = New-Object System.Windows.Forms.Label
+    $wintoollogo.text = "WinTool by Alerion"
+    $wintoollogo.width = 600
+    $wintoollogo.height = 75
+    $wintoollogo.location = New-Object System.Drawing.Point(20, 20)
+    $wintoollogo.Font = New-Object System.Drawing.Font('Impact', 40)
+    $wintoollogo.ForeColor = $frontcolor 
 
     $Panel1 = New-Object system.Windows.Forms.Panel
     $Panel1.height = 440
@@ -267,14 +287,22 @@ Function MakeForm {
     $changedns.height = 30
     $changedns.autosize = $true
 
-    @('ChangeDNS', 'Google DNS', 'Cloudflare DNS', 'Level3 DNS', 'OpenDNS', 'Restore Default DNS') | ForEach-Object { [void] $changedns.Items.Add($_) }
+
+
+    @('          Change DNS Here', 
+      '               Google DNS', 
+      '            Cloudflare DNS', 
+      '               Level3 DNS', 
+      '                 OpenDNS', 
+      '         Restore Default DNS'
+      ) | ForEach-Object { [void] $changedns.Items.Add($_) }
 
     $changedns.SelectedIndex = 0   # Select the default value
     $changedns.location = New-Object System.Drawing.Point(0, 80)
     $changedns.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
     $changedns.BackColor = $frontcolor 
     $changedns.ForeColor = $backcolor
-    $changedns.BorderStyle = 0
+
     $changedns.ReadOnly = $true
     $changedns.SelectionLength = 0;
 
@@ -715,7 +743,7 @@ Function MakeForm {
     #######################################################################################################
 
     $Mischeader = New-Object system.Windows.Forms.Label
-    $Mischeader.text = "Misc"
+    $Mischeader.text = "System Information"
     $Mischeader.AutoSize = $false
     $Mischeader.width = 220
     $Mischeader.height = 35
@@ -725,7 +753,7 @@ Function MakeForm {
     $Mischeader.ForeColor = $frontcolor 
 
     $ClearRAMcache = New-Object system.Windows.Forms.Button
-    $ClearRAMcache.text = "Clear RAM Cache"
+    $ClearRAMcache.text = "RAM Cache Shortcut"
     $ClearRAMcache.width = 220
     $ClearRAMcache.height = 30
     $ClearRAMcache.location = New-Object System.Drawing.Point(0, 45)
@@ -736,7 +764,7 @@ Function MakeForm {
     $ClearRAMcache.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $SystemInfo = New-Object system.Windows.Forms.Button
-    $SystemInfo.text = "System Info"
+    $SystemInfo.text = "System"
     $SystemInfo.width = 220
     $SystemInfo.height = 30
     $SystemInfo.location = New-Object System.Drawing.Point(0, 80)
@@ -747,7 +775,7 @@ Function MakeForm {
     $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $HardwareInfo = New-Object system.Windows.Forms.Button
-    $HardwareInfo.text = "Hardware Info"
+    $HardwareInfo.text = "Hardware"
     $HardwareInfo.width = 220
     $HardwareInfo.height = 30
     $HardwareInfo.location = New-Object System.Drawing.Point(0, 115)
@@ -758,7 +786,7 @@ Function MakeForm {
     $HardwareInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $antivirusInfo = New-Object system.Windows.Forms.Button
-    $antivirusInfo.text = "Anti-Virus Information"
+    $antivirusInfo.text = "Anti-Virus"
     $antivirusInfo.width = 220
     $antivirusInfo.height = 30
     $antivirusInfo.location = New-Object System.Drawing.Point(0, 150)
@@ -852,6 +880,8 @@ Function MakeForm {
             $xButton,
             $createShortcutGit,
             $CreateShortcutTool,
+            $wintoollogo,
+            $supportWintool,
             $Panel1, 
             $Panel2, 
             $Panel3, 
@@ -3593,14 +3623,14 @@ Function MakeForm {
             $computerName = $env:computername
         
             $ResultText.text =
-                "Username: "        + $accountUsername + "`r`n" + 
-                "Computer Name: "   + $computerName + "`r`n" + 
-                "Domain: "          + $domainName + "`r`n" + 
-                "Local IP: "        + $localIP + "`r`n" +
-                "External IP: "     + $externalIP + "`r`n" +
-                "Windows Licence: " + $winLicence + "`r`n" + 
-                "OS: "              + $OSname + "`r`n" +  
-                "OS Build: "        + $OSver + "`r`n" +  
+                "Username: "        + $accountUsername + "`r`n `r`n" + 
+                "Computer Name: "   + $computerName + "`r`n `r`n" + 
+                "Domain: "          + $domainName + "`r`n `r`n" + 
+                "Local IP: "        + $localIP + "`r`n `r`n" +  #REMOVE VPN ADAPTERS HERE AND ONLY DISPLAY ETHERNET OR WIFI
+                "External IP: "     + $externalIP + "`r`n `r`n" + 
+                "Windows Licence: " + $winLicence + "`r`n `r`n" + 
+                "OS: "              + $OSname + "`r`n `r`n" + 
+                "OS Build: "        + $OSver + "`r`n `r`n" +   
                 "CPU Architecture: "+ $OSbit + "`r`n"
 
                 #LAST WINDOWS UPDATE DATE IF POSSIBLE
@@ -3620,7 +3650,6 @@ Function MakeForm {
             $GPU = Get-WmiObject -Class Win32_VideoController -Filter "AdapterCompatibility != 'DisplayLink'" #AdapterDACType = Internal can also be used but need to verify that this works with external GPUs too first
             $GPUname = $GPU.Name
             $GPUdescription = $GPU.VideoProcessor
-            $GPUvram = [Math]::Round($GPU.AdapterRAM / 1GB)
             $GPUrefreshrate = $GPU.CurrentRefreshRate
             
             $disk = Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'" |
@@ -3641,7 +3670,6 @@ Function MakeForm {
                 "CPU Cores: "               + $cores + "`r`n `r`n" +
                 "GPU Name: "                + $GPUname + "`r`n" + 
                 "GPU Description: "         + $GPUdescription + "`r`n" + 
-                "GPU VRAM: "                + $GPUvram + " GB `r`n" + 
                 "Refresh Rate: "            + $GPUrefreshrate + "`r`n `r`n" +
                 "Total RAM: "               + $TotMem + "`r`n `r`n" + 
                 "OS Disk Size: "            + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
@@ -3714,6 +3742,10 @@ Function MakeForm {
             $oUrlLink.IconLocation = "C:\Windows\heart.ico" # icon index 0
             $oUrlLink.TargetPath = "https://github.com/alerion921/WinTool-for-Win11"
             $oUrlLink.Save()
+        })
+
+        $supportWintool.Add_Click({
+            Start-Process 'https://paypal.me/KLuneborg'
         })
 
     $Form.ShowDialog() | Out-Null
