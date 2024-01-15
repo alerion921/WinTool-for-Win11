@@ -12,20 +12,20 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     Exit
 }
 
-#Color Palette for heart.ico
-##C40E61 - bright pink
-##FFE082 - yellow
-##F8BBD0 - light pink
-
+# Global Environment folder setup here #
+$pathDesktop        = [Environment]::GetFolderPath("Desktop")
+$pathDocuments      = [Environment]::GetFolderPath("MyDocuments")
+#$pathPictures       = [Environment]::GetFolderPath("MyPictures")
+#$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")
+#$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")
+#$pathWindows        = [Environment]::GetFolderPath("Windows")
+#$pathSystem         = [Environment]::GetFolderPath("System")
+####################################################################################
 Function MakeForm {
 
     #Sets the information inside "About this computer"
     #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
     #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
-
-    ##C40E61 - bright pink
-    ##FFE082 - yellow
-    ##F8BBD0 - light pink
 
     if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
         $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
@@ -3435,7 +3435,7 @@ Function MakeForm {
                     $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=Brave.Brave --exact --accept-source-agreements
+                    winget install --id=Brave.Brave --exact --accept-source-agreements
                     $ResultText.text = "Brave Browser Installed - Ready for Next Task"
                 }
             }
@@ -3445,7 +3445,7 @@ Function MakeForm {
                     $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=Dropbox.Dropbox --exact --accept-source-agreements
+                    winget install --id=Dropbox.Dropbox --exact --accept-source-agreements
                     $ResultText.text = "Dropbox Installed - Ready for Next Task"
                 }
             }
@@ -3455,7 +3455,7 @@ Function MakeForm {
                     $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=7zip.7zip --exact --accept-source-agreements
+                    winget install --id=7zip.7zip --exact --accept-source-agreements
                     $ResultText.text = "7-Zip Installed - Ready for Next Task"
                 }
             }
@@ -3465,7 +3465,7 @@ Function MakeForm {
                     $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
+                    winget install --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
                     $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
                 }
             }
@@ -3475,7 +3475,7 @@ Function MakeForm {
                     $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=Valve.Steam --exact --accept-source-agreements
+                    winget install --id=Valve.Steam --exact --accept-source-agreements
                     $ResultText.text = "Steam Client Installed - Ready for Next Task"
                 }
             }
@@ -3485,7 +3485,7 @@ Function MakeForm {
                     $ResultText.text = "Discord Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=Discord.Discord --exact --accept-source-agreements
+                    winget install --id=Discord.Discord --exact --accept-source-agreements
                     $ResultText.text = "Discord Installed - Ready for Next Task"
                 }
             }
@@ -3495,7 +3495,7 @@ Function MakeForm {
                     $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
+                    winget install --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
                     $ResultText.text = "Teamviewer Installed - Ready for Next Task"
                 }
             }
@@ -3505,7 +3505,7 @@ Function MakeForm {
                     $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
+                    winget install --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
                     $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
                 }
             }
@@ -3515,7 +3515,7 @@ Function MakeForm {
                     $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=GitHub.GitHubDesktop --exact --accept-source-agreements
+                    winget install --id=GitHub.GitHubDesktop --exact --accept-source-agreements
                     $ResultText.text = "Github Desktop Installed - Ready for Next Task"
                 }
             }
@@ -3525,7 +3525,7 @@ Function MakeForm {
                     $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
+                    winget install --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
                     $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
                 }
             }
@@ -3535,7 +3535,7 @@ Function MakeForm {
                     $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install -e --id=qBittorrent.qBittorrent --exact --accept-source-agreements
+                    winget install --id=qBittorrent.qBittorrent --exact --accept-source-agreements
                     $ResultText.text = "qBittorrent Installed - Ready for Next Task"
                 }
             }
@@ -3561,54 +3561,54 @@ Function MakeForm {
             }
 
             if ($spotify.Checked) {
-
-                $path = [Environment]::GetFolderPath("Desktop")
-
-                if (Test-Path "$path\SpotifySetup.exe") {
+                if (Test-Path "$pathDesktop\SpotifySetup.exe") {
                     $ResultText.text = "Spotify Already Downloaded - Ready for Next Task"
                 }  
                 else {
-                    Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$path\SpotifySetup.exe"
-                    $ResultText.text = "SpotifySetup.exe Downloaded to Desktop for easy installation (This is a temporary option) - Ready for Next Task"
+                    Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
+                    $ResultText.text = "SpotifySetup.exe Downloaded to $pathDesktop for easy installation - Ready for Next Task"
                 }
             }
 
             if ($ds4windows.Checked) {
 
-                $path = [Environment]::GetFolderPath("MyDocuments")
 
-                if (Test-Path "$path\DS4Windows.7z") {
+                if (Test-Path "$pathDocuments\DS4Windows.7z") {
                     $ResultText.text = "DS4Windows Already Downloaded - Ready for Next Task"
                 }  
                 else {
-                    Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$path\DS4Windows.7z"
-                    $ResultText.text = "DS4Windows downloaded, files can be found in your Documents folder - Ready for Next Task"
+                    Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
+                    $ResultText.text = "DS4Windows downloaded, files can be found in your $pathDocuments - Ready for Next Task"
                 }
             }
 
             if ($bakkes.Checked) {
-
-                $path = [Environment]::GetFolderPath("MyDocuments")
-        
-                if (Test-Path "$path\Bakkesmod.zip") {
+                if (Test-Path "$pathDocuments\Bakkesmod.zip") {
                     $ResultText.text = "Bakkesmod Already Downloaded - Ready for Next Task"
                 }  
                 else {
-                    Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$path\Bakkesmod.zip"
+                    Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$pathDocuments\Bakkesmod.zip"
 
-                    $ResultText.text = "Bakkesmod, files can be found in your Documents folder - Ready for Next Task"
+                    $ResultText.text = "Bakkesmod, files can be found in your $pathDocuments - Ready for Next Task"
                 }
             }
         })
 
         $ClearRAMcache.Add_Click({
-            $WshShell = New-Object -comObject WScript.Shell
-            $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\Clear RAM Cache.lnk")
-            $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
-            $Shortcut.TargetPath = "%windir%\system32\rundll32.exe"
-            $Shortcut.Arguments = "advapi32.dll,ProcessIdleTasks"
-            $Shortcut.WorkingDirectory = "C:\Windows\System32\"
-            $Shortcut.Save()
+            if (Test-Path $pathDesktop){ 
+                $WshShell = New-Object -comObject WScript.Shell
+                $Shortcut = $WshShell.CreateShortcut("$pathDesktop\Clear RAM Cache.lnk")
+                $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
+                $Shortcut.TargetPath = "%windir%\system32\rundll32.exe"
+                $Shortcut.Arguments = "advapi32.dll,ProcessIdleTasks"
+                $Shortcut.WorkingDirectory = "C:\Windows\System32\"
+                $Shortcut.Save()
+                
+                $ResultText.text = "Clear RAM Cache shortcut has been sucessfully created and can be found at: $Home\Desktop"
+            }
+            else {
+                $ResultText.text = "Failed to create Clear RAM Cache shortcut, please try again!"
+            }  
         })
 
         $SystemInfo.Add_Click({
@@ -3650,7 +3650,7 @@ Function MakeForm {
             $GPU = Get-WmiObject -Class Win32_VideoController -Filter "AdapterCompatibility != 'DisplayLink'" #AdapterDACType = Internal can also be used but need to verify that this works with external GPUs too first
             $GPUname = $GPU.Name
             $GPUdescription = $GPU.VideoProcessor
-            $GPUrefreshrate = $GPU.CurrentRefreshRate
+            #$GPUrefreshrate = $GPU.CurrentRefreshRate
             
             $disk = Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'" |
             Select-Object Size,FreeSpace
@@ -3670,7 +3670,7 @@ Function MakeForm {
                 "CPU Cores: "               + $cores + "`r`n `r`n" +
                 "GPU Name: "                + $GPUname + "`r`n" + 
                 "GPU Description: "         + $GPUdescription + "`r`n" + 
-                "Refresh Rate: "            + $GPUrefreshrate + "`r`n `r`n" +
+                #"Refresh Rate: "            + $GPUrefreshrate + "`r`n `r`n" +
                 "Total RAM: "               + $TotMem + "`r`n `r`n" + 
                 "OS Disk Size: "            + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
                 "OS Disk Free Space: "      + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n `r`n" +
@@ -3720,28 +3720,40 @@ Function MakeForm {
 
             $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
 
-            #Creates a shortcut for the script to be run easily from the Desktop
-            $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\WinTool.lnk")
-            $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
-            $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-            $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
-            $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
-            $Shortcut.Save()
+            if (Test-Path $pathDesktop){ 
+                $Shortcut = $WshShell.CreateShortcut("$pathDesktop\WinTool.lnk")
+                $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
+                $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+                $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
+                $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
+                $Shortcut.Save()
 
-            #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
-            $bytes = [System.IO.File]::ReadAllBytes("$Home\Desktop\WinTool.lnk")
-            $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
-            [System.IO.File]::WriteAllBytes("$Home\Desktop\WinTool.lnk", $bytes)
+                #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
+                $bytes = [System.IO.File]::ReadAllBytes("$pathDesktop\WinTool.lnk")
+                $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
+                [System.IO.File]::WriteAllBytes("$pathDesktop\WinTool.lnk", $bytes)
+
+                $ResultText.text = "WinTool shortcut has been created and can be found at: $pathDesktop"
+            }
+            else {
+                $ResultText.text = "Failed to create WinTool shortcut, please try again!"
+            }
         })
 
         $createShortcutGit.Add_Click({
-            $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
-            #Creates a shortcut directly to the github repo
-            $strDesktop = $WshShell.SpecialFolders("Desktop")
-            $oUrlLink = $WshShell.CreateShortcut($strDesktop+"\Alerion921's Github.URL")
-            $oUrlLink.IconLocation = "C:\Windows\heart.ico" # icon index 0
-            $oUrlLink.TargetPath = "https://github.com/alerion921/WinTool-for-Win11"
-            $oUrlLink.Save()
+            if (Test-Path $pathDesktop){ 
+                $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
+                #Creates a shortcut directly to the github repo
+                $oUrlLink = $WshShell.CreateShortcut("$pathDesktop\Alerion921's Github.URL")
+                $oUrlLink.IconLocation = "C:\Windows\heart.ico" # icon index 0
+                $oUrlLink.TargetPath = "https://github.com/alerion921/WinTool-for-Win11"
+                $oUrlLink.Save()
+
+                $ResultText.text = "Github - WinTool URL shortcut has been created and can be found at: $Home\Desktop\"
+            }
+            else {
+                $ResultText.text = "Failed to create Github - WinTool URL shortcut, please try again!"
+            }
         })
 
         $supportWintool.Add_Click({
