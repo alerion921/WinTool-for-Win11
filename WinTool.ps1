@@ -3432,7 +3432,7 @@ Function MakeForm {
     $okbutton.Add_Click({
     
         if (!Test-Path "C:\ProgramData\Chocolatey") {
-            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            Invoke-WebRequest -useb https://community.chocolatey.org/install.ps1 | Invoke-Expression
             $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
         else {
