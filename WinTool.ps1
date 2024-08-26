@@ -3431,6 +3431,7 @@ Function MakeForm {
 
     $okbutton.Add_Click({
         if (!Test-Path "C:\ProgramData\Chocolatey") {
+            Set-ExecutionPolicy AllSigned
             Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
             Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
             $ResultText.text = "Chocolatey was installed - Ready for Next Task"
