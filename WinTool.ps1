@@ -3431,7 +3431,7 @@ Function MakeForm {
 
     $okbutton.Add_Click({
         if (Test-Path "C:\ProgramData\Chocolatey") {
-            $ResultText.text = "Chocolatey is already installed - Proceeding..."
+            #$ResultText.text = "Chocolatey is already installed - Proceeding..."
 
             if ($bravebrowser.Checked) {
                 if ($bravepath) {
