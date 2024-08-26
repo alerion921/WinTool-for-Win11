@@ -3432,18 +3432,8 @@ Function MakeForm {
     $okbutton.Add_Click({
     
         if (!Test-Path "C:\ProgramData\Chocolatey") {
-            # Installing Chocolatey
-            $chocoinstall = {
-                $name = 'Chocolatey is installing - Please wait...'
-                $host.ui.RawUI.WindowTitle = $name
-                cmd /c iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
-            }
-
-            Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoinstall"
-           
-            if($chocoinstall) {
-                $ResultText.text = "Chocolatey was installed - Ready for Next Task"
-            }
+            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
         else {
             $ResultText.text = "Chocolatey is already installed - Proceeding..."
@@ -3562,9 +3552,12 @@ Function MakeForm {
                 if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
                     $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
                 }  
-                else {
+                elseif (!Test-Path "C:\Program Files\Notepad++\notepad++.exe"){
                     choco install notepadplusplus
                     $ResultText.text = "Notepad++ Installed - Ready for Next Task"
+                }
+                else {
+                    $ResultText.text = "Error upon installing, check your internet connection."
                 }
             }
 
