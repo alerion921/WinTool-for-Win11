@@ -3430,8 +3430,9 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iwr https://community.chocolatey.org/install.ps1 -UseBasicParsing | iex
+        Set-ExecutionPolicy AllSigned
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
         if (!Test-Path "C:\ProgramData\Chocolatey") {
             
            
