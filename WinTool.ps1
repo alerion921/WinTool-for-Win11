@@ -3456,7 +3456,7 @@ Function MakeForm {
                 $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Brave.Brave --exact --accept-source-agreements
+                choco install brave -y
                 $ResultText.text = "Brave Browser Installed - Ready for Next Task"
             }
         }
@@ -3466,7 +3466,7 @@ Function MakeForm {
                 $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Dropbox.Dropbox --exact --accept-source-agreements
+                choco install dropbox -y
                 $ResultText.text = "Dropbox Installed - Ready for Next Task"
             }
         }
@@ -3476,7 +3476,7 @@ Function MakeForm {
                 $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=7zip.7zip --exact --accept-source-agreements
+                choco install 7zip -y
                 $ResultText.text = "7-Zip Installed - Ready for Next Task"
             }
         }
@@ -3486,7 +3486,7 @@ Function MakeForm {
                 $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
+                choco install Malwarebytes -y
                 $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
             }
         }
@@ -3496,7 +3496,7 @@ Function MakeForm {
                 $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Valve.Steam --exact --accept-source-agreements
+                choco install steam -y
                 $ResultText.text = "Steam Client Installed - Ready for Next Task"
             }
         }
@@ -3506,7 +3506,7 @@ Function MakeForm {
                 $ResultText.text = "Discord Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Discord.Discord --exact --accept-source-agreements
+                choco install discord -y
                 $ResultText.text = "Discord Installed - Ready for Next Task"
             }
         }
@@ -3516,7 +3516,7 @@ Function MakeForm {
                 $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
+                choco install teamviewer -y
                 $ResultText.text = "Teamviewer Installed - Ready for Next Task"
             }
         }
@@ -3526,7 +3526,7 @@ Function MakeForm {
                 $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
+                choco install epicgameslauncher -y
                 $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
             }
         }
@@ -3536,7 +3536,7 @@ Function MakeForm {
                 $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=GitHub.GitHubDesktop --exact --accept-source-agreements
+                choco install github-desktop -y
                 $ResultText.text = "Github Desktop Installed - Ready for Next Task"
             }
         }
@@ -3546,7 +3546,7 @@ Function MakeForm {
                 $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
+                choco install vscode -y
                 $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
             }
         }
@@ -3556,7 +3556,7 @@ Function MakeForm {
                 $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=qBittorrent.qBittorrent --exact --accept-source-agreements
+                choco install qbittorrent -y
                 $ResultText.text = "qBittorrent Installed - Ready for Next Task"
             }
         }
@@ -3576,30 +3576,30 @@ Function MakeForm {
                 $ResultText.text = "Foxit PDF Reader Already Installed - Ready for Next Task"
             }  
             else {
-                winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
+                choco install foxitreader -y
                 $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
             }
         }
 
             if ($spotify.Checked) {
-                if (Test-Path "$pathDesktop\SpotifySetup.exe") {
-                    $ResultText.text = "Spotify Already Downloaded - Ready for Next Task"
+                if (Test-Path ~\AppData\Roaming\Spotify\Spotify.exe) {
+                    $ResultText.text = "Spotify Already Installed - Ready for Next Task"
                 }  
                 else {
-                    Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
-                    $ResultText.text = "SpotifySetup.exe Downloaded to $pathDesktop for easy installation - Ready for Next Task"
+                    choco install spotify -y
+                    #Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
+                    $ResultText.text = "Spotify Installed - Ready for Next Task"
                 }
             }
 
             if ($ds4windows.Checked) {
-
-
-                if (Test-Path "$pathDocuments\DS4Windows.7z") {
-                    $ResultText.text = "DS4Windows Already Downloaded - Ready for Next Task"
+                if (Test-Path "C:\ProgramData\chocolatey\bin") {
+                    $ResultText.text = "DS4Windows Already Installed - Ready for Next Task"
                 }  
                 else {
-                    Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
-                    $ResultText.text = "DS4Windows downloaded, files can be found in your $pathDocuments - Ready for Next Task"
+                    choco install ds4windows -y
+                    #Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
+                    $ResultText.text = "DS4Windows Installed - Ready for Next Task"
                 }
             }
 
