@@ -974,29 +974,29 @@ Function MakeForm {
             $ResultTextWrapper
         ))
 
-    # GUI Specs
-    $ResultText.text = "Checking Winget..."
-
-    # Check if winget is installed
-   # if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-        $ResultText.text = 
+    #Check if Chocolatey is installed
+    if (Test-Path C:\ProgramData\Chocolatey) {
+         $ResultText.text = 
         "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
         `r`n  List of things that are required in order for this to run smoothly:
-        --->  Winget Service
-        --->  Administrator Elevation
-        --->  Windows 10 or Windows 11
-        
-        Enjoy this free tool!
+        --->  Chocolatey App Automation - Installed and good to go!
+        --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
+        --->  Windows 10 or Windows 11, all builds are supported!
+                    
+          Enjoy this free tool!
         "
-    #}  
-    #else {
-        # Installing winget from the Microsoft Store
-     #   $ResultText.text = "Winget is installing please stand by until the GUI becomes responsive again..."
-       # Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-       # $nid = (Get-Process AppInstaller).Id
-       # Wait-Process -Id $nid
-       # $ResultText.text = "Winget Installed - Ready for Next Task"
-    #}
+    }  
+    else {
+        $ResultText.text = 
+       "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
+       `r`n  List of things that are required in order for this to run smoothly:
+       --->  Chocolatey App Automation - NEEDS TO BE FIXED
+       --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
+       --->  Windows 10 or Windows 11, all builds are supported!
+                   
+         Enjoy this free tool!
+       "
+   }  
 
 
     ##DNS CHANGER TEST HERE
@@ -3410,19 +3410,19 @@ Function MakeForm {
         })
 
     $updatebutton.Add_Click({
-           <# [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+           [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
-            $wingetup = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Update installed apps with Winget?" , 4)
-            if ($wingetup -eq 'Yes') {
-                $wingetup = {
-                    $name = 'Winget Update Process - Please wait...'
+            $chocoupdate = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Ready to update apps with Chocolatey?" , 4)
+            if ($chocoupdate -eq 'Yes') {
+                $chocoupdate = {
+                    $name = 'Chocolatey is updating your apps - Please wait...'
                     $host.ui.RawUI.WindowTitle = $name
-                    cmd /c winget upgrade
+                    cmd /c choco upgrade all -y
                 }
 
-                Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $wingetup"
+                Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoupdate"
                 $ResultText.text = "Updating all applications already installed, please wait..."
-            }#>
+            }
         })
 
     $bravepath = Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
@@ -3430,7 +3430,18 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-            <#if ($bravebrowser.Checked) {
+    
+        if (!Test-Path "C:\ProgramData\Chocolatey") { #Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe EXAMPLE
+            # Installing winget from the Microsoft Store
+            $ResultText.text = "Checking for Chocolatey..."
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
+        }
+        else {
+            $ResultText.text = "Chocolatey is already installed - Proceeding..."
+        }
+        
+            if ($bravebrowser.Checked) {
                 if ($bravepath) {
                     $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
                 }  
@@ -3545,7 +3556,7 @@ Function MakeForm {
                     $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
                 }  
                 else {
-                    winget install --id=Notepad++.Notepad++ --exact --accept-source-agreements
+                    choco install notepadplusplus
                     $ResultText.text = "Notepad++ Installed - Ready for Next Task"
                 }
             }
@@ -3558,7 +3569,7 @@ Function MakeForm {
                     winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
                     $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
                 }
-            }#>
+            }
 
             if ($spotify.Checked) {
                 if (Test-Path "$pathDesktop\SpotifySetup.exe") {
