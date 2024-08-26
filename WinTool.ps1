@@ -3433,9 +3433,17 @@ Function MakeForm {
     
         if (!Test-Path "C:\ProgramData\Chocolatey") {
             # Installing Chocolatey
-            $ResultText.text = "Checking for Chocolatey..."
-            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
+            $chocoinstall = {
+                $name = 'Chocolatey is installing - Please wait...'
+                $host.ui.RawUI.WindowTitle = $name
+                cmd /c iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+            }
+
+            Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoinstall"
+           
+            if($chocoinstall) {
+                $ResultText.text = "Chocolatey was installed - Ready for Next Task"
+            }
         }
         else {
             $ResultText.text = "Chocolatey is already installed - Proceeding..."
