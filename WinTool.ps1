@@ -3430,7 +3430,7 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-        if (Test-Path "C:\ProgramData\Chocolatey") {
+        if (Test-Path "$env:ProgramData\Chocolatey") {
             #$ResultText.text = "Chocolatey is already installed - Proceeding..."
 
             if ($bravebrowser.Checked) {
