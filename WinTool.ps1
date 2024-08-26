@@ -991,11 +991,11 @@ Function MakeForm {
     #}  
     #else {
         # Installing winget from the Microsoft Store
-        $ResultText.text = "Winget is installing please stand by until the GUI becomes responsive again..."
-        Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-        $nid = (Get-Process AppInstaller).Id
-        Wait-Process -Id $nid
-        $ResultText.text = "Winget Installed - Ready for Next Task"
+     #   $ResultText.text = "Winget is installing please stand by until the GUI becomes responsive again..."
+       # Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+       # $nid = (Get-Process AppInstaller).Id
+       # Wait-Process -Id $nid
+       # $ResultText.text = "Winget Installed - Ready for Next Task"
     #}
 
 
@@ -3410,7 +3410,7 @@ Function MakeForm {
         })
 
     $updatebutton.Add_Click({
-            [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+           <# [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
             $wingetup = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Update installed apps with Winget?" , 4)
             if ($wingetup -eq 'Yes') {
@@ -3422,7 +3422,7 @@ Function MakeForm {
 
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $wingetup"
                 $ResultText.text = "Updating all applications already installed, please wait..."
-            }
+            }#>
         })
 
     $bravepath = Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
@@ -3430,7 +3430,7 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-            if ($bravebrowser.Checked) {
+            <#if ($bravebrowser.Checked) {
                 if ($bravepath) {
                     $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
                 }  
@@ -3558,7 +3558,7 @@ Function MakeForm {
                     winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
                     $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
                 }
-            }
+            }#>
 
             if ($spotify.Checked) {
                 if (Test-Path "$pathDesktop\SpotifySetup.exe") {
