@@ -3447,8 +3447,7 @@ Function MakeForm {
         }
         else {
             $ResultText.text = "Chocolatey is already installed - Proceeding..."
-        }
-        
+
             if ($bravebrowser.Checked) {
                 if ($bravepath) {
                     $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
@@ -3578,6 +3577,7 @@ Function MakeForm {
                     $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
                 }
             }
+        }
 
             if ($spotify.Checked) {
                 if (Test-Path "$pathDesktop\SpotifySetup.exe") {
