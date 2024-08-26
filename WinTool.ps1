@@ -975,11 +975,11 @@ Function MakeForm {
         ))
 
     #Check if Chocolatey is installed
-    if (Test-Path C:\ProgramData\Chocolatey) {
+    if (Test-Path "$env:ProgramData\Chocolatey") {
          $ResultText.text = 
         "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
         `r`n  List of things that are required in order for this to run smoothly:
-        --->  Chocolatey App Automation - Installed and good to go!
+        --->  Chocolatey App Automation - Already installed!
         --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
         --->  Windows 10 or Windows 11, all builds are supported!
                     
@@ -990,14 +990,21 @@ Function MakeForm {
         $ResultText.text = 
        "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
        `r`n  List of things that are required in order for this to run smoothly:
-       --->  Chocolatey App Automation - NEEDS TO BE FIXED
+       --->  Chocolatey App Automation - Will install automaticly upon choosing an app to install!
        --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
        --->  Windows 10 or Windows 11, all builds are supported!
                    
          Enjoy this free tool!
        "
-   }  
-
+       $chocoinstall = {
+        $name = 'Chocolatey is installing - Please wait...'
+        $host.ui.RawUI.WindowTitle = $name
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
+     }
+     
+     Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
+     
+    }  
 
     ##DNS CHANGER TEST HERE
     $changedns.add_SelectedIndexChanged({
@@ -1617,7 +1624,7 @@ Function MakeForm {
             powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
             $ResultText.text = " Enabled & Activated Highest Performance Power Plan."
 
-            $ResultText.text += " Enabling Windows 10 context menu..."
+            $ResultText.text += " Enabling Windows 10/Old context menu..."
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force
             Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
     
@@ -1672,6 +1679,13 @@ Function MakeForm {
 
             $ResultText.text += " Showing known file extensions..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
+
+            # Default Explorer view to This PC
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 1
+            
+            # Show hidden files, folders and system files that are hidden
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -type Dword -Value 1
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden" -type Dword -Value 1
 
             #Restart Explorer so that the taskbar can update and not look break :D
             Stop-Process -name explorer
@@ -1753,7 +1767,7 @@ Function MakeForm {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
 
             $ResultText.text = " Hide tray icons..."
-            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
+            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -ErrorAction SilentlyContinue
 
             $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu..."
 
@@ -1771,6 +1785,13 @@ Function MakeForm {
     
             # Recovers search to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
+
+            # Default Explorer view to This PC
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 0
+            
+            # Show hidden files, folders and system files that are hidden
+            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden"  -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden"  -ErrorAction SilentlyContinue
 
             #Restart Explorer so that the taskbar can update and not look break :D
             Stop-Process -name explorer
@@ -3430,152 +3451,134 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-        if (Test-Path "$env:ProgramData\Chocolatey") {
-            #$ResultText.text = "Chocolatey is already installed - Proceeding..."
-
-            if ($bravebrowser.Checked) {
-                if ($bravepath) {
-                    $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Brave.Brave --exact --accept-source-agreements
-                    $ResultText.text = "Brave Browser Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($dropbox.Checked) {
-                if ($dropboxpath) {
-                    $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Dropbox.Dropbox --exact --accept-source-agreements
-                    $ResultText.text = "Dropbox Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($7zip.Checked) {
-                if ($7zippath) {
-                    $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=7zip.7zip --exact --accept-source-agreements
-                    $ResultText.text = "7-Zip Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($malwarebytes.Checked) {  
-                if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                    $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
-                    $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($steam.Checked) {
-                if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                    $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Valve.Steam --exact --accept-source-agreements
-                    $ResultText.text = "Steam Client Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($discord.Checked) {
-                if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                    $ResultText.text = "Discord Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Discord.Discord --exact --accept-source-agreements
-                    $ResultText.text = "Discord Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($teamviewer.Checked) {
-                if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                    $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
-                    $ResultText.text = "Teamviewer Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($epicgames.Checked) {
-                if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                    $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
-                    $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($githubdesktop.Checked) {
-                if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                    $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=GitHub.GitHubDesktop --exact --accept-source-agreements
-                    $ResultText.text = "Github Desktop Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($visualstudiocode.Checked) {
-                if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                    $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
-                    $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($qbittorrent.Checked) {
-                if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                    $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=qBittorrent.qBittorrent --exact --accept-source-agreements
-                    $ResultText.text = "qBittorrent Installed - Ready for Next Task"
-                }
-            }
-
-            if ($notepad.Checked) {
-                if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                    $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
-                }  
-                elseif (!Test-Path "C:\Program Files\Notepad++\notepad++.exe"){
-                    choco install notepadplusplus
-                    $ResultText.text = "Notepad++ Installed - Ready for Next Task"
-                }
-                else {
-                    $ResultText.text = "Error upon installing, check your internet connection."
-                }
-            }
-
-            if ($foxit.Checked) {
-                if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
-                    $ResultText.text = "Foxit PDF Reader Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
-                    $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
-                }
+        if ($bravebrowser.Checked) {
+            if ($bravepath) {
+                $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Brave.Brave --exact --accept-source-agreements
+                $ResultText.text = "Brave Browser Installed - Ready for Next Task"
             }
         }
-        else {
-  
-            $chocoinstall = {
-                $name = 'Chocolatey is installing - Please wait...'
-                $host.ui.RawUI.WindowTitle = $name
-                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
-            }
-            Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
 
-            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
+        if ($dropbox.Checked) {
+            if ($dropboxpath) {
+                $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Dropbox.Dropbox --exact --accept-source-agreements
+                $ResultText.text = "Dropbox Installed - Ready for Next Task"
+            }
+        }
+
+        if ($7zip.Checked) {
+            if ($7zippath) {
+                $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=7zip.7zip --exact --accept-source-agreements
+                $ResultText.text = "7-Zip Installed - Ready for Next Task"
+            }
+        }
+
+        if ($malwarebytes.Checked) {  
+            if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
+                $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
+                $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
+            }
+        }
+
+        if ($steam.Checked) {
+            if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
+                $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Valve.Steam --exact --accept-source-agreements
+                $ResultText.text = "Steam Client Installed - Ready for Next Task"
+            }
+        }
+
+        if ($discord.Checked) {
+            if (Test-Path ~\AppData\Local\Discord\update.exe) {
+                $ResultText.text = "Discord Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Discord.Discord --exact --accept-source-agreements
+                $ResultText.text = "Discord Installed - Ready for Next Task"
+            }
+        }
+
+        if ($teamviewer.Checked) {
+            if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
+                $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
+                $ResultText.text = "Teamviewer Installed - Ready for Next Task"
+            }
+        }
+
+        if ($epicgames.Checked) {
+            if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
+                $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
+                $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
+            }
+        }
+
+        if ($githubdesktop.Checked) {
+            if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
+                $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=GitHub.GitHubDesktop --exact --accept-source-agreements
+                $ResultText.text = "Github Desktop Installed - Ready for Next Task"
+            }
+        }
+
+        if ($visualstudiocode.Checked) {
+            if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
+                $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
+                $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
+            }
+        }
+
+        if ($qbittorrent.Checked) {
+            if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
+                $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=qBittorrent.qBittorrent --exact --accept-source-agreements
+                $ResultText.text = "qBittorrent Installed - Ready for Next Task"
+            }
+        }
+
+        if ($notepad.Checked) {
+            if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
+                $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
+            }  
+            else {
+                choco install notepadplusplus -y
+                $ResultText.text = "Notepad++ Installed - Ready for Next Task"
+            }
+        }
+
+        if ($foxit.Checked) {
+            if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
+                $ResultText.text = "Foxit PDF Reader Already Installed - Ready for Next Task"
+            }  
+            else {
+                winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
+                $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
+            }
         }
 
             if ($spotify.Checked) {
