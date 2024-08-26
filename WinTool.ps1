@@ -3431,10 +3431,10 @@ Function MakeForm {
 
     $okbutton.Add_Click({
     
-        if (!Test-Path "C:\ProgramData\Chocolatey") { #Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe EXAMPLE
-            # Installing winget from the Microsoft Store
+        if (!Test-Path "C:\ProgramData\Chocolatey") {
+            # Installing Chocolatey
             $ResultText.text = "Checking for Chocolatey..."
-            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
             $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
         else {
