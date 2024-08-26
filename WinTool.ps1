@@ -3430,9 +3430,9 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-    
         if (!Test-Path "C:\ProgramData\Chocolatey") {
-            Invoke-WebRequest -useb https://community.chocolatey.org/install.ps1 | Invoke-Expression
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+            Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
             $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
         else {
