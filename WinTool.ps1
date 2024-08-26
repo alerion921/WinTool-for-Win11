@@ -3441,7 +3441,8 @@ Function MakeForm {
 
             $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
-        else {
+
+        if (Test-Path "C:\ProgramData\Chocolatey"){
             $ResultText.text = "Chocolatey is already installed - Proceeding..."
 
             if ($bravebrowser.Checked) {
