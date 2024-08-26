@@ -3430,19 +3430,7 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-        if (!Test-Path "C:\ProgramData\Chocolatey") {
-            
-            $chocoinstall = {
-                $name = 'Chocolatey is installing - Please wait...'
-                $host.ui.RawUI.WindowTitle = $name
-                iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
-            }
-            Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
-
-            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
-        }
-
-        if (Test-Path "C:\ProgramData\Chocolatey"){
+        if (Test-Path "C:\ProgramData\Chocolatey") {
             $ResultText.text = "Chocolatey is already installed - Proceeding..."
 
             if ($bravebrowser.Checked) {
@@ -3577,6 +3565,17 @@ Function MakeForm {
                     $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
                 }
             }
+        }
+        else {
+  
+            $chocoinstall = {
+                $name = 'Chocolatey is installing - Please wait...'
+                $host.ui.RawUI.WindowTitle = $name
+                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
+            }
+            Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
+
+            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
 
             if ($spotify.Checked) {
