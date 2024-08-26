@@ -3430,16 +3430,14 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
     $okbutton.Add_Click({
-        $chocoupdate = {
-            $name = 'Chocolatey is installing - Please wait...'
-            $host.ui.RawUI.WindowTitle = $name
-            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
-        }
-        Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoupdate"
-        
         if (!Test-Path "C:\ProgramData\Chocolatey") {
             
-           
+            $chocoinstall = {
+                $name = 'Chocolatey is installing - Please wait...'
+                $host.ui.RawUI.WindowTitle = $name
+                iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
+            }
+            Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
 
             $ResultText.text = "Chocolatey was installed - Ready for Next Task"
         }
