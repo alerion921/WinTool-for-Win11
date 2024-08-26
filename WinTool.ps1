@@ -675,7 +675,7 @@ Function MakeForm {
     $bakkes.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
 
     $updatebutton = New-Object system.Windows.Forms.Button
-    $updatebutton.text = "Update Installed Apps"
+    $updatebutton.text = "Update Apps"
     $updatebutton.width = 220
     $updatebutton.height = 30
     $updatebutton.location = New-Object System.Drawing.Point(0, 360)
@@ -686,7 +686,7 @@ Function MakeForm {
     $updatebutton.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $okbutton = New-Object system.Windows.Forms.Button
-    $okbutton.text = "Ok"
+    $okbutton.text = "Install"
     $okbutton.width = 105
     $okbutton.height = 30
     $okbutton.location = New-Object System.Drawing.Point(0, 395)
@@ -978,7 +978,7 @@ Function MakeForm {
     $ResultText.text = "Checking Winget..."
 
     # Check if winget is installed
-    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+   # if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
         $ResultText.text = 
         "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
         `r`n  List of things that are required in order for this to run smoothly:
@@ -988,15 +988,15 @@ Function MakeForm {
         
         Enjoy this free tool!
         "
-    }  
-    else {
+    #}  
+    #else {
         # Installing winget from the Microsoft Store
         $ResultText.text = "Winget is installing please stand by until the GUI becomes responsive again..."
         Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
         $nid = (Get-Process AppInstaller).Id
         Wait-Process -Id $nid
         $ResultText.text = "Winget Installed - Ready for Next Task"
-    }
+    #}
 
 
     ##DNS CHANGER TEST HERE
