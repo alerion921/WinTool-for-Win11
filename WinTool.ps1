@@ -796,16 +796,16 @@ Function MakeForm {
     $antivirusInfo.FlatStyle = "Flat"
     $antivirusInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $placeholder6 = New-Object system.Windows.Forms.Button
-    $placeholder6.text = "Placeholder"
-    $placeholder6.width = 220
-    $placeholder6.height = 30
-    $placeholder6.location = New-Object System.Drawing.Point(0, 185)
-    $placeholder6.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder6.BackColor = $frontcolor 
-    $placeholder6.ForeColor = $backcolor
-    $placeholder6.FlatStyle = "Flat"
-    $placeholder6.FlatAppearance.MouseOverBackColor = $hovercolor
+    $godmode = New-Object system.Windows.Forms.Button
+    $godmode.text = "Godmode Shortcut"
+    $godmode.width = 220
+    $godmode.height = 30
+    $godmode.location = New-Object System.Drawing.Point(0, 185)
+    $godmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $godmode.BackColor = $frontcolor 
+    $godmode.ForeColor = $backcolor
+    $godmode.FlatStyle = "Flat"
+    $godmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $placeholder7 = New-Object system.Windows.Forms.Label
     $placeholder7.text = "Placeholder Header"
@@ -960,7 +960,7 @@ Function MakeForm {
             $SystemInfo,
             $HardwareInfo,
             $antivirusInfo,
-            $placeholder6,
+            $godmode,
             $placeholder7,
             $placeholder8,
             $placeholder9,
@@ -981,7 +981,7 @@ Function MakeForm {
         `r`n  List of things that are required in order for this to run smoothly:
         --->  Chocolatey App Automation - Already installed!
         --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
-        --->  Windows 10 or Windows 11, all builds are supported!
+        --->  Windows 10 or Windows 11 - All builds are supported!
                     
           Enjoy this free tool!
         "
@@ -992,7 +992,7 @@ Function MakeForm {
        `r`n  List of things that are required in order for this to run smoothly:
        --->  Chocolatey App Automation - Will install automaticly upon choosing an app to install!
        --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
-       --->  Windows 10 or Windows 11, all builds are supported!
+       --->  Windows 10 or Windows 11 - All builds are supported!
                    
          Enjoy this free tool!
        "
@@ -1012,7 +1012,7 @@ Function MakeForm {
 
             switch ($selected) {
                 1 {
-                    $ResultText.text = "DNS set to Google on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Google on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "8.8.8.8"
                     $DNS2 = "8.8.4.4"
                     $dns = "$DNS1", "$DNS2"
@@ -1020,7 +1020,7 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 2 {
-                    $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "1.1.1.1"
                     $DNS2 = "1.0.0.1"
                     $dns = "$DNS1", "$DNS2"
@@ -1028,7 +1028,7 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 3 {
-                    $ResultText.text = "DNS set to Level3 on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Level3 on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "4.2.2.2"
                     $DNS2 = "4.2.2.1"
                     $dns = "$DNS1", "$DNS2"
@@ -1036,7 +1036,7 @@ Function MakeForm {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 4 {
-                    $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "208.67.222.222"
                     $DNS2 = "208.67.220.220"
                     $dns = "$DNS1", "$DNS2"
@@ -1051,7 +1051,7 @@ Function MakeForm {
                         $interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
                         $interface | Set-NetIPInterface -Dhcp Enabled
                         $interface | Set-DnsClientServerAddress -ResetServerAddresses
-                        $ResultText.text = "The Network Adapters has been reset properly. `r`n  Ready for Next Task!"
+                        $ResultText.text = "The Network Adapters has been reset properly. `r`n Ready for Next Task!"
                     }
                 }
                 default {
@@ -1089,7 +1089,7 @@ Function MakeForm {
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
             }
     
-            if ($?) { $ResultText.text = "System error scans has been initiated wait for it to complete then do a restart. `r`n  Ready for Next Task!" }
+            if ($?) { $ResultText.text = "System error scans has been initiated wait for it to complete then do a restart. `r`n Ready for Next Task!" }
         })
 
 
@@ -1543,7 +1543,7 @@ Function MakeForm {
 
                 $ResultText.text = "Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
             }
-            $ResultText.text = "Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n  Ready for Next Task!" 
+            $ResultText.text = "Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n Ready for Next Task!" 
             $Form.text = "WinTool by Alerion"
         })
 
@@ -1566,13 +1566,13 @@ Function MakeForm {
         })
 
     $essentialtweaks.Add_Click({
-            $Form.text = "WinTool by Alerion - Initializing Essential Tweaks..."
-            $ResultText.text = "Activating Essential Tweaks... Please Wait"
-            $ResultText.text = "Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.."
+            $Form.text = "WinTool by Alerion - Initializing Essential Tweaks... `r`n" 
+            $ResultText.text = "Activating Essential Tweaks... Please Wait `r`n" 
+            $ResultText.text = "Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.. `r`n" 
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
-            $ResultText.text = " Adjusting visual effects for performance..."
+            $ResultText.text = " Adjusting visual effects for performance... `r`n" 
             Start-Sleep -s 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
@@ -1584,9 +1584,9 @@ Function MakeForm {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
-            $ResultText.text = " Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance."
+            $ResultText.text = " Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance. `r`n" 
 
-            $ResultText.text += " Disabling Cortana..."
+            $ResultText.text += " Disabling Cortana... `r`n" 
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Force | Out-Null
             }
@@ -1605,115 +1605,123 @@ Function MakeForm {
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
 
-            $ResultText.text += " Disabling Background application access..."
+            $ResultText.text += " Disabling Background application access... `r`n" 
             Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
                 Set-ItemProperty -Path $_.PsPath -Name "Disabled" -Type DWord -Value 1
                 Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Type DWord -Value 1
             }S
 
-            $ResultText.text += " Uninstalling Linux Subsystem..."
+            $ResultText.text += " Uninstalling Linux Subsystem... `r`n" 
             If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
             }
             Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-            $ResultText.text = " Enabling and Activating Highest Performance Power Plan..."
+            $ResultText.text = " Enabling and Activating Highest Performance Power Plan... `r`n" 
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
             powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
             powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-            $ResultText.text = " Enabled & Activated Highest Performance Power Plan."
+            $ResultText.text = " Enabled & Activated Highest Performance Power Plan. `r`n" 
 
-            $ResultText.text += " Enabling Windows 10/Old context menu..."
+            $ResultText.text += " Enabling Windows 10/Old context menu... `r`n" 
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force
             Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
     
-            $ResultText.text += " Removing recently added apps from Start Menu..."
+            $ResultText.text += " Removing recently added apps from Start Menu... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
-            $ResultText.text += " Disabling UAC..."
+            $ResultText.text += " Disabling UAC... `r`n" 
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
 
-            $ResultText.text += " Disabling Sticky Keys..."
+            $ResultText.text += " Disabling Sticky Keys... `r`n" 
             Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
 
-            $ResultText.text += " Hiding Task View button..."
+            $ResultText.text += " Hiding Task View button... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
 
-            $ResultText.text += " Hiding People icon..."
+            $ResultText.text += " Hiding People icon... `r`n" 
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
 
-            $ResultText.text += " Show tray icons..."
+            $ResultText.text += " Show tray icons... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
 
-            $ResultText.text += " Disabling Widgets, Chat, Search and Setting Start Button to left side..."
+            $ResultText.text += " Disabling the Search box on taskbar... `r`n" 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
-            $ResultText.text += " Disable News and Interests"
+            $ResultText.text += " Disabled News and Interests... `r`n" 
             New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -Force
-
+            Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2s
+            
+            $ResultText.text += " Disabled Apps splitting on taskbar... `r`n" 
             #Removes Widgets/Split apps bs from taskbar
             Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 -Force
             New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 0
+            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu... `r`n" 
 
+            $ResultText.text += " Removed chat from taskbar... `r`n" 
             # Removes Chat from the Taskbar
             Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Type DWord -Value 0 -Force
             New-ItemProperty "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -Name "ChatIcon" -Type DWord -Value 3 -Force
 
+            $ResultText.text += " Remove pre-installed Teams... `r`n" 
             # Removes Teams installation aswell
             Get-AppxPackage MicrosoftTeams* | Remove-AppxPackage
 
+            $ResultText.text += " Adjusting taskbar alignment to sane settings... `r`n" 
             # Default StartMenu alignment 0=Left on win 10
             New-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Type DWord -Value 0 -Force
 
+            $ResultText.text += " Grouping svchost processes to free up system ram... `r`n" 
             # Group svchost.exe processes
             $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
 
-            # Remove "News and Interest" from taskbar
-            Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2s
-
             $ResultText.text += " Showing known file extensions..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
 
+            $ResultText.text += " Setting default explorer view to This PC... `r`n" 
             # Default Explorer view to This PC
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 1
             
+            $ResultText.text += " Show all hidden system files and folders available on the current installation... `r`n" 
             # Show hidden files, folders and system files that are hidden
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -type Dword -Value 1
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden" -type Dword -Value 1
 
+            $ResultText.text += " Explorer is restarting, screen flashes might occur... `r`n" 
             #Restart Explorer so that the taskbar can update and not look break :D
             Stop-Process -name explorer
             Start-Sleep -s 5
             Start-Process -name explorer
 
-            $ResultText.text = " Essential Tweaks Done. `r`n  Ready for Next Task!"
+            $ResultText.text = " Essential Tweaks Done. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $dualboottime.Add_Click({
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n  Ready for Next Task!"
+            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n Ready for Next Task!"
         })
 
     $essentialundo.Add_Click({
-            $Form.text = "WinTool by Alerion - Initializing Essentials Undo..."
-            $ResultText.text = " Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong..."
+            $Form.text = "WinTool by Alerion - Initializing Essentials Undo... `r`n" 
+            $ResultText.text = " Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong... `r`n" 
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-EssentialTweaksUndo-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
-            $ResultText.text += " Disabling Windows 10 context menu..."
+            $ResultText.text += " Disabling Windows 10 context menu... `r`n" 
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Force
 
-            $ResultText.text += " Enabling recently added apps from Start Menu..."
+            $ResultText.text += " Enabling recently added apps from Start Menu... `r`n" 
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 0
 
-            $ResultText.text += " Re-Installing Linux Subsystem..."
+            $ResultText.text += " Re-Installing Linux Subsystem... `r`n" 
             If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
                 # 1607 needs developer mode to be enabled
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 1
@@ -1721,7 +1729,7 @@ Function MakeForm {
             }
             Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-            $ResultText.text = " Enabling Cortana..."
+            $ResultText.text = " Re-Enabling Cortana... `r`n" 
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
@@ -1741,7 +1749,7 @@ Function MakeForm {
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")) { powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 }
             $ResultText.text = " Restored all power plans: Power Saver, Balanced, and Ultimate Performance."
 
-            $ResultText.text = " Adjusting visual effects for appearance..."
+            $ResultText.text = " Setting visual effects back to default values (Appearance)... `r`n" 
             Start-Sleep -s 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
@@ -1753,24 +1761,30 @@ Function MakeForm {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-            $ResultText.text = " Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss."
 
+            $ResultText.text += " Re-Enabling Task View button... `r`n" 
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 1
 
-            $ResultText.text = " Raising UAC level..."
+            $ResultText.text += " Re-Enabling People icon... `r`n" 
+            If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 1
+
+            $ResultText.text = " Restoring UAC level... `r`n" 
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
 
-            $ResultText.text += "`r`n" + "Enabling Sticky Keys..."
+            $ResultText.text = "Re-enabling Sticky Keys... `r`n" 
             Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 510
 
-            $ResultText.text = " Hiding known file extensions..."
+            $ResultText.text = " Hiding known file extensions... `r`n" 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
 
-            $ResultText.text = " Hide tray icons..."
+            $ResultText.text = " Hide tray icons... `r`n" 
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -ErrorAction SilentlyContinue
 
-            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu..."
-
+            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu... `r`n" 
             # Restores Widgets to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 1
@@ -1786,19 +1800,22 @@ Function MakeForm {
             # Recovers search to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
 
-            # Default Explorer view to This PC
+            $ResultText.text += " Explorer view reset back to Home menu... `r`n" 
+            # Default Explorer view to Home
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 0
             
+            $ResultText.text += " Hiding Windows system folders that were previously shown ... `r`n" 
             # Show hidden files, folders and system files that are hidden
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden"  -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden"  -ErrorAction SilentlyContinue
 
+            $ResultText.text += " Explorer is restarting, screen flashes might occur... `r`n" 
             #Restart Explorer so that the taskbar can update and not look break :D
             Stop-Process -name explorer
             Start-Sleep -s 5
             Start-Process -name explorer
 
-            $ResultText.text = " Essential Undo Completed. `r`n  Ready for Next Task!"
+            $ResultText.text = " Essential Undo Completed. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -2222,7 +2239,7 @@ Function MakeForm {
             CheckDMWService
             CheckInstallService
 
-            $ResultText.text = " Finished removing bloatware apps. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished removing bloatware apps. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -2296,7 +2313,7 @@ Function MakeForm {
                 New-Item $Objects64
             }
 
-            $ResultText.text = " Finished Reinstalling Bloatware Apps. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished Reinstalling Bloatware Apps. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -2314,7 +2331,7 @@ Function MakeForm {
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
             $ResultText.text = " Enabled driver offering through Windows Update"
             Start-Sleep -s 1
-            $ResultText.text = " Windows Update has been set to Default Settings. `r`n  Ready for Next Task!"
+            $ResultText.text = " Windows Update has been set to Default Settings. `r`n Ready for Next Task!"
         })
 
     $securitywindowsupdate.Add_Click({
@@ -2343,7 +2360,7 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
             $ResultText.text = " Disabled driver offering through Windows Update"
             Start-Sleep -s 1
-            $ResultText.text = " Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
+            $ResultText.text = " Windows Update has been set to Sane Settings. `r`n Ready for Next Task!"
         })
 
     $gamingtweaks.Add_Click({
@@ -2776,7 +2793,7 @@ Function MakeForm {
             $ResultText.text = " Disabling VBS..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
     
-            $ResultText.text = " Gaming Tweaks Applied. `r`n  Ready for Next Task!"
+            $ResultText.text = " Gaming Tweaks Applied. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -3162,7 +3179,7 @@ Function MakeForm {
                 $ResultText.text = " SMB Optimized and Hardening Activated..."
             }
 
-            $ResultText.text = " All known security exploits have been patched successfully & additional system hardening has been applied. `r`n  Ready for Next Task!"
+            $ResultText.text = " All known security exploits have been patched successfully & additional system hardening has been applied. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -3194,22 +3211,22 @@ Function MakeForm {
             }
             Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
             Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-            $ResultText.text = " Deleted and Disabled OneDrive. `r`n  Ready for Next Task!"
+            $ResultText.text = " Deleted and Disabled OneDrive. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $darkmode.Add_Click({
-            $ResultText.text = " Setting dark mode to active"
+            $ResultText.text = " System dark mode set to active!"
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value "0"
-            $ResultText.text = " Dark mode successfully activated. `r`n  Ready for Next Task!"
+            $ResultText.text = " Dark mode successfully activated. `r`n Ready for Next Task!"
         })
 
     $lightmode.Add_Click({
-            $ResultText.text = " Switching Back to Light Mode"
+            $ResultText.text = " System Light Mode set to active!"
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
-            $ResultText.text = " Enabled Light Mode. `r`n  Ready for Next Task!"
+            $ResultText.text = " Enabled Light Mode. `r`n Ready for Next Task!"
         })
 
     $InstallOneDrive.Add_Click({
@@ -3217,7 +3234,7 @@ Function MakeForm {
             $ResultText.text = " Installing Onedrive. Please Wait..."
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
             %systemroot%\SysWOW64\OneDriveSetup.exe
-            $ResultText.text = " Finished Reinstalling OneDrive. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished Reinstalling OneDrive. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -3229,7 +3246,7 @@ Function MakeForm {
                 $wsh = New-Object -ComObject WScript.Shell
                 $wsh.SendKeys('{NUMLOCK}')
             }
-            $ResultText.text = " Disable NumLock after startup. `r`n  Ready for Next Task!"
+            $ResultText.text = " Disable NumLock after startup. `r`n Ready for Next Task!"
         })
 
     $killedge.Add_Click({
@@ -3243,7 +3260,7 @@ Function MakeForm {
                 Remove-Item $_.FullName
             }
 
-            $ResultText.text = " Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n  Ready for Next Task!"
+            $ResultText.text = " Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -3291,7 +3308,7 @@ Function MakeForm {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
             nfsadmin client start
             nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-            $ResultText.text = " NFS is now setup for user based NFS mounts `r`n  Ready for Next Task!"
+            $ResultText.text = " NFS is now setup for user based NFS mounts `r`n Ready for Next Task!"
         })
 
     $resetnetwork.Add_Click({
@@ -3453,164 +3470,164 @@ Function MakeForm {
     $okbutton.Add_Click({
         if ($bravebrowser.Checked) {
             if ($bravepath) {
-                $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
+                $ResultText.text = "Brave Browser Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install brave -y
-                $ResultText.text = "Brave Browser Installed - Ready for Next Task"
+                $ResultText.text = "Brave Browser Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($dropbox.Checked) {
             if ($dropboxpath) {
-                $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
+                $ResultText.text = "Dropbox Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install dropbox -y
-                $ResultText.text = "Dropbox Installed - Ready for Next Task"
+                $ResultText.text = "Dropbox Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($7zip.Checked) {
             if ($7zippath) {
-                $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
+                $ResultText.text = "7-Zip Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install 7zip -y
-                $ResultText.text = "7-Zip Installed - Ready for Next Task"
+                $ResultText.text = "7-Zip Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($malwarebytes.Checked) {  
             if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
+                $ResultText.text = "Malwarebytes Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install Malwarebytes -y
-                $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
+                $ResultText.text = "Malwarebytes Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($steam.Checked) {
             if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
+                $ResultText.text = "Steam Client Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install steam -y
-                $ResultText.text = "Steam Client Installed - Ready for Next Task"
+                $ResultText.text = "Steam Client Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($discord.Checked) {
             if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                $ResultText.text = "Discord Already Installed - Ready for Next Task"
+                $ResultText.text = "Discord Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install discord -y
-                $ResultText.text = "Discord Installed - Ready for Next Task"
+                $ResultText.text = "Discord Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($teamviewer.Checked) {
             if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
+                $ResultText.text = "Teamviewer Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install teamviewer -y
-                $ResultText.text = "Teamviewer Installed - Ready for Next Task"
+                $ResultText.text = "Teamviewer Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($epicgames.Checked) {
             if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
+                $ResultText.text = "Epic Games Launcher Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install epicgameslauncher -y
-                $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
+                $ResultText.text = "Epic Games Launcher Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($githubdesktop.Checked) {
             if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
+                $ResultText.text = "Github Desktop Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install github-desktop -y
-                $ResultText.text = "Github Desktop Installed - Ready for Next Task"
+                $ResultText.text = "Github Desktop Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($visualstudiocode.Checked) {
             if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
+                $ResultText.text = "Visual Studio Code Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install vscode -y
-                $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
+                $ResultText.text = "Visual Studio Code Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($qbittorrent.Checked) {
             if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
+                $ResultText.text = "qBittorrent Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install qbittorrent -y
-                $ResultText.text = "qBittorrent Installed - Ready for Next Task"
+                $ResultText.text = "qBittorrent Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($notepad.Checked) {
             if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
+                $ResultText.text = "Notepad++ Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install notepadplusplus -y
-                $ResultText.text = "Notepad++ Installed - Ready for Next Task"
+                $ResultText.text = "Notepad++ Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($foxit.Checked) {
             if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
-                $ResultText.text = "Foxit PDF Reader Already Installed - Ready for Next Task"
+                $ResultText.text = "Foxit PDF Reader Already Installed. `r`n Ready for Next Task!"
             }  
             else {
                 choco install foxitreader -y
-                $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
+                $ResultText.text = "Foxit PDF Reader Installed. `r`n Ready for Next Task!"
             }
         }
 
             if ($spotify.Checked) {
                 if (Test-Path ~\AppData\Roaming\Spotify\Spotify.exe) {
-                    $ResultText.text = "Spotify Already Installed - Ready for Next Task"
+                    $ResultText.text = "Spotify Already Installed. `r`n Ready for Next Task!"
                 }  
                 else {
                     choco install spotify -y
                     #Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
-                    $ResultText.text = "Spotify Installed - Ready for Next Task"
+                    $ResultText.text = "Spotify Installed. `r`n Ready for Next Task!"
                 }
             }
 
             if ($ds4windows.Checked) {
                 if (Test-Path "C:\ProgramData\chocolatey\bin") {
-                    $ResultText.text = "DS4Windows Already Installed - Ready for Next Task"
+                    $ResultText.text = "DS4Windows Already Installed. `r`n Ready for Next Task!"
                 }  
                 else {
                     choco install ds4windows -y
                     #Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
-                    $ResultText.text = "DS4Windows Installed - Ready for Next Task"
+                    $ResultText.text = "DS4Windows Installed. `r`n Ready for Next Task!"
                 }
             }
 
             if ($bakkes.Checked) {
                 if (Test-Path "$pathDocuments\Bakkesmod.zip") {
-                    $ResultText.text = "Bakkesmod Already Downloaded - Ready for Next Task"
+                    $ResultText.text = "Bakkesmod Already Downloaded. `r`n Ready for Next Task!"
                 }  
                 else {
                     Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$pathDocuments\Bakkesmod.zip"
 
-                    $ResultText.text = "Bakkesmod, files can be found in your $pathDocuments - Ready for Next Task"
+                    $ResultText.text = "Bakkesmod, files can be found in your $pathDocuments. `r`n Ready for Next Task!"
                 }
             }
         })
@@ -3730,6 +3747,16 @@ Function MakeForm {
             
         }) 
 
+        $godmode.Add_Click({
+            If (!(Test-Path "$pathDesktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}")) { 
+                New-Item -Path "$pathDesktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}" -ItemType Directory | Out-Null
+                $ResultText.text = "Godmode shortcut has been sucessfully created and can be found at: $Home\Desktop"
+            }
+            else {
+                $ResultText.text = "Failed to create GodMode shortcut it might already exist, please try again!"
+            }
+        })
+
         $xButton.Add_Click({
             $form.Close()
         })
@@ -3741,7 +3768,7 @@ Function MakeForm {
 
             $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
 
-            if (Test-Path $pathDesktop){ 
+            if (!(Test-Path "$pathDesktop\WinTool.lnk")){ 
                 $Shortcut = $WshShell.CreateShortcut("$pathDesktop\WinTool.lnk")
                 $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
                 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
@@ -3757,12 +3784,12 @@ Function MakeForm {
                 $ResultText.text = "WinTool shortcut has been created and can be found at: $pathDesktop"
             }
             else {
-                $ResultText.text = "Failed to create WinTool shortcut, please try again!"
+                $ResultText.text = "Failed to create WinTool shortcut it might already exist, please try again!"
             }
         })
 
         $createShortcutGit.Add_Click({
-            if (Test-Path $pathDesktop){ 
+            if (!(Test-Path "$pathDesktop\Alerion921's Github.URL")) { 
                 $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
                 #Creates a shortcut directly to the github repo
                 $oUrlLink = $WshShell.CreateShortcut("$pathDesktop\Alerion921's Github.URL")
@@ -3773,7 +3800,7 @@ Function MakeForm {
                 $ResultText.text = "Github - WinTool URL shortcut has been created and can be found at: $Home\Desktop\"
             }
             else {
-                $ResultText.text = "Failed to create Github - WinTool URL shortcut, please try again!"
+                $ResultText.text = "Failed to create Github - WinTool URL shortcut it might already exist, please try again!"
             }
         })
 
