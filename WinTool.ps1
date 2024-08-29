@@ -3453,9 +3453,10 @@ Function MakeForm {
             $chocoupdate = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Ready to update apps with Chocolatey?" , 4)
             if ($chocoupdate -eq 'Yes') {
                 $chocoupdate = {
-                    $name = 'Chocolatey is updating your apps - Please wait...'
+                    $name = 'Chocolatey is updating all your apps that require an update - Please wait...'
                     $host.ui.RawUI.WindowTitle = $name
-                    cmd /c choco upgrade all -y
+                    
+                    cmd /c choco update all -y --force
                 }
 
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoupdate"
@@ -3467,13 +3468,13 @@ Function MakeForm {
     $dropboxpath = Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
-    $okbutton.Add_Click({
+   $okbutton.Add_Click({
         if ($bravebrowser.Checked) {
             if ($bravepath) {
                 $ResultText.text = "Brave Browser Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install brave -y
+                choco install brave -y --force
                 $ResultText.text = "Brave Browser Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3483,7 +3484,7 @@ Function MakeForm {
                 $ResultText.text = "Dropbox Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install dropbox -y
+                choco install dropbox -y --force
                 $ResultText.text = "Dropbox Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3493,7 +3494,7 @@ Function MakeForm {
                 $ResultText.text = "7-Zip Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install 7zip -y
+                choco install 7zip -y --force
                 $ResultText.text = "7-Zip Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3503,7 +3504,7 @@ Function MakeForm {
                 $ResultText.text = "Malwarebytes Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install Malwarebytes -y
+                choco install Malwarebytes -y --force
                 $ResultText.text = "Malwarebytes Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3513,7 +3514,7 @@ Function MakeForm {
                 $ResultText.text = "Steam Client Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install steam -y
+                choco install steam -y --force
                 $ResultText.text = "Steam Client Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3523,7 +3524,7 @@ Function MakeForm {
                 $ResultText.text = "Discord Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install discord -y
+                choco install discord -y --force
                 $ResultText.text = "Discord Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3533,7 +3534,7 @@ Function MakeForm {
                 $ResultText.text = "Teamviewer Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install teamviewer -y
+                choco install teamviewer -y --force
                 $ResultText.text = "Teamviewer Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3543,7 +3544,7 @@ Function MakeForm {
                 $ResultText.text = "Epic Games Launcher Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install epicgameslauncher -y
+                choco install epicgameslauncher -y --force
                 $ResultText.text = "Epic Games Launcher Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3553,7 +3554,7 @@ Function MakeForm {
                 $ResultText.text = "Github Desktop Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install github-desktop -y
+                choco install github-desktop -y --force
                 $ResultText.text = "Github Desktop Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3563,7 +3564,7 @@ Function MakeForm {
                 $ResultText.text = "Visual Studio Code Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install vscode -y
+                choco install vscode -y --force
                 $ResultText.text = "Visual Studio Code Installed. `r`n Ready for Next Task!"
             }
         }
@@ -3573,61 +3574,74 @@ Function MakeForm {
                 $ResultText.text = "qBittorrent Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install qbittorrent -y
+                choco install qbittorrent -y --force
                 $ResultText.text = "qBittorrent Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($notepad.Checked) {
             if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                $ResultText.text = "Notepad++ Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = "`r`n Notepad++ Already Installed. `r`n Ready for Next Task!"
+                
             }  
             else {
-                choco install notepadplusplus -y
-                $ResultText.text = "Notepad++ Installed. `r`n Ready for Next Task!"
+                install notepadplusplus -y --force
+                $ResultText.text = "`r`n Notepad++ Installed. `r`n Ready for Next Task!"
             }
         }
 
         if ($foxit.Checked) {
-            if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
-                $ResultText.text = "Foxit PDF Reader Already Installed. `r`n Ready for Next Task!"
+            if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader\FoxitPDFReader.exe") {
+                $ResultText.text = "`r`n Foxit PDF Reader Already Installed. `r`n Ready for Next Task!"
             }  
             else {
-                choco install foxitreader -y
-                $ResultText.text = "Foxit PDF Reader Installed. `r`n Ready for Next Task!"
+                choco install foxitreader -y --force
+                $ResultText.text = "`r`n Foxit PDF Reader Installed. `r`n Ready for Next Task!"
             }
         }
 
             if ($spotify.Checked) {
-                if (Test-Path ~\AppData\Roaming\Spotify\Spotify.exe) {
-                    $ResultText.text = "Spotify Already Installed. `r`n Ready for Next Task!"
+                if (Test-Path "~\AppData\Roaming\Spotify\Spotify.exe") {
+                    $ResultText.text = "`r`n Spotify Already Installed. `r`n Ready for Next Task!"
                 }  
                 else {
-                    choco install spotify -y
+                    choco install spotify -y --force
                     #Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
-                    $ResultText.text = "Spotify Installed. `r`n Ready for Next Task!"
+                    $ResultText.text = "`r`n Spotify Installed. `r`n Ready for Next Task!"
                 }
             }
 
             if ($ds4windows.Checked) {
-                if (Test-Path "C:\ProgramData\chocolatey\bin") {
+                if (Test-Path "C:\ProgramData\chocolatey\bin\DS4Windows.exe") {
                     $ResultText.text = "DS4Windows Already Installed. `r`n Ready for Next Task!"
                 }  
                 else {
-                    choco install ds4windows -y
+                    choco install ds4windows -y --force
                     #Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
                     $ResultText.text = "DS4Windows Installed. `r`n Ready for Next Task!"
                 }
             }
 
             if ($bakkes.Checked) {
+
                 if (Test-Path "$pathDocuments\Bakkesmod.zip") {
                     $ResultText.text = "Bakkesmod Already Downloaded. `r`n Ready for Next Task!"
                 }  
                 else {
+                    # Download bakkesmod from source destination
                     Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$pathDocuments\Bakkesmod.zip"
+                    
+                    # Install 7zip module
+                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+                    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+                    Install-Module -Name 7Zip4PowerShell -Force
 
-                    $ResultText.text = "Bakkesmod, files can be found in your $pathDocuments. `r`n Ready for Next Task!"
+                    # Extract file
+                    $sourcefile = "$pathDocuments\Bakkesmod.zip"
+                    Expand-7Zip -ArchiveFileName $sourcefile -TargetPath "~\AppData\Roaming\"
+
+                    $ResultText.text = "Bakkesmod has been downloaded and extracted, files can be found in your $pathDocuments. `r`n Ready for Next Task!"
                 }
             }
         })
