@@ -996,14 +996,6 @@ Function MakeForm {
                    
          Enjoy this free tool!
        "
-       $chocoinstall = {
-        $name = 'Chocolatey is installing - Please wait...'
-        $host.ui.RawUI.WindowTitle = $name
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
-     }
-     
-     Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
-     
     }  
 
     ##DNS CHANGER TEST HERE
@@ -3445,6 +3437,27 @@ Function MakeForm {
             $spotify.Checked = $false
             $ds4windows.Checked = $false
             $bakkes.Checked = $false
+
+            [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+            $forcereinstallchoco = [System.Windows.Forms.MessageBox]::Show('Do you also want to force a re-install of Chocolatey?' , "Ready to re-install Chocolatey?" , 4)
+            if ($forcereinstallchoco -eq 'Yes') {
+                # Resets/Removed chocolatey in case of failure.
+                Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
+                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+                
+                if (choco list --lo -r -e chocolatey-core.extension) {
+                    $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
+                }
+                else {
+                    choco install chocolatey-core.extension -y -force
+                    $ResultText.text = " Chocolatey Core Extension was installed. `r`n Ready for next task!"
+                }    
+                
+                $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
+            }
         })
 
     $updatebutton.Add_Click({
@@ -3456,11 +3469,11 @@ Function MakeForm {
                     $name = 'Chocolatey is updating all your apps that require an update - Please wait...'
                     $host.ui.RawUI.WindowTitle = $name
                     
-                    cmd /c choco update all -y --force
+                    choco update all -y --force
                 }
 
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoupdate"
-                $ResultText.text = "Updating all applications already installed, please wait..."
+                $ResultText.text = " Updating all installed applications `r`n Stay tuned until UI is responsive again!"
             }
         })
 
@@ -3469,163 +3482,285 @@ Function MakeForm {
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
    $okbutton.Add_Click({
+
+    if(!(Test-Path "C:\ProgramData\chocolatey")) {
+        $ResultText.text = " Chocolatey is installing! `r`n Stay tuned until UI is responsive again!"
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        
+        if (choco list --lo -r -e chocolatey-core.extension) {
+            $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
+            Write-Host " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
+        }
+        else {
+            choco install chocolatey-core.extension -y -force
+            Write-Host " Chocolatey Core Extension was installed. `r`n Ready for next task!"
+            $ResultText.text = " Chocolatey Core Extension was installed. `r`n Ready for next task!"
+        }
+
+        $ResultText.text = " Chocolatey was installed! `r`n Ready for next task!"
+    }
+    elseif(Test-Path "C:\ProgramData\chocolatey\choco.exe") {
+        $ResultText.text = " Making sure Chocolatey is up to date! `r`n Stay tuned until UI is responsive again!"
+        choco upgrade chocolatey
+        $ResultText.text = " Chocolatey updated sucessfully! `r`n Ready for next task!"
+    }
+    elseif((Test-Path "C:\ProgramData\chocolatey\lib") -and (!(Test-Path "C:\ProgramData\chocolatey\choco.exe"))) {
+        $ResultText.text = " Files missing, re-installing Chocolatey! `r`n Stay tuned until UI is responsive again!"
+
+         # Resets/Removed chocolatey in case of failure.
+         Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        choco install chocolatey-core.extension -y -force
+        $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
+    }
+
         if ($bravebrowser.Checked) {
             if ($bravepath) {
-                $ResultText.text = "Brave Browser Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Brave Browser was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install brave -y --force
-                $ResultText.text = "Brave Browser Installed. `r`n Ready for Next Task!"
+                
+                if (choco list --lo -r -e brave) {
+                    $ResultText.text = " Brave Browser has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Brave Browser failed to install. `r`n Ready for next task!"
+                }    
             }
         }
 
         if ($dropbox.Checked) {
             if ($dropboxpath) {
-                $ResultText.text = "Dropbox Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Dropbox was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install dropbox -y --force
-                $ResultText.text = "Dropbox Installed. `r`n Ready for Next Task!"
+
+                if (choco list --lo -r -e dropbox) {
+                    $ResultText.text = " Dropbox has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Dropbox failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($7zip.Checked) {
             if ($7zippath) {
-                $ResultText.text = "7-Zip Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " 7-Zip was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install 7zip -y --force
-                $ResultText.text = "7-Zip Installed. `r`n Ready for Next Task!"
+
+                if (choco list --lo -r -e 7zip) {
+                    $ResultText.text = " 7zip has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " 7zip failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($malwarebytes.Checked) {  
             if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                $ResultText.text = "Malwarebytes Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Malwarebytes was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install Malwarebytes -y --force
-                $ResultText.text = "Malwarebytes Installed. `r`n Ready for Next Task!"
+
+                if (choco list --lo -r -e Malwarebytes) {
+                    $ResultText.text = " Malwarebytes has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Malwarebytes failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($steam.Checked) {
             if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                $ResultText.text = "Steam Client Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Steam Client was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install steam -y --force
-                $ResultText.text = "Steam Client Installed. `r`n Ready for Next Task!"
+
+                if (choco list --lo -r -e steam) {
+                    $ResultText.text = " Steam has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Steam failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($discord.Checked) {
             if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                $ResultText.text = "Discord Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Discord was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install discord -y --force
-                $ResultText.text = "Discord Installed. `r`n Ready for Next Task!"
+
+                if (choco list --lo -r -e discord) {
+                    $ResultText.text = " Discord has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Discord failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($teamviewer.Checked) {
             if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                $ResultText.text = "Teamviewer Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Teamviewer was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install teamviewer -y --force
-                $ResultText.text = "Teamviewer Installed. `r`n Ready for Next Task!"
+
+                if (choco list --lo -r -e teamviewer) {
+                        $ResultText.text = " Teamviewer has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Teamviewer failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($epicgames.Checked) {
             if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                $ResultText.text = "Epic Games Launcher Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Epic Games Launcher was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install epicgameslauncher -y --force
-                $ResultText.text = "Epic Games Launcher Installed. `r`n Ready for Next Task!"
+                
+                if (choco list --lo -r -e epicgameslauncher) {
+                    $ResultText.text = " Epic Games Launcher has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Epic Games Launcher failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($githubdesktop.Checked) {
             if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                $ResultText.text = "Github Desktop Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Github Desktop was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install github-desktop -y --force
-                $ResultText.text = "Github Desktop Installed. `r`n Ready for Next Task!"
+                
+                if (choco list --lo -r -e github-desktop) {
+                    $ResultText.text = " Github Desktop has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Github Desktop failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($visualstudiocode.Checked) {
             if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                $ResultText.text = "Visual Studio Code Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Visual Studio Code was already Installed.  `r`n Ready for next task!"
             }  
             else {
                 choco install vscode -y --force
-                $ResultText.text = "Visual Studio Code Installed. `r`n Ready for Next Task!"
+                
+                if (choco list --lo -r -e vscode) {
+                    $ResultText.text = " Visual Studio Code has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Visual Studio Code failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($qbittorrent.Checked) {
             if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                $ResultText.text = "qBittorrent Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " qBittorrent was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install qbittorrent -y --force
-                $ResultText.text = "qBittorrent Installed. `r`n Ready for Next Task!"
+                
+                if (choco list --lo -r -e qbittorrent) {
+                    $ResultText.text = " qBittorrent has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " qBittorrent failed to install. `r`n Ready for next task!"
+                } 
             }
         }
 
         if ($notepad.Checked) {
             if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                $ResultText.text = "`r`n Notepad++ Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Notepad++ is was already Installed. `r`n Ready for next task!"
                 
-            }  
+            }
             else {
-                install notepadplusplus -y --force
-                $ResultText.text = "`r`n Notepad++ Installed. `r`n Ready for Next Task!"
+                choco install notepadplusplus -y --force
+
+                if (choco list --lo -r -e notepadplusplus) {
+                    $ResultText.text = " Notepad++ has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Notepad++ failed to install. `r`n Ready for next task!"
+                }    
             }
         }
 
         if ($foxit.Checked) {
             if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader\FoxitPDFReader.exe") {
-                $ResultText.text = "`r`n Foxit PDF Reader Already Installed. `r`n Ready for Next Task!"
+                $ResultText.text = " Foxit PDF Reader was already Installed. `r`n Ready for next task!"
             }  
             else {
                 choco install foxitreader -y --force
-                $ResultText.text = "`r`n Foxit PDF Reader Installed. `r`n Ready for Next Task!"
+                
+                if (choco list --lo -r -e foxitreader) {
+                    $ResultText.text = " Foxit PDF Reader has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Foxit PDF Reader failed to install. `r`n Ready for next task!"
+                }
             }
         }
 
             if ($spotify.Checked) {
                 if (Test-Path "~\AppData\Roaming\Spotify\Spotify.exe") {
-                    $ResultText.text = "`r`n Spotify Already Installed. `r`n Ready for Next Task!"
+                    $ResultText.text = " Spotify was already Installed. `r`n Ready for next task!"
                 }  
                 else {
                     choco install spotify -y --force
-                    #Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
-                    $ResultText.text = "`r`n Spotify Installed. `r`n Ready for Next Task!"
+
+                    if (choco list --lo -r -e spotify) {
+                        $ResultText.text = " Spotify has been installed. `r`n Ready for next task!"
+                    }
+                    else {
+                        $ResultText.text = " Spotify failed to install. `r`n Ready for next task!"
+                    }
                 }
             }
 
             if ($ds4windows.Checked) {
                 if (Test-Path "C:\ProgramData\chocolatey\bin\DS4Windows.exe") {
-                    $ResultText.text = "DS4Windows Already Installed. `r`n Ready for Next Task!"
+                    $ResultText.text = " DS4 Windows was already Installed. `r`n Ready for next task!"
                 }  
                 else {
                     choco install ds4windows -y --force
-                    #Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
-                    $ResultText.text = "DS4Windows Installed. `r`n Ready for Next Task!"
+                    
+                    if (choco list --lo -r -e ds4windows) {
+                        $ResultText.text = " DS4 Windows has been installed. `r`n Ready for next task!"
+                    }
+                    else {
+                        $ResultText.text = " DS4 Windows failed to install. `r`n Ready for next task!"
+                    }
                 }
             }
 
             if ($bakkes.Checked) {
 
                 if (Test-Path "$pathDocuments\Bakkesmod.zip") {
-                    $ResultText.text = "Bakkesmod Already Downloaded. `r`n Ready for Next Task!"
+                    $ResultText.text = " Bakkesmod Already Downloaded. `r`n Ready for next task!"
                 }  
                 else {
                     # Download bakkesmod from source destination
@@ -3641,7 +3776,7 @@ Function MakeForm {
                     $sourcefile = "$pathDocuments\Bakkesmod.zip"
                     Expand-7Zip -ArchiveFileName $sourcefile -TargetPath "~\AppData\Roaming\"
 
-                    $ResultText.text = "Bakkesmod has been downloaded and extracted, files can be found in your $pathDocuments. `r`n Ready for Next Task!"
+                    $ResultText.text = " Bakkesmod has been downloaded and extracted, files can be found in your $pathDocuments. `r`n Stay tuned until UI is responsive again!"
                 }
             }
         })
