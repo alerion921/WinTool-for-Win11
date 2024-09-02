@@ -763,19 +763,19 @@ Function MakeForm {
     $ClearRAMcache.FlatStyle = "Flat"
     $ClearRAMcache.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $SystemInfo = New-Object system.Windows.Forms.Button
-    $SystemInfo.text = "System"
-    $SystemInfo.width = 220
-    $SystemInfo.height = 30
-    $SystemInfo.location = New-Object System.Drawing.Point(0, 80)
-    $SystemInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $SystemInfo.BackColor = $frontcolor 
-    $SystemInfo.ForeColor = $backcolor
-    $SystemInfo.FlatStyle = "Flat"
-    $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
+    $godmode = New-Object system.Windows.Forms.Button
+    $godmode.text = "Godmode Shortcut"
+    $godmode.width = 220
+    $godmode.height = 30
+    $godmode.location = New-Object System.Drawing.Point(0, 80)
+    $godmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $godmode.BackColor = $frontcolor 
+    $godmode.ForeColor = $backcolor
+    $godmode.FlatStyle = "Flat"
+    $godmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $HardwareInfo = New-Object system.Windows.Forms.Button
-    $HardwareInfo.text = "Hardware"
+    $HardwareInfo.text = "Hardware Info"
     $HardwareInfo.width = 220
     $HardwareInfo.height = 30
     $HardwareInfo.location = New-Object System.Drawing.Point(0, 115)
@@ -786,7 +786,7 @@ Function MakeForm {
     $HardwareInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $antivirusInfo = New-Object system.Windows.Forms.Button
-    $antivirusInfo.text = "Anti-Virus"
+    $antivirusInfo.text = "Anti-Virus Status"
     $antivirusInfo.width = 220
     $antivirusInfo.height = 30
     $antivirusInfo.location = New-Object System.Drawing.Point(0, 150)
@@ -796,16 +796,17 @@ Function MakeForm {
     $antivirusInfo.FlatStyle = "Flat"
     $antivirusInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $godmode = New-Object system.Windows.Forms.Button
-    $godmode.text = "Godmode Shortcut"
-    $godmode.width = 220
-    $godmode.height = 30
-    $godmode.location = New-Object System.Drawing.Point(0, 185)
-    $godmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $godmode.BackColor = $frontcolor 
-    $godmode.ForeColor = $backcolor
-    $godmode.FlatStyle = "Flat"
-    $godmode.FlatAppearance.MouseOverBackColor = $hovercolor
+
+    $SystemInfo = New-Object system.Windows.Forms.Button
+    $SystemInfo.text = "System Info"
+    $SystemInfo.width = 220
+    $SystemInfo.height = 30
+    $SystemInfo.location = New-Object System.Drawing.Point(0, 185)
+    $SystemInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $SystemInfo.BackColor = $frontcolor 
+    $SystemInfo.ForeColor = $backcolor
+    $SystemInfo.FlatStyle = "Flat"
+    $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $placeholder7 = New-Object system.Windows.Forms.Label
     $placeholder7.text = "Placeholder Header"
@@ -891,7 +892,7 @@ Function MakeForm {
         ))
 
     $Panel1.controls.AddRange(@(
-            $performancetweaks, #header for the bellow selection
+            $performancetweaks, #header for the section below
             $essentialtweaks,
             $essentialundo,
             $gamingtweaks,
@@ -926,13 +927,13 @@ Function MakeForm {
             $microsoftstore,
             $cleaning,
             $ultimateclean,
-            $visualtweaks, #header for the bellow selection
+            $visualtweaks, #header for the section below
             $darkmode,
             $lightmode
         ))
 
     $Panel4.controls.AddRange(@(
-            $extras, #header for the bellow selection
+            $extras, #header for the section below
             $bravebrowser,
             $dropbox,
             $7zip,
@@ -3806,21 +3807,21 @@ Function MakeForm {
             $externalIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
             $winLicence = (Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
             $accountUsername = (Get-ChildItem Env:USERNAME).Value
-            $domainName = $env:USERDNSDOMAIN
+            $domainName = (Get-WmiObject win32_computersystem).Domain
             $computerName = $env:computername
+
+
         
             $ResultText.text =
                 "Username: "        + $accountUsername + "`r`n `r`n" + 
                 "Computer Name: "   + $computerName + "`r`n `r`n" + 
                 "Domain: "          + $domainName + "`r`n `r`n" + 
-                "Local IP: "        + $localIP + "`r`n `r`n" +  #REMOVE VPN ADAPTERS HERE AND ONLY DISPLAY ETHERNET OR WIFI
+                "Local IP: "        + $localIP + "`r`n `r`n" + 
                 "External IP: "     + $externalIP + "`r`n `r`n" + 
                 "Windows Licence: " + $winLicence + "`r`n `r`n" + 
                 "OS: "              + $OSname + "`r`n `r`n" + 
                 "OS Build: "        + $OSver + "`r`n `r`n" +   
                 "CPU Architecture: "+ $OSbit + "`r`n"
-
-                #LAST WINDOWS UPDATE DATE IF POSSIBLE
         })
 
         $HardwareInfo.Add_Click({
@@ -3868,31 +3869,38 @@ Function MakeForm {
         })
     
         $antivirusInfo.Add_Click({
-            $AntiVirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct
+            if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
+                $id = (Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Malwarebytes").id
 
-            foreach($AntiVirusProduct in $AntiVirusProducts){
-                switch ($AntiVirusProduct.productState) {
-                    "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
-                    "262160" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
-                    "266240" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
-                    "266256" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
-                    "393216" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
-                    "393232" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
-                    "393488" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
-                    "397312" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
-                    "397328" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
-                    "397584" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
-                default {$defstatus = "Unknown" ;$rtstatus = "Unknown"}
-                }
+                $ResultText.text = " Malwarebytes is installed and active so you should have the best protection there is!" + " `r`n " + "Application ID: $id"
             }
+            else {
+                $AntiVirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct
 
-                $ResultText.text =
-                "Name: "        + $AntiVirusProduct.displayName + "`r`n" + 
-                "Product GUID: "   + $AntiVirusProduct.instanceGuid + "`r`n" + 
-                "Product Executable: "          + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
-                "Reporting Exe: "        + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
-                "Definition Status: "     + $defstatus + "`r`n" +
-                "Real-time Protection Status: " + $rtstatus + "`r`n"
+                foreach($AntiVirusProduct in $AntiVirusProducts){
+                    switch ($AntiVirusProduct.productState) {
+                        "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                        "262160" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                        "266240" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
+                        "266256" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                        "393216" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                        "393232" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                        "393488" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                        "397312" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
+                        "397328" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                        "397584" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                    default {$defstatus = "Unknown" ;$rtstatus = "Unknown"}
+                    }
+                }
+
+                    $ResultText.text =
+                    "Name: "        + $AntiVirusProduct.displayName + "`r`n" + 
+                    "Product GUID: "   + $AntiVirusProduct.instanceGuid + "`r`n" + 
+                    "Product Executable: "          + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
+                    "Reporting Exe: "        + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
+                    "Definition Status: "     + $defstatus + "`r`n" +
+                    "Real-time Protection Status: " + $rtstatus + "`r`n"
+            }
             
         }) 
 
