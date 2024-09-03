@@ -222,7 +222,7 @@ Function MakeForm {
     $securitypatches.FlatStyle = "Flat"
     $securitypatches.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    if(Test-Path "$env:programdata\Microsoft OneDrive", "C:\Program Files (x86)\Microsoft OneDrive", "C:\Program Files\Microsoft OneDrive") {
+    if((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
         $onedrive = New-Object system.Windows.Forms.Button
         $onedrive.text = "Remove OneDrive"
         $onedrive.width = 220
@@ -3192,7 +3192,7 @@ Function MakeForm {
         })
 
     $onedrive.Add_Click({
-        if(Test-Path "$env:programdata\Microsoft OneDrive", "C:\Program Files (x86)\Microsoft OneDrive", "C:\Program Files\Microsoft OneDrive") {
+        if((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
                 $Form.text = "WinTool by Alerion - Removing OneDrive..."
                 $ResultText.text = " Onedrive is being uninstalled..."
                 $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe"
@@ -3201,29 +3201,18 @@ Function MakeForm {
                     $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(" ")
                     Start-Process -FilePath $OneDriveExe -ArgumentList "$OneDriveArgs /silent" -NoNewWindow -Wait
                 } 
-                else {
-                    
-                    "%programdata%\chocolatey\lib\onedrive\tools\chocolateyuninstall.ps1"
-                    if(Test-Path "C:\Program Files\Microsoft OneDrive", "C:\Program Files (x86)\Microsoft OneDrive") {
-                        taskkill.exe /F /IM "OneDrive.exe"
-                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Program Files\Microsoft OneDrive"
-                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Program Files (x86)\Microsoft OneDrive"
-        
-                        taskkill.exe /F /IM "explorer.exe"
-                        Start-Process "explorer.exe"
-                    }
-
-                }
 
                 # Check if OneDrive got Uninstalled
-                if (-not (Test-Path $regPath) -or (Test-Path "C:\Program Files\Microsoft OneDrive", "C:\Program Files (x86)\Microsoft OneDrive")) {
+                if (-not (Test-Path $regPath)) {
                     $Form.text = "WinTool by Alerion - Backing up user created files..."
-                    $ResultText.text = " User created files are being backed up and moved to the root of the user folder..." # Change this to the user desktop instead $env:USERPROFILE.TrimEnd()
-                    Start-Process -FilePath powershell -ArgumentList "robocopy '$($OneDrivePath)' '$("$env:USERPROFILE\Desktop")\' /mov /e /xj" -NoNewWindow -Wait
+                    $ResultText.text = " User created files are being backed up and moved to the root of the user folder..." # Change this to the user desktop instead 
+                    Start-Process -FilePath powershell -ArgumentList "robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\' /mov /e /xj" -NoNewWindow -Wait
             
                     taskkill.exe /F /IM "explorer.exe"
-                    
-                    cmd /c del C:\Program Files\Microsoft OneDrive
+                    taskkill.exe /F /IM "OneDrive.exe"
+                    taskkill.exe /F /IM "FileSynchHelper.exe"
+                    taskkill.exe /F /IM "FileCoAuth.exe"
+                    taskkill.exe /F /IM "GitHubDesktop.exe"
 
                     #Disable FileSynch to be able to delete the remaining files later
                     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1            
