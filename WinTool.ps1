@@ -3238,8 +3238,8 @@ Function MakeForm {
                     If (!(Test-Path "HKCR:")) {
                         New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
                     }
-                    Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-                    Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
+                    Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+                    Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
             
                     $Form.text = "WinTool by Alerion - Removing run hook for new users..."
                     $ResultText.text = " Removing run hook for new users..."
@@ -3250,6 +3250,7 @@ Function MakeForm {
                     $Form.text = "WinTool by Alerion - Removing startmenu entry..."
                     $ResultText.text = " Removing startmenu entry..."
                     Remove-Item -Force -ErrorAction SilentlyContinue "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+                    Remove-Item -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
             
                     $Form.text = "WinTool by Alerion - Removing scheduled task..."
                     $ResultText.text = " Removing scheduled task..."
