@@ -3245,8 +3245,11 @@ Function MakeForm {
             
                     $Form.text = "WinTool by Alerion - Remove Onedrive from explorer sidebar..."
                     $ResultText.text = " Remove Onedrive from explorer sidebar..."
-                    Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
-                    Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+                    If (!(Test-Path "HKCR:")) {
+                        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
+                    }
+                    Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
+                    Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
             
                     $Form.text = "WinTool by Alerion - Removing run hook for new users..."
                     $ResultText.text = " Removing run hook for new users..."
@@ -3296,14 +3299,13 @@ Function MakeForm {
                     $ResultText.text = " Something went Wrong during the Unistallation of OneDrive. `r`n Ready for Next Task!"
                 }
                 
-                $ResultText.text = " Deleted and Disabled OneDrive. `r`n Ready for Next Task!"
+                $ResultText.text = " Removed OneDrive completely. `r`n Ready for Next Task!"
             }
             else {
                 $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
-                $ResultText.text = " Installing Onedrive. Please Wait..."
                 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
-                choco install onedrive -y --force
-                $ResultText.text = " Finished Reinstalling OneDrive. `r`n Ready for Next Task!"
+                Start-Process "https://www.microsoft.com/en-us/microsoft-365/onedrive/download"
+                $ResultText.text = " Registry has been reverted back to normal and opening a link to download Microsoft OneDrive. `r`n Ready for Next Task!"
             }
         })
 
@@ -3314,7 +3316,7 @@ Function MakeForm {
             $ResultText.text = " Dark mode successfully activated. `r`n Ready for Next Task!"
         })
 
-    $lightmode.Add_Click({
+    $lightmode.Add_Click({ 
             $ResultText.text = " System Light Mode set to active!"
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
