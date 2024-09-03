@@ -274,7 +274,7 @@ Function MakeForm {
 
     if(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {    
         $removehomegallery = New-Object system.Windows.Forms.Button
-        $removehomegallery.text = "Remove Home & Gallery"
+        $removehomegallery.text = "Remove Home and Gallery"
         $removehomegallery.width = 220
         $removehomegallery.height = 30
         $removehomegallery.location = New-Object System.Drawing.Point(0, 395)
@@ -286,7 +286,7 @@ Function MakeForm {
     }
     else {    
         $removehomegallery = New-Object system.Windows.Forms.Button
-        $removehomegallery.text = "Restore Home & Gallery"
+        $removehomegallery.text = "Restore Home and Gallery"
         $removehomegallery.width = 220
         $removehomegallery.height = 30
         $removehomegallery.location = New-Object System.Drawing.Point(0, 395)
@@ -3348,10 +3348,16 @@ Function MakeForm {
         })
 
     $removehomegallery.Add_Click({
-            if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
+            if ((Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") -or (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}")) {
+                REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f
+                REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" /f
+                #I can possibly do this to remove the onedrive apperance aswell
+                $ResultText.text = " Home and Gallery Removed successfully! `r`n Ready for Next Task!"
             }
             else {
-
+                REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f /ve /t REG_SZ /d "{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}"
+                REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" /f /ve /t REG_SZ /d "CLSID_MSGraphHomeFolder"
+                $ResultText.text = " Home and Gallery Restored successfully! `r`n Ready for Next Task!"
             }
         })
 
