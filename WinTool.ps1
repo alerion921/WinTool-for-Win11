@@ -3193,6 +3193,8 @@ Function MakeForm {
 
     $onedrive.Add_Click({
         if((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
+            $confirmonedrive = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Ready to update apps with Chocolatey?" , 4)
+            if ($confirmonedrive -eq 'Yes') {
                 $Form.text = "WinTool by Alerion - Removing OneDrive..."
                 $ResultText.text = " Onedrive is being uninstalled..."
                 $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe"
@@ -3219,13 +3221,15 @@ Function MakeForm {
                     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1            
 
                     $Form.text = "WinTool by Alerion - Removing OneDrive leftovers..."
-                    $ResultText.text = " Removing OneDrive leftovers..."
+                    $ResultText.text = " Removing OneDrive leftovers & cached files..."
                     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:localappdata\Microsoft\OneDrive"
                     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:localappdata\OneDrive"
                     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft OneDrive"
                     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:systemdrive\OneDriveTemp"
                     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Program Files\Microsoft OneDrive"
                     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Program Files (x86)\Microsoft OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Users\Default\OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:userprofile\OneDrive"   
 
                     reg delete "HKEY_CURRENT_USER\Software\Microsoft\OneDrive" -f
                     # check if directory is empty before removing:
@@ -3286,6 +3290,7 @@ Function MakeForm {
             
                     $Form.text = "WinTool by Alerion - Onedrive has been successfully removed..."
                     Start-Sleep 5
+                }
                 } else {
                     $ResultText.text = " Something went Wrong during the Unistallation of OneDrive. `r`n Ready for Next Task!"
                 }
