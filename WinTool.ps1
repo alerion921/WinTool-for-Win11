@@ -3208,9 +3208,10 @@ Function MakeForm {
                     $ResultText.text = " User created files are being backed up and moved to the root of the user folder..." # Change this to the user desktop instead 
                     Start-Process -FilePath powershell -ArgumentList "robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\' /mov /e /xj" -NoNewWindow -Wait
             
+                    #Shutting down required processes to make sure all files are removed completely!
                     taskkill.exe /F /IM "explorer.exe"
                     taskkill.exe /F /IM "OneDrive.exe"
-                    taskkill.exe /F /IM "FileSynchHelper.exe"
+                    taskkill.exe /F /IM "FileSyncHelper.exe"
                     taskkill.exe /F /IM "FileCoAuth.exe"
                     taskkill.exe /F /IM "GitHubDesktop.exe"
 
