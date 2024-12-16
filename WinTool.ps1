@@ -30,19 +30,14 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 # Retrieves commonly used folder paths using [Environment]::GetFolderPath
 $pathDesktop        = [Environment]::GetFolderPath("Desktop")                # Path to the Desktop folder
 $pathDocuments      = [Environment]::GetFolderPath("MyDocuments")           # Path to the Documents folder
-$pathPictures       = [Environment]::GetFolderPath("MyPictures")            # Path to the Pictures folder
-$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
-$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
-$pathWindows        = [Environment]::GetFolderPath("Windows")               # Path to the Windows folder
-$pathSystem         = [Environment]::GetFolderPath("System")                # Path to the System folder (e.g., System32)
+#$pathPictures       = [Environment]::GetFolderPath("MyPictures")            # Path to the Pictures folder
+#$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
+#$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
+#$pathWindows        = [Environment]::GetFolderPath("Windows")               # Path to the Windows folder
+#$pathSystem         = [Environment]::GetFolderPath("System")                # Path to the System folder (e.g., System32)
 ####################################################################################
 
 Function MakeForm {
-
-    #Sets the information inside "About this computer"
-    #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value "Optimized by Alerion"
-    #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value "https://github.com/alerion921"
-
     if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
         $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
         $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
@@ -1234,37 +1229,50 @@ public class Wallpaper {
             }
         })
     
-    $errorscanner.Add_Click({
-            $ResultText.text = "System error scan has started, select your options then, Please Wait..." 
-    
+        $errorscanner.Add_Click({
+            $ResultText.text = "System error scan has started, select your options and wait..."
+        
+            # Load Windows Forms for MessageBox
             [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-
-            $sfcscando = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Run SFC Scan now?" , 4)
-            if ($sfcscando -eq 'Yes') {
-                $sfcscan = {
-                    $name = 'SFC Scannow - Offload Process'
-                    $host.ui.RawUI.WindowTitle = $name
-                    cmd /c sfc /scannow
+        
+            # Function to initiate system scans
+            function Start-SystemScan {
+                param (
+                    [string]$scanType,
+                    [string]$scanCommand
+                )
+        
+                $name = "$scanType - Offload Process"
+                $host.ui.RawUI.WindowTitle = $name
+        
+                try {
+                    # Start the scan process
+                    Start-Process cmd.exe -ArgumentList "/c $scanCommand" -Wait
+                    $ResultText.text = "$scanType scan completed successfully. You may need to restart your system."
+                } catch {
+                    $ResultText.text = "Error during $scanType scan: $_"
                 }
-
-                Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $sfcscan"
             }
-
-            $dismscansinit = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Initiate DISM Scans?" , 4)
-            if ($dismscansinit -eq 'Yes') { 
-                $dismscan = {
-                    $name = 'DISM Error Scanner - Offload Process'
-                    $host.ui.RawUI.WindowTitle = $name
-                    cmd /c DISM /Online /Cleanup-Image /ScanHealth
-                    cmd /c DISM /Online /Cleanup-Image /CheckHealth
-                    cmd /c DISM /Online /Cleanup-Image /RestoreHealth
-                }
-
-                Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
+        
+            # SFC Scan
+            $sfcConfirmation = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?', 'Run SFC Scan now?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
+            if ($sfcConfirmation -eq [System.Windows.Forms.DialogResult]::Yes) {
+                Start-SystemScan -scanType 'SFC Scannow' -scanCommand 'sfc /scannow'
             }
-    
-            if ($?) { $ResultText.text = "System error scans has been initiated wait for it to complete then do a restart. `r`n Ready for Next Task!" }
+        
+            # DISM Scan
+            $dismConfirmation = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?', 'Initiate DISM Scans?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
+            if ($dismConfirmation -eq [System.Windows.Forms.DialogResult]::Yes) {
+                Start-SystemScan -scanType 'DISM Error Scanner' -scanCommand 'DISM /Online /Cleanup-Image /ScanHealth'
+                Start-SystemScan -scanType 'DISM Check Health' -scanCommand 'DISM /Online /Cleanup-Image /CheckHealth'
+                Start-SystemScan -scanType 'DISM Restore Health' -scanCommand 'DISM /Online /Cleanup-Image /RestoreHealth'
+            }
+        
+            if ($?) {
+                $ResultText.text = "System error scans have been initiated. Please wait for them to complete and then restart your computer."
+            }
         })
+        
 
 
     $ultimateclean.Add_Click({
@@ -1282,54 +1290,81 @@ public class Wallpaper {
             $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean Shadow Copies cache and Windows Store Component cache?" , 4)
 
             if ($componentcache -eq 'Yes') {
-                $ResultText.text = "Windows Store Component cache is being cleaned please be patient..." 
-                Start-Sleep -Seconds 2
+                $ResultText.text = "Windows Store Component cache is being cleaned, please be patient..."
+                
+                # Delete shadow copies and cleanup component store in one go
                 vssadmin delete shadows /all | Out-Null
-                $ResultText.text = "Shadowcopies deleted, moving on to deleting useless Windows Store caches please wait..." 
-                Start-Sleep -Seconds 2
-                $Key = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches
-                $Form.text = "WinTool by Alerion - Please wait patiently Ultimate Cleaning is still deleting files..."
-                $ResultText.text = "Still deleting alot of unnecessary Windows crap..." 
-                ForEach ($result in $Key) {
-                    If ($result.name -eq "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\DownloadsFolder") {}Else {
-                        $Regkey = 'HKLM:' + $result.Name.Substring( 18 )
-                        New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA 0 | Out-Null
-                    }
+                cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore | Out-Null
+                cmd /c DISM /Online /Cleanup-Image /spsuperseded | Out-Null
+                cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup | Out-Null
+                
+                $ResultText.text = "Shadow copies and Windows Store component cache cleaned..."
+                
+                # Clean unnecessary Windows Store caches efficiently
+                $Key = Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches" | 
+                       Where-Object { $_.Name -ne "DownloadsFolder" }
+                
+                $Form.text = "WinTool by Alerion - Please wait, Ultimate Cleaning in progress..."
+                $ResultText.text = "Cleaning unnecessary Windows Store caches..."
+            
+                # Update registry in bulk without unnecessary looping and checking
+                foreach ($result in $Key) {
+                    $Regkey = 'HKLM:' + $result.Name.Substring(18)
+                    New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA SilentlyContinue | Out-Null
                 }
-                cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore
-                cmd /c DISM /Online /Cleanup-Image /spsuperseded
-                cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup
-                $ResultText.text = "Shadow Copies cache and Windows Store Component cache cleaned..." 
+            
+                # Clear BCCache if necessary
                 Clear-BCCache -Force -ErrorAction SilentlyContinue
             }
 
-            $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean up a collection of useless registry files?" , 4)
-            if ($regcachclean -eq 'Yes') {
-                Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Managed\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Unmanaged\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\usbflags\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache\Intranet\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose 
-        
-                Stop-Process -ProcessName explorer -Force	
+            $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?', "Clean up a collection of useless registry files?", [System.Windows.Forms.MessageBoxButtons]::YesNo)
+
+            if ($regcachclean -eq [System.Windows.Forms.DialogResult]::Yes) {
+                # List of registry paths to clean
+                $regPaths = @(
+                    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles\*",
+                    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Managed\*",
+                    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Unmanaged\*",
+                    "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*",
+                    "HKLM:\SYSTEM\CurrentControlSet\Control\usbflags\*",
+                    "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache\Intranet\*",
+                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\*",
+                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths\*",
+                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\*",
+                    "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\*",
+                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\*"
+                )
+                
+                # Remove registry paths in bulk
+                foreach ($path in $regPaths) {
+                    Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                }
+                
+                # Stop and restart explorer.exe
+                Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
                 taskkill /F /IM explorer.exe
+                
+                # Wait for a moment before clearing Explorer-related files
                 Start-Sleep -Seconds 3
                 
-                Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Explorer" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                # Clean up local explorer-related files
+                $localPaths = @(
+                    "$env:LocalAppData\Microsoft\Windows\Explorer",
+                    "$env:LocalAppData\Microsoft\Windows\Recent",
+                    "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations",
+                    "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations"
+                )
 
-                Start-Process explorer.exe	
-
-                Start-Sleep -s 3
-                $ResultText.text = "Windows registry junk files deleted successfully..." 
+                foreach ($path in $localPaths) {
+                    Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                }
+                
+                # Restart explorer.exe
+                Start-Process explorer.exe
+                
+                # Final delay and message update
+                Start-Sleep -Seconds 3
+                $ResultText.text = "Windows registry junk files deleted successfully..."
             }
 
             $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
@@ -3876,7 +3911,7 @@ public class Wallpaper {
                 Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
                 Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
-                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
                 
                 if (choco list --lo -r -e chocolatey-core.extension) {
                     $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
@@ -3915,7 +3950,7 @@ public class Wallpaper {
 
     if(!(Test-Path "C:\ProgramData\chocolatey")) {
         $ResultText.text = " Chocolatey is installing! `r`n Stay tuned until UI is responsive again!"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         
         if (choco list --lo -r -e chocolatey-core.extension) {
             $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
@@ -3941,7 +3976,7 @@ public class Wallpaper {
          Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
          Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
 
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         choco install chocolatey-core.extension -y -force
         $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
     }
@@ -4212,20 +4247,34 @@ public class Wallpaper {
         })
 
         $ClearRAMcache.Add_Click({
-            if (Test-Path $pathDesktop){ 
-                $WshShell = New-Object -comObject WScript.Shell
-                $Shortcut = $WshShell.CreateShortcut("$pathDesktop\Clear RAM Cache.lnk")
-                $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
-                $Shortcut.TargetPath = "%windir%\system32\rundll32.exe"
-                $Shortcut.Arguments = "advapi32.dll,ProcessIdleTasks"
-                $Shortcut.WorkingDirectory = "C:\Windows\System32\"
-                $Shortcut.Save()
-                
-                $ResultText.text = "Clear RAM Cache shortcut has been sucessfully created and can be found at: $Home\Desktop"
+            if (Test-Path $pathDesktop) {
+                try {
+                    [System.GC]::Collect()
+                    [System.GC]::WaitForPendingFinalizers()
+        
+                    $unnecessaryProcesses = @("chrome", "edge" )
+                    foreach ($process in $unnecessaryProcesses) {
+                        Get-Process $process -ErrorAction SilentlyContinue | Stop-Process -Force
+                    }
+        
+                    rundll32.exe advapi32.dll,ProcessIdleTasks
+                    Clear-Host
+        
+                    $WshShell = New-Object -comObject WScript.Shell
+                    $Shortcut = $WshShell.CreateShortcut("$pathDesktop\Clear RAM Cache.lnk")
+                    $Shortcut.IconLocation = "C:\Windows\heart.ico"
+                    $Shortcut.TargetPath = "%windir%\system32\rundll32.exe"
+                    $Shortcut.Arguments = "advapi32.dll,ProcessIdleTasks"
+                    $Shortcut.WorkingDirectory = "C:\Windows\System32\"
+                    $Shortcut.Save()
+        
+                    $ResultText.text = "Clear RAM Cache shortcut created successfully on Desktop."
+                } catch {
+                    $ResultText.text = "Error occurred: $_"
+                }
+            } else {
+                $ResultText.text = "Failed to create shortcut, try again!"
             }
-            else {
-                $ResultText.text = "Failed to create Clear RAM Cache shortcut, please try again!"
-            }  
         })
 
         $SystemInfo.Add_Click({
