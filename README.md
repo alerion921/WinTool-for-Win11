@@ -55,7 +55,7 @@ Added a couple of my favorite apps for easy access to this list, Spotify setup i
 
 Update apps---
 
-Utillity that uses winget to update all apps that you have installed now or before that are supported by winget.
+Utillity that uses Chocolatey to update all apps that you have installed now or before that are supported by Chocolatey.
 
 Reset button just resets the checkboxes if you want to start over.
 

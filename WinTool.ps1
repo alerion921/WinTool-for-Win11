@@ -237,38 +237,80 @@ Function MakeForm {
     $securitypatches.FlatStyle = "Flat"
     $securitypatches.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $onedrive = New-Object system.Windows.Forms.Button
-    $onedrive.text = "Remove OneDrive"
-    $onedrive.width = 220
-    $onedrive.height = 30
-    $onedrive.location = New-Object System.Drawing.Point(0, 325)
-    $onedrive.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $onedrive.BackColor = $frontcolor 
-    $onedrive.ForeColor = $backcolor
-    $onedrive.FlatStyle = "Flat"
-    $onedrive.FlatAppearance.MouseOverBackColor = $hovercolor
+    if((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
+        $onedrive = New-Object system.Windows.Forms.Button
+        $onedrive.text = "Remove OneDrive"
+        $onedrive.width = 220
+        $onedrive.height = 30
+        $onedrive.location = New-Object System.Drawing.Point(0, 325)
+        $onedrive.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+        $onedrive.BackColor = $frontcolor 
+        $onedrive.ForeColor = $backcolor
+        $onedrive.FlatStyle = "Flat"
+        $onedrive.FlatAppearance.MouseOverBackColor = $hovercolor
+    }
+    else {
+        $onedrive = New-Object system.Windows.Forms.Button
+        $onedrive.text = "Restore OneDrive"
+        $onedrive.width = 220
+        $onedrive.height = 30
+        $onedrive.location = New-Object System.Drawing.Point(0, 325)
+        $onedrive.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+        $onedrive.BackColor = $frontcolor 
+        $onedrive.ForeColor = $backcolor
+        $onedrive.FlatStyle = "Flat"
+        $onedrive.FlatAppearance.MouseOverBackColor = $hovercolor 
+    }
 
-    $InstallOneDrive = New-Object system.Windows.Forms.Button
-    $InstallOneDrive.text = "Restore OneDrive"
-    $InstallOneDrive.width = 220
-    $InstallOneDrive.height = 30
-    $InstallOneDrive.location = New-Object System.Drawing.Point(0, 360)
-    $InstallOneDrive.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $InstallOneDrive.BackColor = $frontcolor 
-    $InstallOneDrive.ForeColor = $backcolor
-    $InstallOneDrive.FlatStyle = "Flat"
-    $InstallOneDrive.FlatAppearance.MouseOverBackColor = $hovercolor
+    if(Test-Path "$env:programdata\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk") {
+        $killedge = New-Object system.Windows.Forms.Button
+        $killedge.text = "Remove Microsoft Edge"
+        $killedge.width = 220
+        $killedge.height = 30
+        $killedge.location = New-Object System.Drawing.Point(0, 360)
+        $killedge.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+        $killedge.BackColor = $frontcolor 
+        $killedge.ForeColor = $backcolor
+        $killedge.FlatStyle = "Flat"
+        $killedge.FlatAppearance.MouseOverBackColor = $hovercolor
+    }
+    else {
+        $killedge = New-Object system.Windows.Forms.Button
+        $killedge.text = "Restore Microsoft Edge"
+        $killedge.width = 220
+        $killedge.height = 30
+        $killedge.location = New-Object System.Drawing.Point(0, 360)
+        $killedge.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+        $killedge.BackColor = $frontcolor 
+        $killedge.ForeColor = $backcolor
+        $killedge.FlatStyle = "Flat"
+        $killedge.FlatAppearance.MouseOverBackColor = $hovercolor
+    }
 
-    $killedge = New-Object system.Windows.Forms.Button
-    $killedge.text = "Remove Microsoft Edge"
-    $killedge.width = 220
-    $killedge.height = 30
-    $killedge.location = New-Object System.Drawing.Point(0, 395)
-    $killedge.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $killedge.BackColor = $frontcolor 
-    $killedge.ForeColor = $backcolor
-    $killedge.FlatStyle = "Flat"
-    $killedge.FlatAppearance.MouseOverBackColor = $hovercolor
+    if(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {    
+        $removehomegallery = New-Object system.Windows.Forms.Button
+        $removehomegallery.text = "Remove Home and Gallery"
+        $removehomegallery.width = 220
+        $removehomegallery.height = 30
+        $removehomegallery.location = New-Object System.Drawing.Point(0, 395)
+        $removehomegallery.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+        $removehomegallery.BackColor = $frontcolor 
+        $removehomegallery.ForeColor = $backcolor
+        $removehomegallery.FlatStyle = "Flat"
+        $removehomegallery.FlatAppearance.MouseOverBackColor = $hovercolor
+    }
+    else {    
+        $removehomegallery = New-Object system.Windows.Forms.Button
+        $removehomegallery.text = "Restore Home and Gallery"
+        $removehomegallery.width = 220
+        $removehomegallery.height = 30
+        $removehomegallery.location = New-Object System.Drawing.Point(0, 395)
+        $removehomegallery.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+        $removehomegallery.BackColor = $frontcolor 
+        $removehomegallery.ForeColor = $backcolor
+        $removehomegallery.FlatStyle = "Flat"
+        $removehomegallery.FlatAppearance.MouseOverBackColor = $hovercolor
+    }
 
     #######################################################################################################
     # Tweaks ends here
@@ -779,19 +821,19 @@ Function MakeForm {
     $ClearRAMcache.FlatStyle = "Flat"
     $ClearRAMcache.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $SystemInfo = New-Object system.Windows.Forms.Button
-    $SystemInfo.text = "System"
-    $SystemInfo.width = 220
-    $SystemInfo.height = 30
-    $SystemInfo.location = New-Object System.Drawing.Point(0, 80)
-    $SystemInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $SystemInfo.BackColor = $frontcolor 
-    $SystemInfo.ForeColor = $backcolor
-    $SystemInfo.FlatStyle = "Flat"
-    $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
+    $godmode = New-Object system.Windows.Forms.Button
+    $godmode.text = "Godmode Shortcut"
+    $godmode.width = 220
+    $godmode.height = 30
+    $godmode.location = New-Object System.Drawing.Point(0, 80)
+    $godmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $godmode.BackColor = $frontcolor 
+    $godmode.ForeColor = $backcolor
+    $godmode.FlatStyle = "Flat"
+    $godmode.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $HardwareInfo = New-Object system.Windows.Forms.Button
-    $HardwareInfo.text = "Hardware"
+    $HardwareInfo.text = "Hardware Info"
     $HardwareInfo.width = 220
     $HardwareInfo.height = 30
     $HardwareInfo.location = New-Object System.Drawing.Point(0, 115)
@@ -802,7 +844,7 @@ Function MakeForm {
     $HardwareInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $antivirusInfo = New-Object system.Windows.Forms.Button
-    $antivirusInfo.text = "Anti-Virus"
+    $antivirusInfo.text = "Anti-Virus Status"
     $antivirusInfo.width = 220
     $antivirusInfo.height = 30
     $antivirusInfo.location = New-Object System.Drawing.Point(0, 150)
@@ -812,16 +854,17 @@ Function MakeForm {
     $antivirusInfo.FlatStyle = "Flat"
     $antivirusInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $placeholder6 = New-Object system.Windows.Forms.Button
-    $placeholder6.text = "Placeholder"
-    $placeholder6.width = 220
-    $placeholder6.height = 30
-    $placeholder6.location = New-Object System.Drawing.Point(0, 185)
-    $placeholder6.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder6.BackColor = $frontcolor 
-    $placeholder6.ForeColor = $backcolor
-    $placeholder6.FlatStyle = "Flat"
-    $placeholder6.FlatAppearance.MouseOverBackColor = $hovercolor
+
+    $SystemInfo = New-Object system.Windows.Forms.Button
+    $SystemInfo.text = "System Info"
+    $SystemInfo.width = 220
+    $SystemInfo.height = 30
+    $SystemInfo.location = New-Object System.Drawing.Point(0, 185)
+    $SystemInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $SystemInfo.BackColor = $frontcolor 
+    $SystemInfo.ForeColor = $backcolor
+    $SystemInfo.FlatStyle = "Flat"
+    $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
 
     $placeholder7 = New-Object system.Windows.Forms.Label
     $placeholder7.text = "Placeholder Header"
@@ -908,13 +951,13 @@ Function MakeForm {
         ))
 
     $Panel1.controls.AddRange(@(
-            $performancetweaks, #header for the bellow selection
+            $performancetweaks, #header for the section below
             $essentialtweaks,
             $essentialundo,
             $gamingtweaks,
             $securitypatches, 
             $onedrive,
-            $InstallOneDrive,
+            $removehomegallery,
             $killedge
         ))
 
@@ -943,13 +986,13 @@ Function MakeForm {
             $microsoftstore,
             $cleaning,
             $ultimateclean,
-            $visualtweaks, #header for the bellow selection
+            $visualtweaks, #header for the section below
             $darkmode,
             $lightmode
         ))
 
     $Panel4.controls.AddRange(@(
-            $extras, #header for the bellow selection
+            $extras, #header for the section below
             $bravebrowser,
             $dropbox,
             $7zip,
@@ -977,7 +1020,7 @@ Function MakeForm {
             $SystemInfo,
             $HardwareInfo,
             $antivirusInfo,
-            $placeholder6,
+            $godmode,
             $placeholder7,
             $placeholder8,
             $placeholder9,
@@ -992,13 +1035,13 @@ Function MakeForm {
         ))
 
     #Check if Chocolatey is installed
-    if (Test-Path C:\ProgramData\Chocolatey) {
+    if (Test-Path "$env:ProgramData\Chocolatey") {
          $ResultText.text = 
         "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
         `r`n  List of things that are required in order for this to run smoothly:
-        --->  Chocolatey App Automation - Installed and good to go!
+        --->  Chocolatey App Automation - Already installed!
         --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
-        --->  Windows 10 or Windows 11, all builds are supported!
+        --->  Windows 10 or Windows 11 - All builds are supported!
                     
           Enjoy this free tool!
         "
@@ -1007,9 +1050,9 @@ Function MakeForm {
         $ResultText.text = 
        "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
        `r`n  List of things that are required in order for this to run smoothly:
-       --->  Chocolatey App Automation - NEEDS TO BE FIXED
+       --->  Chocolatey App Automation - Will install automaticly upon choosing an app to install!
        --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
-       --->  Windows 10 or Windows 11, all builds are supported!
+       --->  Windows 10 or Windows 11 - All builds are supported!
                    
          Enjoy this free tool!
        "
@@ -1143,7 +1186,7 @@ public class Wallpaper {
 
             switch ($selected) {
                 1 {
-                    $ResultText.text = "DNS set to Google on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Google on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "8.8.8.8"
                     $DNS2 = "8.8.4.4"
                     $dns = "$DNS1", "$DNS2"
@@ -1151,7 +1194,7 @@ public class Wallpaper {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 2 {
-                    $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "1.1.1.1"
                     $DNS2 = "1.0.0.1"
                     $dns = "$DNS1", "$DNS2"
@@ -1159,7 +1202,7 @@ public class Wallpaper {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 3 {
-                    $ResultText.text = "DNS set to Level3 on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to Level3 on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "4.2.2.2"
                     $DNS2 = "4.2.2.1"
                     $dns = "$DNS1", "$DNS2"
@@ -1167,7 +1210,7 @@ public class Wallpaper {
                     $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
                 }
                 4 {
-                    $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n  Ready for Next Task!"
+                    $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n Ready for Next Task!"
                     $DNS1 = "208.67.222.222"
                     $DNS2 = "208.67.220.220"
                     $dns = "$DNS1", "$DNS2"
@@ -1182,7 +1225,7 @@ public class Wallpaper {
                         $interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
                         $interface | Set-NetIPInterface -Dhcp Enabled
                         $interface | Set-DnsClientServerAddress -ResetServerAddresses
-                        $ResultText.text = "The Network Adapters has been reset properly. `r`n  Ready for Next Task!"
+                        $ResultText.text = "The Network Adapters has been reset properly. `r`n Ready for Next Task!"
                     }
                 }
                 default {
@@ -1220,7 +1263,7 @@ public class Wallpaper {
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $dismscan"
             }
     
-            if ($?) { $ResultText.text = "System error scans has been initiated wait for it to complete then do a restart. `r`n  Ready for Next Task!" }
+            if ($?) { $ResultText.text = "System error scans has been initiated wait for it to complete then do a restart. `r`n Ready for Next Task!" }
         })
 
 
@@ -1674,7 +1717,7 @@ public class Wallpaper {
 
                 $ResultText.text = "Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
             }
-            $ResultText.text = "Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n  Ready for Next Task!" 
+            $ResultText.text = "Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n Ready for Next Task!" 
             $Form.text = "WinTool by Alerion"
         })
 
@@ -1697,13 +1740,13 @@ public class Wallpaper {
         })
 
     $essentialtweaks.Add_Click({
-            $Form.text = "WinTool by Alerion - Initializing Essential Tweaks..."
-            $ResultText.text = "Activating Essential Tweaks... Please Wait"
-            $ResultText.text = "Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.."
+            $Form.text = "WinTool by Alerion - Initializing Essential Tweaks... `r`n" 
+            $ResultText.text = "Activating Essential Tweaks... Please Wait `r`n" 
+            $ResultText.text = "Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint, incase something bad happens.. `r`n" 
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
-            $ResultText.text = " Adjusting visual effects for performance..."
+            $ResultText.text = " Adjusting visual effects for performance... `r`n" 
             Start-Sleep -s 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
@@ -1715,9 +1758,9 @@ public class Wallpaper {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
-            $ResultText.text = " Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance."
+            $ResultText.text = " Adjusted visual effects for performance. `r`n  This makes Windows have rougher edges but you can gain some extra performance. `r`n" 
 
-            $ResultText.text += " Disabling Cortana..."
+            $ResultText.text += " Disabling Cortana... `r`n" 
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Force | Out-Null
             }
@@ -1736,108 +1779,123 @@ public class Wallpaper {
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
 
-            $ResultText.text += " Disabling Background application access..."
+            $ResultText.text += " Disabling Background application access... `r`n" 
             Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" | ForEach-Object { #was ForEach
                 Set-ItemProperty -Path $_.PsPath -Name "Disabled" -Type DWord -Value 1
                 Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Type DWord -Value 1
             }S
 
-            $ResultText.text += " Uninstalling Linux Subsystem..."
+            $ResultText.text += " Uninstalling Linux Subsystem... `r`n" 
             If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 0
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 0
             }
             Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-            $ResultText.text = " Enabling and Activating Highest Performance Power Plan..."
+            $ResultText.text = " Enabling and Activating Highest Performance Power Plan... `r`n" 
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow" -OutFile "$Env:windir\system32\Bitsum-Highest-Performance.pow" -ErrorAction SilentlyContinue
             powercfg -import "$Env:windir\system32\Bitsum-Highest-Performance.pow" e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
             powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-            $ResultText.text = " Enabled & Activated Highest Performance Power Plan."
+            $ResultText.text = " Enabled & Activated Highest Performance Power Plan. `r`n" 
 
-            $ResultText.text += " Enabling Windows 10 context menu..."
+            $ResultText.text += " Enabling Windows 10/Old context menu... `r`n" 
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force
             Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Type String -Value ""
     
-            $ResultText.text += " Removing recently added apps from Start Menu..."
+            $ResultText.text += " Removing recently added apps from Start Menu... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1 #Disable start menu RecentlyAddedApps
 
-            $ResultText.text += " Disabling UAC..."
+            $ResultText.text += " Disabling UAC... `r`n" 
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
 
-            $ResultText.text += " Disabling Sticky Keys..."
+            $ResultText.text += " Disabling Sticky Keys... `r`n" 
             Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
 
-            $ResultText.text += " Hiding Task View button..."
+            $ResultText.text += " Hiding Task View button... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
 
-            $ResultText.text += " Hiding People icon..."
+            $ResultText.text += " Hiding People icon... `r`n" 
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
             }
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
 
-            $ResultText.text += " Show tray icons..."
+            $ResultText.text += " Show tray icons... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
 
-            $ResultText.text += " Disabling Widgets, Chat, Search and Setting Start Button to left side..."
+            $ResultText.text += " Disabling the Search box on taskbar... `r`n" 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
 
-            $ResultText.text += " Disable News and Interests"
+            $ResultText.text += " Disabled News and Interests... `r`n" 
             New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -Force
-
+            Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2s
+            
+            $ResultText.text += " Disabled Apps splitting on taskbar... `r`n" 
             #Removes Widgets/Split apps bs from taskbar
             Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 -Force
             New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 0
+            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu... `r`n" 
 
+            $ResultText.text += " Removed chat from taskbar... `r`n" 
             # Removes Chat from the Taskbar
             Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Type DWord -Value 0 -Force
             New-ItemProperty "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -Name "ChatIcon" -Type DWord -Value 3 -Force
 
+            $ResultText.text += " Remove pre-installed Teams... `r`n" 
             # Removes Teams installation aswell
             Get-AppxPackage MicrosoftTeams* | Remove-AppxPackage
 
+            $ResultText.text += " Adjusting taskbar alignment to sane settings... `r`n" 
             # Default StartMenu alignment 0=Left on win 10
             New-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Type DWord -Value 0 -Force
 
+            $ResultText.text += " Grouping svchost processes to free up system ram... `r`n" 
             # Group svchost.exe processes
             $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
 
-            # Remove "News and Interest" from taskbar
-            Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2s
-
             $ResultText.text += " Showing known file extensions..."
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
 
+            $ResultText.text += " Setting default explorer view to This PC... `r`n" 
+            # Default Explorer view to This PC
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 1
+            
+            $ResultText.text += " Show all hidden system files and folders available on the current installation... `r`n" 
+            # Show hidden files, folders and system files that are hidden
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -type Dword -Value 1
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden" -type Dword -Value 1
+
+            $ResultText.text += " Explorer is restarting, screen flashes might occur... `r`n" 
             #Restart Explorer so that the taskbar can update and not look break :D
             Stop-Process -name explorer
             Start-Sleep -s 5
             Start-Process -name explorer
 
-            $ResultText.text = " Essential Tweaks Done. `r`n  Ready for Next Task!"
+            $ResultText.text = " Essential Tweaks Done. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $dualboottime.Add_Click({
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n  Ready for Next Task!"
+            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n Ready for Next Task!"
         })
 
     $essentialundo.Add_Click({
-            $Form.text = "WinTool by Alerion - Initializing Essentials Undo..."
-            $ResultText.text = " Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong..."
+            $Form.text = "WinTool by Alerion - Initializing Essentials Undo... `r`n" 
+            $ResultText.text = " Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong... `r`n" 
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "WinTool-EssentialTweaksUndo-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
 
-            $ResultText.text += " Disabling Windows 10 context menu..."
+            $ResultText.text += " Disabling Windows 10 context menu... `r`n" 
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Force
 
-            $ResultText.text += " Enabling recently added apps from Start Menu..."
+            $ResultText.text += " Enabling recently added apps from Start Menu... `r`n" 
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 0
 
-            $ResultText.text += " Re-Installing Linux Subsystem..."
+            $ResultText.text += " Re-Installing Linux Subsystem... `r`n" 
             If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
                 # 1607 needs developer mode to be enabled
                 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 1
@@ -1845,7 +1903,7 @@ public class Wallpaper {
             }
             Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-            $ResultText.text = " Enabling Cortana..."
+            $ResultText.text = " Re-Enabling Cortana... `r`n" 
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
             If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore")) {
                 New-Item -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" -Force | Out-Null
@@ -1865,7 +1923,7 @@ public class Wallpaper {
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")) { powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 }
             $ResultText.text = " Restored all power plans: Power Saver, Balanced, and Ultimate Performance."
 
-            $ResultText.text = " Adjusting visual effects for appearance..."
+            $ResultText.text = " Setting visual effects back to default values (Appearance)... `r`n" 
             Start-Sleep -s 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
@@ -1877,24 +1935,30 @@ public class Wallpaper {
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-            $ResultText.text = " Visual effects are set for appearance (Defaults). `r`n  This makes Windows look nicer but at the cost of additional performance loss."
 
+            $ResultText.text += " Re-Enabling Task View button... `r`n" 
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 1
 
-            $ResultText.text = " Raising UAC level..."
+            $ResultText.text += " Re-Enabling People icon... `r`n" 
+            If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 1
+
+            $ResultText.text = " Restoring UAC level... `r`n" 
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
 
-            $ResultText.text += "`r`n" + "Enabling Sticky Keys..."
+            $ResultText.text = "Re-enabling Sticky Keys... `r`n" 
             Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 510
 
-            $ResultText.text = " Hiding known file extensions..."
+            $ResultText.text = " Hiding known file extensions... `r`n" 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
 
-            $ResultText.text = " Hide tray icons..."
-            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
+            $ResultText.text = " Hide tray icons... `r`n" 
+            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -ErrorAction SilentlyContinue
 
-            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu..."
-
+            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu... `r`n" 
             # Restores Widgets to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 1
@@ -1910,12 +1974,22 @@ public class Wallpaper {
             # Recovers search to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
 
+            $ResultText.text += " Explorer view reset back to Home menu... `r`n" 
+            # Default Explorer view to Home
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 0
+            
+            $ResultText.text += " Hiding Windows system folders that were previously shown ... `r`n" 
+            # Show hidden files, folders and system files that are hidden
+            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden"  -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden"  -ErrorAction SilentlyContinue
+
+            $ResultText.text += " Explorer is restarting, screen flashes might occur... `r`n" 
             #Restart Explorer so that the taskbar can update and not look break :D
             Stop-Process -name explorer
             Start-Sleep -s 5
             Start-Process -name explorer
 
-            $ResultText.text = " Essential Undo Completed. `r`n  Ready for Next Task!"
+            $ResultText.text = " Essential Undo Completed. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -2339,7 +2413,7 @@ public class Wallpaper {
             CheckDMWService
             CheckInstallService
 
-            $ResultText.text = " Finished removing bloatware apps. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished removing bloatware apps. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -2413,7 +2487,7 @@ public class Wallpaper {
                 New-Item $Objects64
             }
 
-            $ResultText.text = " Finished Reinstalling Bloatware Apps. `r`n  Ready for Next Task!"
+            $ResultText.text = " Finished Reinstalling Bloatware Apps. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -2431,7 +2505,7 @@ public class Wallpaper {
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
             $ResultText.text = " Enabled driver offering through Windows Update"
             Start-Sleep -s 1
-            $ResultText.text = " Windows Update has been set to Default Settings. `r`n  Ready for Next Task!"
+            $ResultText.text = " Windows Update has been set to Default Settings. `r`n Ready for Next Task!"
         })
 
     $securitywindowsupdate.Add_Click({
@@ -2460,7 +2534,7 @@ public class Wallpaper {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
             $ResultText.text = " Disabled driver offering through Windows Update"
             Start-Sleep -s 1
-            $ResultText.text = " Windows Update has been set to Sane Settings. `r`n  Ready for Next Task!"
+            $ResultText.text = " Windows Update has been set to Sane Settings. `r`n Ready for Next Task!"
         })
 
     $gamingtweaks.Add_Click({
@@ -2893,7 +2967,7 @@ public class Wallpaper {
             $ResultText.text = " Disabling VBS..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
     
-            $ResultText.text = " Gaming Tweaks Applied. `r`n  Ready for Next Task!"
+            $ResultText.text = " Gaming Tweaks Applied. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
@@ -3279,63 +3353,150 @@ public class Wallpaper {
                 $ResultText.text = " SMB Optimized and Hardening Activated..."
             }
 
-            $ResultText.text = " All known security exploits have been patched successfully & additional system hardening has been applied. `r`n  Ready for Next Task!"
+            $ResultText.text = " All known security exploits have been patched successfully & additional system hardening has been applied. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
         })
 
     $onedrive.Add_Click({
-            $Form.text = "WinTool by Alerion - Removing OneDrive..."
-            $ResultText.text = " Disabling OneDrive..."
-            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
-                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" | Out-Null
+        if((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
+            $confirmonedrive = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Ready to update apps with Chocolatey?" , 4)
+            if ($confirmonedrive -eq 'Yes') {
+                $Form.text = "WinTool by Alerion - Removing OneDrive..."
+                $ResultText.text = " Onedrive is being uninstalled..."
+                $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe"
+                if (Test-Path $regPath) {
+                    $OneDriveUninstallString = Get-ItemPropertyValue "$regPath" -Name "UninstallString"
+                    $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(" ")
+                    Start-Process -FilePath $OneDriveExe -ArgumentList "$OneDriveArgs /silent" -NoNewWindow -Wait
+                } 
+
+                # Check if OneDrive got Uninstalled
+                if (-not (Test-Path $regPath)) {
+                    $Form.text = "WinTool by Alerion - Backing up user created files..."
+                    $ResultText.text = " User created files are being backed up and moved to the root of the user folder..." # Change this to the user desktop instead 
+                    Start-Process -FilePath powershell -ArgumentList "robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\' /mov /e /xj" -NoNewWindow -Wait
+            
+                    #Shutting down required processes to make sure all files are removed completely!
+                    taskkill.exe /F /IM "explorer.exe"
+                    taskkill.exe /F /IM "OneDrive.exe"
+                    taskkill.exe /F /IM "FileSyncHelper.exe"
+                    taskkill.exe /F /IM "FileCoAuth.exe"
+                    taskkill.exe /F /IM "GitHubDesktop.exe"
+
+                    #Disable FileSynch to be able to delete the remaining files later
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1            
+
+                    $Form.text = "WinTool by Alerion - Removing OneDrive leftovers..."
+                    $ResultText.text = " Removing OneDrive leftovers & cached files..."
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:localappdata\Microsoft\OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:localappdata\OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:systemdrive\OneDriveTemp"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Program Files\Microsoft OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Program Files (x86)\Microsoft OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "C:\Users\Default\OneDrive"
+                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:userprofile\OneDrive"   
+
+                    reg delete "HKEY_CURRENT_USER\Software\Microsoft\OneDrive" -f
+                    # check if directory is empty before removing:
+                    If ((Get-ChildItem "$OneDrivePath" -Recurse | Measure-Object).Count -eq 0) {
+                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$OneDrivePath"
+                    }
+            
+                    $Form.text = "WinTool by Alerion - Remove Onedrive from explorer sidebar..."
+                    $ResultText.text = " Remove Onedrive from explorer sidebar..."
+                    If (!(Test-Path "HKCR:")) {
+                        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
+                    }
+                    Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+                    Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+            
+                    $Form.text = "WinTool by Alerion - Removing run hook for new users..."
+                    $ResultText.text = " Removing run hook for new users..."
+                    reg load "hku\Default" "C:\Users\Default\NTUSER.DAT"
+                    reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f
+                    reg unload "hku\Default"
+            
+                    $Form.text = "WinTool by Alerion - Removing startmenu entry..."
+                    $ResultText.text = " Removing startmenu entry..."
+                    Remove-Item -Force -ErrorAction SilentlyContinue "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+                    Remove-Item -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+            
+                    $Form.text = "WinTool by Alerion - Removing scheduled task..."
+                    $ResultText.text = " Removing scheduled task..."
+                    Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+
+                    # Restoring userfolders to default locations
+                    $Form.text = "WinTool by Alerion - Restoring userfolders to default locations..."
+                    $ResultText.text = " Restoring userfolders to default locations..."
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "AppData" -Value "$env:userprofile\AppData\Roaming" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Cache" -Value "$env:userprofile\AppData\Local\Microsoft\Windows\INetCache" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Cookies" -Value "$env:userprofile\AppData\Local\Microsoft\Windows\INetCookies" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Favorites" -Value "$env:userprofile\Favorites" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "History" -Value "$env:userprofile\AppData\Local\Microsoft\Windows\History" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Local AppData" -Value "$env:userprofile\AppData\Local" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Music" -Value "$env:userprofile\Music" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Video" -Value "$env:userprofile\Videos" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "NetHood" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Network Shortcuts" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "PrintHood" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Printer Shortcuts" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Programs" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Recent" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Recent" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "SendTo" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\SendTo" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Start Menu" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Startup" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Templates" -Value "$env:userprofile\AppData\Roaming\Microsoft\Windows\Templates" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}" -Value "$env:userprofile\Downloads" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Desktop" -Value "$env:userprofile\Desktop" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Pictures" -Value "$env:userprofile\Pictures" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "Personal" -Value "$env:userprofile\Documents" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{F42EE2D3-909F-4907-8871-4C22FC0BF756}" -Value "$env:userprofile\Documents" -Type ExpandString
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{0DDD015D-B06C-45D5-8C4C-F59713854639}" -Value "$env:userprofile\Pictures" -Type ExpandString
+
+                    Start-Process "explorer.exe"
+            
+                    $Form.text = "WinTool by Alerion - Onedrive has been successfully removed..."
+                    Start-Sleep 5
+                }
+                } else {
+                    $ResultText.text = " Something went Wrong during the Unistallation of OneDrive. `r`n Ready for Next Task!"
+                }
+                
+                $ResultText.text = " Removed OneDrive completely. `r`n Ready for Next Task!"
             }
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
-            $ResultText.text = " Uninstalling OneDrive..."
-            Stop-Process -Name "OneDrive" -ErrorAction SilentlyContinue
-            Start-Sleep -s 2
-            $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
-            If (!(Test-Path $onedrive)) {
-                $onedrive = "$env:SYSTEMROOT\System32\OneDriveSetup.exe"
+            else {
+                $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
+                Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
+                Start-Process "https://www.microsoft.com/en-us/microsoft-365/onedrive/download"
+                $ResultText.text = " Registry has been reverted back to normal and opening a link to download Microsoft OneDrive. `r`n Ready for Next Task!"
             }
-            Start-Process $onedrive "/uninstall" -NoNewWindow -Wait
-            Start-Sleep -s 2
-            Stop-Process -Name "explorer" -ErrorAction SilentlyContinue
-            Start-Sleep -s 2
-            $ResultText.text = " Removing extra OneDrive leftovers..."
-            Remove-Item -Path "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-            Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-            Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-            Remove-Item -Path "$env:SYSTEMDRIVE\OneDriveTemp" -Force -Recurse -ErrorAction SilentlyContinue
-            If (!(Test-Path "HKCR:")) {
-                New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
-            }
-            Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-            Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-            $ResultText.text = " Deleted and Disabled OneDrive. `r`n  Ready for Next Task!"
-            $Form.text = "WinTool by Alerion"
         })
 
     $darkmode.Add_Click({
-            $ResultText.text = " Setting dark mode to active"
+            $ResultText.text = " System dark mode set to active!"
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -PropertyType "DWord" -Name "AppsUseLightTheme" -Value "0" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value "0"
-            $ResultText.text = " Dark mode successfully activated. `r`n  Ready for Next Task!"
+            $ResultText.text = " Dark mode successfully activated. `r`n Ready for Next Task!"
         })
 
-    $lightmode.Add_Click({
-            $ResultText.text = " Switching Back to Light Mode"
+    $lightmode.Add_Click({ 
+            $ResultText.text = " System Light Mode set to active!"
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Force
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 1
-            $ResultText.text = " Enabled Light Mode. `r`n  Ready for Next Task!"
+            $ResultText.text = " Enabled Light Mode. `r`n Ready for Next Task!"
         })
 
-    $InstallOneDrive.Add_Click({
-            $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
-            $ResultText.text = " Installing Onedrive. Please Wait..."
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -ErrorAction SilentlyContinue
-            %systemroot%\SysWOW64\OneDriveSetup.exe
-            $ResultText.text = " Finished Reinstalling OneDrive. `r`n  Ready for Next Task!"
-            $Form.text = "WinTool by Alerion"
+    $removehomegallery.Add_Click({
+            if ((Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") -or (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}")) {
+                REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f
+                REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" /f
+                #I can possibly do this to remove the onedrive apperance aswell
+                $ResultText.text = " Home and Gallery Removed successfully! `r`n Ready for Next Task!"
+            }
+            else {
+                REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f /ve /t REG_SZ /d "{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}"
+                REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" /f /ve /t REG_SZ /d "CLSID_MSGraphHomeFolder"
+                $ResultText.text = " Home and Gallery Restored successfully! `r`n Ready for Next Task!"
+            }
         })
 
     $DisableNumLock.Add_Click({
@@ -3346,13 +3507,168 @@ public class Wallpaper {
                 $wsh = New-Object -ComObject WScript.Shell
                 $wsh.SendKeys('{NUMLOCK}')
             }
-            $ResultText.text = " Disable NumLock after startup. `r`n  Ready for Next Task!"
+            $ResultText.text = " Disable NumLock after startup. `r`n Ready for Next Task!"
         })
 
+        Function Uninstall-WinUtilEdgeBrowser {
+
+            <#
+        
+            .SYNOPSIS
+                This will uninstall edge by changing the region to Ireland and uninstalling edge the changing it back
+        
+            #>
+        
+        $msedgeProcess = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
+        $widgetsProcess = Get-Process -Name "widgets" -ErrorAction SilentlyContinue
+        # Checking if Microsoft Edge is running
+        if ($msedgeProcess) {
+            Stop-Process -Name "msedge" -Force
+        } else {
+            Write-Output "msedge process is not running."
+        }
+        # Checking if Widgets is running
+        if ($widgetsProcess) {
+            Stop-Process -Name "widgets" -Force
+        } else {
+            Write-Output "widgets process is not running."
+        }
+        
+        function Uninstall-Process {
+            param (
+                [Parameter(Mandatory = $true)]
+                [string]$Key
+            )
+        
+            $originalNation = [microsoft.win32.registry]::GetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', [Microsoft.Win32.RegistryValueKind]::String)
+        
+            # Set Nation to 84 (France) temporarily
+            [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', 68, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
+        
+            # credits to he3als for the Acl commands
+            $fileName = "IntegratedServicesRegionPolicySet.json"
+            $pathISRPS = [Environment]::SystemDirectory + "\" + $fileName
+            $aclISRPS = Get-Acl -Path $pathISRPS
+            $aclISRPSBackup = [System.Security.AccessControl.FileSecurity]::new()
+            $aclISRPSBackup.SetSecurityDescriptorSddlForm($acl.Sddl)
+            if (Test-Path -Path $pathISRPS) {
+                try {
+                    $admin = [System.Security.Principal.NTAccount]$(New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
+        
+                    $aclISRPS.SetOwner($admin)
+                    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($admin, 'FullControl', 'Allow')
+                    $aclISRPS.AddAccessRule($rule)
+                    Set-Acl -Path $pathISRPS -AclObject $aclISRPS
+        
+                    Rename-Item -Path $pathISRPS -NewName ($fileName + '.bak') -Force
+                }
+                catch {
+                    Write-Error "[$Mode] Failed to set owner for $pathISRPS"
+                }
+            }
+        
+            $baseKey = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+            $registryPath = $baseKey + '\ClientState\' + $Key
+        
+            if (!(Test-Path -Path $registryPath)) {
+                Write-Host "[$Mode] Registry key not found: $registryPath"
+                return
+            }
+        
+            Remove-ItemProperty -Path $registryPath -Name "experiment_control_labels" -ErrorAction SilentlyContinue | Out-Null
+        
+            $uninstallString = (Get-ItemProperty -Path $registryPath).UninstallString
+            $uninstallArguments = (Get-ItemProperty -Path $registryPath).UninstallArguments
+        
+            if ([string]::IsNullOrEmpty($uninstallString) -or [string]::IsNullOrEmpty($uninstallArguments)) {
+                Write-Host "[$Mode] Cannot find uninstall methods for $Mode"
+                return
+            }
+        
+            $uninstallArguments += " --force-uninstall --delete-profile"
+        
+            # $uninstallCommand = "`"$uninstallString`"" + $uninstallArguments
+            if (!(Test-Path -Path $uninstallString)) {
+                Write-Host "[$Mode] setup.exe not found at: $uninstallString"
+                return
+            }
+            Start-Process -FilePath $uninstallString -ArgumentList $uninstallArguments -Wait -NoNewWindow -Verbose
+        
+            # Restore Acl
+            if (Test-Path -Path ($pathISRPS + '.bak')) {
+                Rename-Item -Path ($pathISRPS + '.bak') -NewName $fileName -Force
+                Set-Acl -Path $pathISRPS -AclObject $aclISRPSBackup
+            }
+        
+            # Restore Nation
+            [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $originalNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
+        
+            if ((Get-ItemProperty -Path $baseKey).IsEdgeStableUninstalled -eq 1) {
+                Write-Host "[$Mode] Edge Stable has been successfully uninstalled"
+            }
+        }
+        
+        function Uninstall-Edge {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        
+            [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
+        
+            Uninstall-Process -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
+        
+            @( "$env:ProgramData\Microsoft\Windows\Start Menu\Programs",
+               "$env:PUBLIC\Desktop",
+               "$env:USERPROFILE\Desktop" ) | ForEach-Object {
+                $shortcutPath = Join-Path -Path $_ -ChildPath "Microsoft Edge.lnk"
+                if (Test-Path -Path $shortcutPath) {
+                    Remove-Item -Path $shortcutPath -Force
+                }
+            }
+        
+        }
+        
+        function Uninstall-WebView {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        
+            # Force to use system-wide WebView2
+            # [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\WebView2\BrowserExecutableFolder", "*", "%%SystemRoot%%\System32\Microsoft-Edge-WebView")
+        
+            Uninstall-Process -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+        }
+        
+        function Uninstall-EdgeUpdate {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        
+            $registryPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+            if (!(Test-Path -Path $registryPath)) {
+                Write-Host "Registry key not found: $registryPath"
+                return
+            }
+            $uninstallCmdLine = (Get-ItemProperty -Path $registryPath).UninstallCmdLine
+        
+            if ([string]::IsNullOrEmpty($uninstallCmdLine)) {
+                Write-Host "Cannot find uninstall methods for $Mode"
+                return
+            }
+        
+            Write-Output "Uninstalling: $uninstallCmdLine"
+            Start-Process cmd.exe "/c $uninstallCmdLine" -WindowStyle Hidden -Wait
+        }
+        
+        Uninstall-Edge
+            # "WebView" { Uninstall-WebView }
+            # "EdgeUpdate" { Uninstall-EdgeUpdate }
+        
+        
+        
+        
+        }
+
     $killedge.Add_Click({
+        if(Test-Path "$env:programdata\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk") {
             $Form.text = "WinTool by Alerion - Removing Microsoft Edge..."
             $ResultText.text = " Removing Microsoft Edge..."
-            Invoke-WebRequest -useb https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/killedge.bat | Invoke-Expression
+
+            Uninstall-WinUtilEdgeBrowser
 
             #removes shortcut from programdata
             Get-ChildItem "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" -Recurse  -Filter *Edge*.lnk |
@@ -3360,8 +3676,14 @@ public class Wallpaper {
                 Remove-Item $_.FullName
             }
 
-            $ResultText.text = " Microsoft Edge is getting removed in the background, the script will stop when it is done. `r`n  Ready for Next Task!"
+            $ResultText.text = " Microsoft Edge was removed completly and all shortcuts accosiated with it too. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
+        } 
+        else {
+            choco install microsoft-edge -y --force
+            $ResultText.text = " Microsoft Edge has been restored successfully. `r`n Ready for Next Task!"
+        }
+            
         })
 
     $ncpa.Add_Click({ #Network cards interface
@@ -3408,7 +3730,7 @@ public class Wallpaper {
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
             nfsadmin client start
             nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-            $ResultText.text = " NFS is now setup for user based NFS mounts `r`n  Ready for Next Task!"
+            $ResultText.text = " NFS is now setup for user based NFS mounts `r`n Ready for Next Task!"
         })
 
     $resetnetwork.Add_Click({
@@ -3545,6 +3867,27 @@ public class Wallpaper {
             $spotify.Checked = $false
             $ds4windows.Checked = $false
             $bakkes.Checked = $false
+
+            [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+            $forcereinstallchoco = [System.Windows.Forms.MessageBox]::Show('Do you also want to force a re-install of Chocolatey?' , "Ready to re-install Chocolatey?" , 4)
+            if ($forcereinstallchoco -eq 'Yes') {
+                # Resets/Removed chocolatey in case of failure.
+                Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
+                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+                
+                if (choco list --lo -r -e chocolatey-core.extension) {
+                    $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
+                }
+                else {
+                    choco install chocolatey-core.extension -y -force
+                    $ResultText.text = " Chocolatey Core Extension was installed. `r`n Ready for next task!"
+                }    
+                
+                $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
+            }
         })
 
     $updatebutton.Add_Click({
@@ -3553,13 +3896,14 @@ public class Wallpaper {
             $chocoupdate = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Ready to update apps with Chocolatey?" , 4)
             if ($chocoupdate -eq 'Yes') {
                 $chocoupdate = {
-                    $name = 'Chocolatey is updating your apps - Please wait...'
+                    $name = 'Chocolatey is updating all your apps that require an update - Please wait...'
                     $host.ui.RawUI.WindowTitle = $name
-                    cmd /c choco upgrade all -y
+                    
+                    choco update all -y --force
                 }
 
                 Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoupdate"
-                $ResultText.text = "Updating all applications already installed, please wait..."
+                $ResultText.text = " Updating all installed applications `r`n Stay tuned until UI is responsive again!"
             }
         })
 
@@ -3567,185 +3911,302 @@ public class Wallpaper {
     $dropboxpath = Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"
     $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
 
-    $okbutton.Add_Click({
-        if (Test-Path "$env:ProgramData\Chocolatey") {
-            #$ResultText.text = "Chocolatey is already installed - Proceeding..."
+   $okbutton.Add_Click({
 
-            if ($bravebrowser.Checked) {
-                if ($bravepath) {
-                    $ResultText.text = "Brave Browser Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Brave.Brave --exact --accept-source-agreements
-                    $ResultText.text = "Brave Browser Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($dropbox.Checked) {
-                if ($dropboxpath) {
-                    $ResultText.text = "Dropbox Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Dropbox.Dropbox --exact --accept-source-agreements
-                    $ResultText.text = "Dropbox Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($7zip.Checked) {
-                if ($7zippath) {
-                    $ResultText.text = "7-Zip Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=7zip.7zip --exact --accept-source-agreements
-                    $ResultText.text = "7-Zip Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($malwarebytes.Checked) {  
-                if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                    $ResultText.text = "Malwarebytes Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Malwarebytes.Malwarebytes --exact --accept-source-agreements
-                    $ResultText.text = "Malwarebytes Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($steam.Checked) {
-                if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                    $ResultText.text = "Steam Client Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Valve.Steam --exact --accept-source-agreements
-                    $ResultText.text = "Steam Client Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($discord.Checked) {
-                if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                    $ResultText.text = "Discord Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Discord.Discord --exact --accept-source-agreements
-                    $ResultText.text = "Discord Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($teamviewer.Checked) {
-                if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                    $ResultText.text = "Teamviewer Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=TeamViewer.TeamViewer  --exact --accept-source-agreements
-                    $ResultText.text = "Teamviewer Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($epicgames.Checked) {
-                if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                    $ResultText.text = "Epic Games Launcher Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=EpicGames.EpicGamesLauncher --exact --accept-source-agreements
-                    $ResultText.text = "Epic Games Launcher Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($githubdesktop.Checked) {
-                if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                    $ResultText.text = "Github Desktop Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=GitHub.GitHubDesktop --exact --accept-source-agreements
-                    $ResultText.text = "Github Desktop Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($visualstudiocode.Checked) {
-                if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                    $ResultText.text = "Visual Studio Code Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Microsoft.VisualStudioCode --exact --accept-source-agreements
-                    $ResultText.text = "Visual Studio Code Installed - Ready for Next Task"
-                }
-            }
-    
-            if ($qbittorrent.Checked) {
-                if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                    $ResultText.text = "qBittorrent Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=qBittorrent.qBittorrent --exact --accept-source-agreements
-                    $ResultText.text = "qBittorrent Installed - Ready for Next Task"
-                }
-            }
-
-            if ($notepad.Checked) {
-                if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                    $ResultText.text = "Notepad++ Already Installed - Ready for Next Task"
-                }  
-                elseif (!Test-Path "C:\Program Files\Notepad++\notepad++.exe"){
-                    choco install notepadplusplus
-                    $ResultText.text = "Notepad++ Installed - Ready for Next Task"
-                }
-                else {
-                    $ResultText.text = "Error upon installing, check your internet connection."
-                }
-            }
-
-            if ($foxit.Checked) {
-                if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader") {
-                    $ResultText.text = "Foxit PDF Reader Already Installed - Ready for Next Task"
-                }  
-                else {
-                    winget install --id=Foxit.FoxitReader --exact --accept-source-agreements
-                    $ResultText.text = "Foxit PDF Reader Installed - Ready for Next Task"
-                }
-            }
+    if(!(Test-Path "C:\ProgramData\chocolatey")) {
+        $ResultText.text = " Chocolatey is installing! `r`n Stay tuned until UI is responsive again!"
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        
+        if (choco list --lo -r -e chocolatey-core.extension) {
+            $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
+            Write-Host " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
         }
         else {
-  
-            $chocoinstall = {
-                $name = 'Chocolatey is installing - Please wait...'
-                $host.ui.RawUI.WindowTitle = $name
-                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
-            }
-            Start-Process powershell.exe -ArgumentList "Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; $chocoinstall"
+            choco install chocolatey-core.extension -y -force
+            Write-Host " Chocolatey Core Extension was installed. `r`n Ready for next task!"
+            $ResultText.text = " Chocolatey Core Extension was installed. `r`n Ready for next task!"
+        }
 
-            $ResultText.text = "Chocolatey was installed - Ready for Next Task"
+        $ResultText.text = " Chocolatey was installed! `r`n Ready for next task!"
+    }
+    elseif(Test-Path "C:\ProgramData\chocolatey\choco.exe") {
+        $ResultText.text = " Making sure Chocolatey is up to date! `r`n Stay tuned until UI is responsive again!"
+        choco upgrade chocolatey
+        $ResultText.text = " Chocolatey updated sucessfully! `r`n Ready for next task!"
+    }
+    elseif((Test-Path "C:\ProgramData\chocolatey\lib") -and (!(Test-Path "C:\ProgramData\chocolatey\choco.exe"))) {
+        $ResultText.text = " Files missing, re-installing Chocolatey! `r`n Stay tuned until UI is responsive again!"
+
+         # Resets/Removed chocolatey in case of failure.
+         Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+         Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        choco install chocolatey-core.extension -y -force
+        $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
+    }
+
+        if ($bravebrowser.Checked) {
+            if ($bravepath) {
+                $ResultText.text = " Brave Browser was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install brave -y --force
+                
+                if (choco list --lo -r -e brave) {
+                    $ResultText.text = " Brave Browser has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Brave Browser failed to install. `r`n Ready for next task!"
+                }    
+            }
+        }
+
+        if ($dropbox.Checked) {
+            if ($dropboxpath) {
+                $ResultText.text = " Dropbox was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install dropbox -y --force
+
+                if (choco list --lo -r -e dropbox) {
+                    $ResultText.text = " Dropbox has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Dropbox failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($7zip.Checked) {
+            if ($7zippath) {
+                $ResultText.text = " 7-Zip was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install 7zip -y --force
+
+                if (choco list --lo -r -e 7zip) {
+                    $ResultText.text = " 7zip has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " 7zip failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($malwarebytes.Checked) {  
+            if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
+                $ResultText.text = " Malwarebytes was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install Malwarebytes -y --force
+
+                if (choco list --lo -r -e Malwarebytes) {
+                    $ResultText.text = " Malwarebytes has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Malwarebytes failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($steam.Checked) {
+            if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
+                $ResultText.text = " Steam Client was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install steam -y --force
+
+                if (choco list --lo -r -e steam) {
+                    $ResultText.text = " Steam has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Steam failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($discord.Checked) {
+            if (Test-Path ~\AppData\Local\Discord\update.exe) {
+                $ResultText.text = " Discord was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install discord -y --force
+
+                if (choco list --lo -r -e discord) {
+                    $ResultText.text = " Discord has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Discord failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($teamviewer.Checked) {
+            if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
+                $ResultText.text = " Teamviewer was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install teamviewer -y --force
+
+                if (choco list --lo -r -e teamviewer) {
+                        $ResultText.text = " Teamviewer has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Teamviewer failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($epicgames.Checked) {
+            if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
+                $ResultText.text = " Epic Games Launcher was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install epicgameslauncher -y --force
+                
+                if (choco list --lo -r -e epicgameslauncher) {
+                    $ResultText.text = " Epic Games Launcher has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Epic Games Launcher failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($githubdesktop.Checked) {
+            if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
+                $ResultText.text = " Github Desktop was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install github-desktop -y --force
+                
+                if (choco list --lo -r -e github-desktop) {
+                    $ResultText.text = " Github Desktop has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Github Desktop failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($visualstudiocode.Checked) {
+            if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
+                $ResultText.text = " Visual Studio Code was already Installed.  `r`n Ready for next task!"
+            }  
+            else {
+                choco install vscode -y --force
+                
+                if (choco list --lo -r -e vscode) {
+                    $ResultText.text = " Visual Studio Code has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Visual Studio Code failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($qbittorrent.Checked) {
+            if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
+                $ResultText.text = " qBittorrent was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install qbittorrent -y --force
+                
+                if (choco list --lo -r -e qbittorrent) {
+                    $ResultText.text = " qBittorrent has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " qBittorrent failed to install. `r`n Ready for next task!"
+                } 
+            }
+        }
+
+        if ($notepad.Checked) {
+            if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
+                $ResultText.text = " Notepad++ is was already Installed. `r`n Ready for next task!"
+                
+            }
+            else {
+                choco install notepadplusplus -y --force
+
+                if (choco list --lo -r -e notepadplusplus) {
+                    $ResultText.text = " Notepad++ has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Notepad++ failed to install. `r`n Ready for next task!"
+                }    
+            }
+        }
+
+        if ($foxit.Checked) {
+            if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader\FoxitPDFReader.exe") {
+                $ResultText.text = " Foxit PDF Reader was already Installed. `r`n Ready for next task!"
+            }  
+            else {
+                choco install foxitreader -y --force
+                
+                if (choco list --lo -r -e foxitreader) {
+                    $ResultText.text = " Foxit PDF Reader has been installed. `r`n Ready for next task!"
+                }
+                else {
+                    $ResultText.text = " Foxit PDF Reader failed to install. `r`n Ready for next task!"
+                }
+            }
         }
 
             if ($spotify.Checked) {
-                if (Test-Path "$pathDesktop\SpotifySetup.exe") {
-                    $ResultText.text = "Spotify Already Downloaded - Ready for Next Task"
+                if (Test-Path "~\AppData\Roaming\Spotify\Spotify.exe") {
+                    $ResultText.text = " Spotify was already Installed. `r`n Ready for next task!"
                 }  
                 else {
-                    Invoke-WebRequest "https://download.scdn.co/SpotifySetup.exe" -OutFile "$pathDesktop\SpotifySetup.exe"
-                    $ResultText.text = "SpotifySetup.exe Downloaded to $pathDesktop for easy installation - Ready for Next Task"
+                    choco install spotify -y --force
+
+                    if (choco list --lo -r -e spotify) {
+                        $ResultText.text = " Spotify has been installed. `r`n Ready for next task!"
+                    }
+                    else {
+                        $ResultText.text = " Spotify failed to install. `r`n Ready for next task!"
+                    }
                 }
             }
 
             if ($ds4windows.Checked) {
-
-
-                if (Test-Path "$pathDocuments\DS4Windows.7z") {
-                    $ResultText.text = "DS4Windows Already Downloaded - Ready for Next Task"
+                if (Test-Path "C:\ProgramData\chocolatey\bin\DS4Windows.exe") {
+                    $ResultText.text = " DS4 Windows was already Installed. `r`n Ready for next task!"
                 }  
                 else {
-                    Invoke-WebRequest "https://github.com/Ryochan7/DS4Windows/releases/download/v3.2.17/DS4Windows_3.2.17_x64.7z" -OutFile "$pathDocuments\DS4Windows.7z"
-                    $ResultText.text = "DS4Windows downloaded, files can be found in your $pathDocuments - Ready for Next Task"
+                    choco install ds4windows -y --force
+                    
+                    if (choco list --lo -r -e ds4windows) {
+                        $ResultText.text = " DS4 Windows has been installed. `r`n Ready for next task!"
+                    }
+                    else {
+                        $ResultText.text = " DS4 Windows failed to install. `r`n Ready for next task!"
+                    }
                 }
             }
 
             if ($bakkes.Checked) {
+
                 if (Test-Path "$pathDocuments\Bakkesmod.zip") {
-                    $ResultText.text = "Bakkesmod Already Downloaded - Ready for Next Task"
+                    $ResultText.text = " Bakkesmod Already Downloaded. `r`n Ready for next task!"
                 }  
                 else {
+                    # Download bakkesmod from source destination
                     Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$pathDocuments\Bakkesmod.zip"
+                    
+                    # Install 7zip module
+                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+                    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+                    Install-Module -Name 7Zip4PowerShell -Force
 
-                    $ResultText.text = "Bakkesmod, files can be found in your $pathDocuments - Ready for Next Task"
+                    # Extract file
+                    $sourcefile = "$pathDocuments\Bakkesmod.zip"
+                    Expand-7Zip -ArchiveFileName $sourcefile -TargetPath "~\AppData\Roaming\"
+
+                    $ResultText.text = " Bakkesmod has been downloaded and extracted, files can be found in your $pathDocuments. `r`n Stay tuned until UI is responsive again!"
                 }
             }
         })
@@ -3775,21 +4236,21 @@ public class Wallpaper {
             $externalIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
             $winLicence = (Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
             $accountUsername = (Get-ChildItem Env:USERNAME).Value
-            $domainName = $env:USERDNSDOMAIN
+            $domainName = (Get-WmiObject win32_computersystem).Domain
             $computerName = $env:computername
+
+
         
             $ResultText.text =
                 "Username: "        + $accountUsername + "`r`n `r`n" + 
                 "Computer Name: "   + $computerName + "`r`n `r`n" + 
                 "Domain: "          + $domainName + "`r`n `r`n" + 
-                "Local IP: "        + $localIP + "`r`n `r`n" +  #REMOVE VPN ADAPTERS HERE AND ONLY DISPLAY ETHERNET OR WIFI
+                "Local IP: "        + $localIP + "`r`n `r`n" + 
                 "External IP: "     + $externalIP + "`r`n `r`n" + 
                 "Windows Licence: " + $winLicence + "`r`n `r`n" + 
                 "OS: "              + $OSname + "`r`n `r`n" + 
                 "OS Build: "        + $OSver + "`r`n `r`n" +   
                 "CPU Architecture: "+ $OSbit + "`r`n"
-
-                #LAST WINDOWS UPDATE DATE IF POSSIBLE
         })
 
         $HardwareInfo.Add_Click({
@@ -3837,33 +4298,50 @@ public class Wallpaper {
         })
     
         $antivirusInfo.Add_Click({
-            $AntiVirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct
+            if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
+                $id = (Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Malwarebytes").id
 
-            foreach($AntiVirusProduct in $AntiVirusProducts){
-                switch ($AntiVirusProduct.productState) {
-                    "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
-                    "262160" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
-                    "266240" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
-                    "266256" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
-                    "393216" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
-                    "393232" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
-                    "393488" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
-                    "397312" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
-                    "397328" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
-                    "397584" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
-                default {$defstatus = "Unknown" ;$rtstatus = "Unknown"}
-                }
+                $ResultText.text = " Malwarebytes is installed and active so you should have the best protection there is!" + " `r`n " + "Application ID: $id"
             }
+            else {
+                $AntiVirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct
 
-                $ResultText.text =
-                "Name: "        + $AntiVirusProduct.displayName + "`r`n" + 
-                "Product GUID: "   + $AntiVirusProduct.instanceGuid + "`r`n" + 
-                "Product Executable: "          + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
-                "Reporting Exe: "        + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
-                "Definition Status: "     + $defstatus + "`r`n" +
-                "Real-time Protection Status: " + $rtstatus + "`r`n"
+                foreach($AntiVirusProduct in $AntiVirusProducts){
+                    switch ($AntiVirusProduct.productState) {
+                        "262144" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                        "262160" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                        "266240" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
+                        "266256" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                        "393216" {$defstatus = "Up to date" ;$rtstatus = "Disabled"}
+                        "393232" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                        "393488" {$defstatus = "Out of date" ;$rtstatus = "Disabled"}
+                        "397312" {$defstatus = "Up to date" ;$rtstatus = "Enabled"}
+                        "397328" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                        "397584" {$defstatus = "Out of date" ;$rtstatus = "Enabled"}
+                    default {$defstatus = "Unknown" ;$rtstatus = "Unknown"}
+                    }
+                }
+
+                    $ResultText.text =
+                    "Name: "        + $AntiVirusProduct.displayName + "`r`n" + 
+                    "Product GUID: "   + $AntiVirusProduct.instanceGuid + "`r`n" + 
+                    "Product Executable: "          + $AntiVirusProduct.pathToSignedProductExe + "`r`n" + 
+                    "Reporting Exe: "        + $AntiVirusProduct.pathToSignedReportingExe + "`r`n" +
+                    "Definition Status: "     + $defstatus + "`r`n" +
+                    "Real-time Protection Status: " + $rtstatus + "`r`n"
+            }
             
         }) 
+
+        $godmode.Add_Click({
+            If (!(Test-Path "$pathDesktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}")) { 
+                New-Item -Path "$pathDesktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}" -ItemType Directory | Out-Null
+                $ResultText.text = "Godmode shortcut has been sucessfully created and can be found at: $Home\Desktop"
+            }
+            else {
+                $ResultText.text = "Failed to create GodMode shortcut it might already exist, please try again!"
+            }
+        })
 
         $xButton.Add_Click({
             $form.Close()
@@ -3876,7 +4354,7 @@ public class Wallpaper {
 
             $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
 
-            if (Test-Path $pathDesktop){ 
+            if (!(Test-Path "$pathDesktop\WinTool.lnk")){ 
                 $Shortcut = $WshShell.CreateShortcut("$pathDesktop\WinTool.lnk")
                 $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
                 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
@@ -3892,12 +4370,12 @@ public class Wallpaper {
                 $ResultText.text = "WinTool shortcut has been created and can be found at: $pathDesktop"
             }
             else {
-                $ResultText.text = "Failed to create WinTool shortcut, please try again!"
+                $ResultText.text = "Failed to create WinTool shortcut it might already exist, please try again!"
             }
         })
 
         $createShortcutGit.Add_Click({
-            if (Test-Path $pathDesktop){ 
+            if (!(Test-Path "$pathDesktop\Alerion921's Github.URL")) { 
                 $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
                 #Creates a shortcut directly to the github repo
                 $oUrlLink = $WshShell.CreateShortcut("$pathDesktop\Alerion921's Github.URL")
@@ -3908,7 +4386,7 @@ public class Wallpaper {
                 $ResultText.text = "Github - WinTool URL shortcut has been created and can be found at: $Home\Desktop\"
             }
             else {
-                $ResultText.text = "Failed to create Github - WinTool URL shortcut, please try again!"
+                $ResultText.text = "Failed to create Github - WinTool URL shortcut it might already exist, please try again!"
             }
         })
 
