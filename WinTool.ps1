@@ -4232,7 +4232,7 @@ public class Wallpaper {
             $OSname = (Get-WmiObject Win32_OperatingSystem).caption
             $OSbit = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
             $OSver = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
-            $localIP = (Get-NetIPAddress | Where-Object{ $_.AddressFamily -eq "IPv4"-and !($_.IPAddress -match "169") -and !($_.IPaddress -match "127") }).IPAddress
+            $localIP = (Get-NetIPAddress | Where-Object{ $_.AddressFamily -eq "IPv4" -and !($_.IPAddress -match "169") -and !($_.IPAddress -match "127") }).IPAddress -join ', '
             $externalIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
             $winLicence = (Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
             $accountUsername = (Get-ChildItem Env:USERNAME).Value
@@ -4256,25 +4256,19 @@ public class Wallpaper {
         $HardwareInfo.Add_Click({
 
             $manufacturer = Get-WmiObject -Class Win32_ComputerSystem -Namespace "root\CIMV2"
+            $bios = Get-WmiObject -Class Win32_BIOS -Namespace "root\CIMV2"
+            $GPU = Get-WmiObject -Class Win32_VideoController -Filter "AdapterCompatibility != 'DisplayLink'" #AdapterDACType = Internal can also be used but need to verify that this works with external GPUs too first    
+            $cpuInfo = Get-WmiObject -Class Win32_Processor -ComputerName. | Select-Object -Property [a-z]*
+
             $computerBrand = $manufacturer.Manufacturer
             $model           = $manufacturer.Model
-            
-            
-            $cpuInfo = Get-WmiObject -Class Win32_Processor -ComputerName. | Select-Object -Property [a-z]*
             $cpuName = $cpuInfo.Name
             $cores   = $cpuInfo[0].NumberOfLogicalProcessors
-
-            $GPU = Get-WmiObject -Class Win32_VideoController -Filter "AdapterCompatibility != 'DisplayLink'" #AdapterDACType = Internal can also be used but need to verify that this works with external GPUs too first
             $GPUname = $GPU.Name
             $GPUdescription = $GPU.VideoProcessor
-            #$GPUrefreshrate = $GPU.CurrentRefreshRate
-            
             $disk = Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'" |
             Select-Object Size,FreeSpace
-
             $TotMem          = "$([string]([System.Math]::Round($manufacturer.TotalPhysicalMemory/1gb,2))) GB"
-
-            $bios = Get-WmiObject -Class Win32_BIOS -Namespace "root\CIMV2"
             $biosName        = $bios.Manufacturer
             $biosDesc        = $bios.Description
             $biosSerial      = $bios.SerialNumber
@@ -4282,18 +4276,19 @@ public class Wallpaper {
 
             $ResultText.text =
                 "Manufacturer: "            + $computerBrand + "`r`n" + 
-                "Model: "                   + $model + "`r`n `r`n" + 
+                "Model: "                   + $model + "`r`n" + 
+                "Serial Number: "           + $biosSerial + "`r`n `r`n" + 
                 "CPU: "                     + $cpuName + "`r`n" + 
                 "CPU Cores: "               + $cores + "`r`n `r`n" +
                 "GPU Name: "                + $GPUname + "`r`n" + 
-                "GPU Description: "         + $GPUdescription + "`r`n" + 
-                #"Refresh Rate: "            + $GPUrefreshrate + "`r`n `r`n" +
+                "GPU Description: "         + $GPUdescription + "`r`n `r`n" + 
+
                 "Total RAM: "               + $TotMem + "`r`n `r`n" + 
                 "OS Disk Size: "            + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
                 "OS Disk Free Space: "      + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n `r`n" +
                 "Bios: "                    + $biosName + "`r`n" +
-                "Bios Description: "        + $biosDesc + "`r`n" +
-                "Bios Serial: "             + $biosSerial + "`r`n"
+                "Bios Description: "        + $biosDesc + "`r`n"
+                
     
         })
     
