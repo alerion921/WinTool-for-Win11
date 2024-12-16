@@ -1,26 +1,42 @@
+# Import the ShowWindow function from user32.dll to manipulate the PowerShell window state.
+# This allows us to hide the PowerShell console window.
 $HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+
+# Add the ShowWindow method to the PowerShell runtime as a .NET class.
 add-type -name win -member $HidePowershellWindow -namespace native
+
+# Retrieve the current process's main window handle and hide it (state = 0).
 [native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
+# Enable the use of Windows Forms for potential GUI elements (not used in this script, but prepares for it).
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
+# Set the error handling preference to silently ignore errors.
 $ErrorActionPreference = 'SilentlyContinue'
+
+# Create an object to interact with Windows Shell for launching processes.
 $wshell = New-Object -ComObject Wscript.Shell
+
+# Check if the current user has administrator privileges.
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
+    # If not running as administrator, restart the script with elevated permissions.
     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    # Exit the current (non-elevated) instance of the script.
     Exit
 }
 
-# Global Environment folder setup here #
-$pathDesktop        = [Environment]::GetFolderPath("Desktop")
-$pathDocuments      = [Environment]::GetFolderPath("MyDocuments")
-#$pathPictures       = [Environment]::GetFolderPath("MyPictures")
-#$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")
-#$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")
-#$pathWindows        = [Environment]::GetFolderPath("Windows")
-#$pathSystem         = [Environment]::GetFolderPath("System")
+# Global Environment folder setup here
+# Retrieves commonly used folder paths using [Environment]::GetFolderPath
+$pathDesktop        = [Environment]::GetFolderPath("Desktop")                # Path to the Desktop folder
+$pathDocuments      = [Environment]::GetFolderPath("MyDocuments")           # Path to the Documents folder
+$pathPictures       = [Environment]::GetFolderPath("MyPictures")            # Path to the Pictures folder
+$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
+$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
+$pathWindows        = [Environment]::GetFolderPath("Windows")               # Path to the Windows folder
+$pathSystem         = [Environment]::GetFolderPath("System")                # Path to the System folder (e.g., System32)
 ####################################################################################
+
 Function MakeForm {
 
     #Sets the information inside "About this computer"
@@ -861,16 +877,17 @@ Function MakeForm {
     $placeholder11.FlatStyle = "Flat"
     $placeholder11.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    $placeholder12 = New-Object system.Windows.Forms.Button
-    $placeholder12.text = "Placeholder"
-    $placeholder12.width = 220
-    $placeholder12.height = 30
-    $placeholder12.location = New-Object System.Drawing.Point(0, 395)
-    $placeholder12.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder12.BackColor = $frontcolor 
-    $placeholder12.ForeColor = $backcolor
-    $placeholder12.FlatStyle = "Flat"
-    $placeholder12.FlatAppearance.MouseOverBackColor = $hovercolor
+    # Button to Open Customization Form
+    $btnOpenCustomization = New-Object system.Windows.Forms.Button
+    $btnOpenCustomization.text = "Customize About Info"
+    $btnOpenCustomization.width = 220
+    $btnOpenCustomization.height = 30
+    $btnOpenCustomization.location = New-Object System.Drawing.Point(0, 395)
+    $btnOpenCustomization.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $btnOpenCustomization.BackColor = $frontcolor 
+    $btnOpenCustomization.ForeColor = $backcolor
+    $btnOpenCustomization.FlatStyle = "Flat"
+    $btnOpenCustomization.FlatAppearance.MouseOverBackColor = $hovercolor
 
     #######################################################################################################
     # Placeholder ends here
@@ -966,7 +983,7 @@ Function MakeForm {
             $placeholder9,
             $placeholder10,
             $placeholder11,
-            $placeholder12
+            $btnOpenCustomization
         ))
 
     $Panel6.controls.AddRange(@(
@@ -997,6 +1014,127 @@ Function MakeForm {
          Enjoy this free tool!
        "
    }  
+
+## Customize About this computer, new form that allows the users to customize default Windows properties within the About this computer section.
+
+# Event handler for opening the customization form
+$btnOpenCustomization.Add_Click({
+    # Secondary Customization Form
+    $customForm = New-Object System.Windows.Forms.Form
+    $customForm.Text = "Customize About This Computer"
+    $customForm.Size = New-Object System.Drawing.Size(500, 400)
+    $customForm.StartPosition = "CenterScreen"
+
+    # Label for Manufacturer
+    $labelManufacturer = New-Object System.Windows.Forms.Label
+    $labelManufacturer.Text = "Manufacturer:"
+    $labelManufacturer.Location = New-Object System.Drawing.Point(10, 20)
+    $labelManufacturer.Size = New-Object System.Drawing.Size(100, 20)
+    $customForm.Controls.Add($labelManufacturer)
+
+    # Textbox for Manufacturer
+    $textManufacturer = New-Object System.Windows.Forms.TextBox
+    $textManufacturer.Location = New-Object System.Drawing.Point(120, 20)
+    $textManufacturer.Size = New-Object System.Drawing.Size(350, 20)
+    $customForm.Controls.Add($textManufacturer)
+
+    # Label for Support URL
+    $labelSupportURL = New-Object System.Windows.Forms.Label
+    $labelSupportURL.Text = "Support URL:"
+    $labelSupportURL.Location = New-Object System.Drawing.Point(10, 60)
+    $labelSupportURL.Size = New-Object System.Drawing.Size(100, 20)
+    $customForm.Controls.Add($labelSupportURL)
+
+    # Textbox for Support URL
+    $textSupportURL = New-Object System.Windows.Forms.TextBox
+    $textSupportURL.Location = New-Object System.Drawing.Point(120, 60)
+    $textSupportURL.Size = New-Object System.Drawing.Size(350, 20)
+    $customForm.Controls.Add($textSupportURL)
+
+    # Label for Background Image
+    $labelBackground = New-Object System.Windows.Forms.Label
+    $labelBackground.Text = "Background Image:"
+    $labelBackground.Location = New-Object System.Drawing.Point(10, 100)
+    $labelBackground.Size = New-Object System.Drawing.Size(120, 20)
+    $customForm.Controls.Add($labelBackground)
+
+    # Textbox to Display Selected Background Image Path
+    $textBackgroundPath = New-Object System.Windows.Forms.TextBox
+    $textBackgroundPath.Location = New-Object System.Drawing.Point(120, 100)
+    $textBackgroundPath.Size = New-Object System.Drawing.Size(250, 20)
+    $customForm.Controls.Add($textBackgroundPath)
+
+    # Button to Browse Background Image
+    $btnBrowseImage = New-Object System.Windows.Forms.Button
+    $btnBrowseImage.Text = "Browse"
+    $btnBrowseImage.Location = New-Object System.Drawing.Point(380, 100)
+    $btnBrowseImage.Size = New-Object System.Drawing.Size(90, 25)
+    $customForm.Controls.Add($btnBrowseImage)
+
+    # Event handler for browsing background image
+    $btnBrowseImage.Add_Click({
+        $fileDialog = New-Object System.Windows.Forms.OpenFileDialog
+        $fileDialog.Filter = "Image Files (*.bmp, *.jpg, *.jpeg, *.png)|*.bmp;*.jpg;*.jpeg;*.png"
+        If ($fileDialog.ShowDialog() -eq "OK") {
+            $textBackgroundPath.Text = $fileDialog.FileName
+        }
+    })
+
+    # Button to Apply Settings
+    $btnApply = New-Object System.Windows.Forms.Button
+    $btnApply.Text = "Apply"
+    $btnApply.Location = New-Object System.Drawing.Point(120, 150)
+    $btnApply.Size = New-Object System.Drawing.Size(100, 30)
+    $customForm.Controls.Add($btnApply)
+
+    # Button to Close Customization Form
+    $btnCloseCustom = New-Object System.Windows.Forms.Button
+    $btnCloseCustom.Text = "Close"
+    $btnCloseCustom.Location = New-Object System.Drawing.Point(230, 150)
+    $btnCloseCustom.Size = New-Object System.Drawing.Size(100, 30)
+    $customForm.Controls.Add($btnCloseCustom)
+
+    # Event handler for Apply button
+    $btnApply.Add_Click({
+        # Get the values from the textboxes
+        $manufacturer = $textManufacturer.Text
+        $supportURL = $textSupportURL.Text
+        $backgroundPath = $textBackgroundPath.Text
+
+        # Validate and Apply Manufacturer and Support URL
+        If (-not [string]::IsNullOrWhiteSpace($manufacturer)) {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "Manufacturer" -Type String -Value $manufacturer
+        }
+        If (-not [string]::IsNullOrWhiteSpace($supportURL)) {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value $supportURL
+        }
+
+        # Validate and Set Background Image
+        If (-not [string]::IsNullOrWhiteSpace($backgroundPath) -and (Test-Path $backgroundPath)) {
+            Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Wallpaper {
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+}
+"@
+            [Wallpaper]::SystemParametersInfo(0x0014, 0, $backgroundPath, 0x0001 -bor 0x0002)
+        }
+
+        # Show confirmation
+        [System.Windows.Forms.MessageBox]::Show("Information updated successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+    })
+
+    # Event handler for Close button
+    $btnCloseCustom.Add_Click({
+        $customForm.Close()
+    })
+
+    # Show the Customization Form as a modal dialog
+    $customForm.ShowDialog()
+})
+
 
 
     ##DNS CHANGER TEST HERE
