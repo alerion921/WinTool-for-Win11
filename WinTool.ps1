@@ -2088,33 +2088,45 @@ public class Wallpaper {
 
             $ResultText.text = "Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
         })
-
-        Add-Type -AssemblyName System.Windows.Forms
-
+        
         $essentialtweaks.Add_Click({
-            $Form.text = "WinTool by Alerion - Initializing Essential Tweaks... `r`n" 
+            $Form.text = "WinTool by Alerion - Initializing Essential Tweaks... `r`n"
             $ResultText.text = "Activating Essential Tweaks... Please Wait... `r`n"
         
             # Create Restore Point
-            $ResultText.text += "Creating a restore point... `r`n"
-            Enable-ComputerRestore -Drive "C:\" | Out-Null
-            Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
+            $ResultText.text += "Creating a restore point named: WinTool-Essential-Tweaks-Restorepoint... `r`n"
+            try {
+                Enable-ComputerRestore -Drive "C:\" | Out-Null
+                Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
+            } catch {
+                $ResultText.text += "Failed to create a restore point. Continuing without it. `r`n"
+            }
         
             # Adjust Visual Effects
             $ResultText.text += "Adjusting visual effects for performance... `r`n"
             Start-Sleep -Seconds 1
             $visualEffects = @{
-                "HKCU:\Control Panel\Desktop" = @{"DragFullWindows"="0"; "MenuShowDelay"="200"; "UserPreferencesMask"=([byte[]](144, 18, 3, 128, 16, 0, 0, 0))}
-                "HKCU:\Control Panel\Desktop\WindowMetrics" = @{"MinAnimate"="0"}
-                "HKCU:\Control Panel\Keyboard" = @{"KeyboardDelay"=0}
-                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" = @{"ListviewAlphaSelect"=0; "ListviewShadow"=0; "TaskbarAnimations"=0; "VisualFXSetting"=3}
-                "HKCU:\Software\Microsoft\Windows\DWM" = @{"EnableAeroPeek"=0}
+                "HKCU:\Control Panel\Desktop" = @{
+                    "DragFullWindows" = "0"
+                    "MenuShowDelay" = "200"
+                    "UserPreferencesMask" = ([byte[]](144, 18, 3, 128, 16, 0, 0, 0))
+                }
+                "HKCU:\Control Panel\Desktop\WindowMetrics" = @{"MinAnimate" = "0"}
+                "HKCU:\Control Panel\Keyboard" = @{"KeyboardDelay" = 0}
+                "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" = @{
+                    "ListviewAlphaSelect" = 0
+                    "ListviewShadow" = 0
+                    "TaskbarAnimations" = 0
+                    "VisualFXSetting" = 3
+                }
+                "HKCU:\Software\Microsoft\Windows\DWM" = @{"EnableAeroPeek" = 0}
             }
             foreach ($path in $visualEffects.Keys) {
                 foreach ($name in $visualEffects[$path].Keys) {
                     Set-ItemProperty -Path $path -Name $name -Value $visualEffects[$path][$name] | Out-Null
                 }
             }
+            $ResultText.text += "Visual effects adjusted for performance. `r`n"
         
             # Disable Cortana
             $ResultText.text += "Disabling Cortana... `r`n"
@@ -2134,28 +2146,30 @@ public class Wallpaper {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Cortana" -Name "IsAvailable" -Value 0
         
-            # Disable Background Apps
-            $ResultText.text += "Disabling Background Application Access... `r`n"
-            Get-ChildItem "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" |
-                Where-Object { $_.PSChildName -notlike "Microsoft.Windows.Cortana*" } |
+            # Disable Background Applications
+            $ResultText.text += "Disabling background application access... `r`n"
+            Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" -Exclude "Microsoft.Windows.Cortana*" |
                 ForEach-Object {
-                    Set-ItemProperty -Path $_.PSPath -Name "Disabled" -Value 1
-                    Set-ItemProperty -Path $_.PSPath -Name "DisabledByUser" -Value 1
+                    Set-ItemProperty -Path $_.PsPath -Name "Disabled" -Value 1
+                    Set-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -Value 1
                 }
         
-            # Prompt for Linux Subsystem Removal
-            $ResultText.text += "Prompting for Linux Subsystem removal... `r`n"
+            # Confirm Removal of Linux Subsystem
             $linuxPrompt = [System.Windows.Forms.MessageBox]::Show("Do you want to remove the Linux Subsystem (WSL)?", "Remove WSL", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
             if ($linuxPrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
                 $ResultText.text += "Uninstalling Linux Subsystem... `r`n"
+                if ([System.Environment]::OSVersion.Version.Build -eq 14393) {
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Value 0
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Value 0
+                }
                 Disable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
             } else {
                 $ResultText.text += "Skipped Linux Subsystem removal. `r`n"
             }
         
-            # Prompt for Teams Removal
-            $ResultText.text += "Prompting for Microsoft Teams removal... `r`n"
+            # Confirm Removal of Microsoft Teams
             $teamsPrompt = [System.Windows.Forms.MessageBox]::Show("Do you want to remove Microsoft Teams?", "Remove Microsoft Teams", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
             if ($teamsPrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
                 $ResultText.text += "Removing pre-installed Microsoft Teams... `r`n"
@@ -2164,7 +2178,7 @@ public class Wallpaper {
                 $ResultText.text += "Skipped Microsoft Teams removal. `r`n"
             }
         
-            # Enable Performance Power Plan
+            # Enable Highest Performance Power Plan
             $ResultText.text += "Enabling Highest Performance Power Plan... `r`n"
             $powerPlanUrl = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow"
             $powerPlanPath = "$Env:windir\system32\Bitsum-Highest-Performance.pow"
@@ -2172,12 +2186,91 @@ public class Wallpaper {
             powercfg -import $powerPlanPath e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
             powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
         
+            # Enable Windows 10 Context Menu
+            $ResultText.text += "Restoring Windows 10/Old context menu... `r`n"
+            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force | Out-Null
+            Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Name "(Default)" -Value "" | Out-Null
+        
+            # Removing recently added apps and used apps from Start Menu
+            $ResultText.text += "Removing recently added apps and used apps from Start Menu... `r`n"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start" -Name "ShowFrequentList" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Start" -Name "ShowRecentList" -Type DWord -Value 0
+
+            # Disabling UAC
+            $ResultText.text += "Disabling UAC... `r`n"
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
+
+            # Disabling Sticky Keys
+            $ResultText.text += "Disabling Sticky Keys... `r`n"
+            Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Type DWord -Value 506
+
+            # Hiding Task View button
+            $ResultText.text += "Hiding Task View button... `r`n"
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
+
+            # Hiding People icon
+            $ResultText.text += "Hiding People icon... `r`n"
+            If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
+
+            # Showing tray icons
+            $ResultText.text += "Showing tray icons... `r`n"
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Type DWord -Value 1
+
+            # Disabling the Search box on taskbar
+            $ResultText.text += "Disabling the Search box on taskbar... `r`n"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+
+            # Disabling News and Interests
+            $ResultText.text += "Disabling News and Interests... `r`n"
+            New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2
+
+            # Disabling Apps splitting on taskbar
+            $ResultText.text += "Disabling Apps splitting on taskbar... `r`n"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 0 -Force
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" | Out-Null
+            }
+            New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 0
+
+            # Removing chat from taskbar
+            $ResultText.text += "Removing chat from taskbar... `r`n"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Type DWord -Value 0 -Force
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" -Name "ChatIcon" -Type DWord -Value 3 -Force
+
+            # Adjusting taskbar alignment
+            $ResultText.text += "Adjusting taskbar alignment to sane settings... `r`n"
+            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Type DWord -Value 0 -Force
+
+            # Grouping svchost processes
+            $ResultText.text += "Grouping svchost processes to free up system RAM... `r`n"
+            $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
+
+            # Showing known file extensions
+            $ResultText.text += "Showing known file extensions... `r`n"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
+
+            # Setting default explorer view to This PC
+            $ResultText.text += "Setting default explorer view to This PC... `r`n"
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
+
+            # Showing hidden system files and folders
+            $ResultText.text += "Showing all hidden system files and folders... `r`n"
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Type DWord -Value 1
+            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden" -Type DWord -Value 1
+
             # Restart Explorer
             $ResultText.text += "Restarting Explorer for changes to take effect... `r`n"
             Stop-Process -Name explorer -Force
             Start-Sleep -Seconds 2
             Start-Process explorer
-        
+
             $ResultText.text = "Essential Tweaks Completed. Ready for the next task!"
             $Form.text = "WinTool by Alerion"
         })
@@ -2189,24 +2282,61 @@ public class Wallpaper {
         })
 
     $essentialundo.Add_Click({
-            $Form.text = "WinTool by Alerion - Initializing Essentials Undo... `r`n" 
-            $ResultText.text = " Creating Restore Point named: WinTool-EssentialTweaksUndo-Restorepoint in case something goes wrong... `r`n" 
-            Enable-ComputerRestore -Drive "C:\"
-            Checkpoint-Computer -Description "WinTool-EssentialTweaksUndo-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
+            $Form.text = "WinTool by Alerion - Initializing Undo Essential Tweaks... `r`n"
+            $ResultText.text = "Activating Undo Essential Tweaks... Please Wait... `r`n"
 
-            $ResultText.text += " Disabling Windows 10 context menu... `r`n" 
-            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Force
-
-            $ResultText.text += " Enabling recently added apps from Start Menu... `r`n" 
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 0
-
-            $ResultText.text += " Re-Installing Linux Subsystem... `r`n" 
-            If ([System.Environment]::OSVersion.Version.Build -eq 14393) {
-                # 1607 needs developer mode to be enabled
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 1
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 1
+            # Create Restore Point
+            $ResultText.text += "Creating a restore point named: WinTool-Essential-Tweaks-Undo-Restorepoint... `r`n"
+            try {
+                Enable-ComputerRestore -Drive "C:\" | Out-Null
+                Checkpoint-Computer -Description "WinTool-Essential-Tweaks-Undo-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
+            } catch {
+                $ResultText.text += "Failed to create a restore point. Continuing without it. `r`n"
             }
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
+
+            $ResultText.text += "Disabling Windows 10 context menu... `r`n"
+            Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Force -ErrorAction SilentlyContinue
+
+            $ResultText.text += "Enabling recently added apps in Start Menu... `r`n"
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -ErrorAction SilentlyContinue
+
+            $ResultText.text += "Preparing to reinstall Linux Subsystem... `r`n"
+            $linuxPrompt = [System.Windows.Forms.MessageBox]::Show(
+                "Do you want to reinstall the Linux Subsystem (WSL)?",
+                "Reinstall Linux Subsystem",
+                [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                [System.Windows.Forms.MessageBoxIcon]::Question
+            )
+            if ($linuxPrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
+                $ResultText.text += "Reinstalling Linux Subsystem... `r`n"
+                if ([System.Environment]::OSVersion.Version.Build -eq 14393) {
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Type DWord -Value 1
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Type DWord -Value 1
+                }
+                Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
+                $ResultText.text += "Linux Subsystem reinstalled successfully. `r`n"
+            } else {
+                $ResultText.text += "Skipped Linux Subsystem reinstallation. `r`n"
+            }
+
+            $ResultText.text += "Preparing to reinstall Microsoft Teams... `r`n"
+            $teamsPrompt = [System.Windows.Forms.MessageBox]::Show(
+                "Do you want to reinstall Microsoft Teams?",
+                "Reinstall Microsoft Teams",
+                [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                [System.Windows.Forms.MessageBoxIcon]::Question
+            )
+            if ($teamsPrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
+                $ResultText.text += "Reinstalling Microsoft Teams... `r`n"
+                $teamsPackageUrl = "https://aka.ms/teamsdownload"
+                $teamsInstallerPath = "$Env:Temp\TeamsInstaller.exe"
+                Invoke-WebRequest -Uri $teamsPackageUrl -OutFile $teamsInstallerPath -ErrorAction SilentlyContinue
+                Start-Process -FilePath $teamsInstallerPath -ArgumentList "/silent" -Wait
+                Remove-Item -Path $teamsInstallerPath -Force -ErrorAction SilentlyContinue
+                $ResultText.text += "Microsoft Teams reinstalled successfully. `r`n"
+            } else {
+                $ResultText.text += "Skipped Microsoft Teams reinstallation. `r`n"
+            }
 
             $ResultText.text = " Re-Enabling Cortana... `r`n" 
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -ErrorAction SilentlyContinue
@@ -2263,8 +2393,8 @@ public class Wallpaper {
             $ResultText.text = " Hide tray icons... `r`n" 
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -ErrorAction SilentlyContinue
 
-            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu... `r`n" 
             # Restores Widgets to the Taskbar
+            $ResultText.text += " Re-Enabling Chat, Widgets and Centering Start Menu... `r`n" 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 1
             Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -ErrorAction SilentlyContinue
@@ -2279,17 +2409,17 @@ public class Wallpaper {
             # Recovers search to the Taskbar
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 2
 
-            $ResultText.text += " Explorer view reset back to Home menu... `r`n" 
             # Default Explorer view to Home
+            $ResultText.text += " Explorer view reset back to Home menu... `r`n" 
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -type Dword -Value 0
             
-            $ResultText.text += " Hiding Windows system folders that were previously shown ... `r`n" 
             # Show hidden files, folders and system files that are hidden
+            $ResultText.text += " Hiding Windows system folders that were previously shown ... `r`n" 
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden"  -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden"  -ErrorAction SilentlyContinue
 
-            $ResultText.text += " Explorer is restarting, screen flashes might occur... `r`n" 
             #Restart Explorer so that the taskbar can update and not look break :D
+            $ResultText.text += " Explorer is restarting, screen flashes might occur... `r`n" 
             Stop-Process -name explorer
             Start-Sleep -s 5
             Start-Process -name explorer
