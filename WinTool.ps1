@@ -1,12 +1,12 @@
 # Import the ShowWindow function from user32.dll to manipulate the PowerShell window state.
 # This allows us to hide the PowerShell console window.
-$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+#$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
 
 # Add the ShowWindow method to the PowerShell runtime as a .NET class.
-add-type -name win -member $HidePowershellWindow -namespace native
+#add-type -name win -member $HidePowershellWindow -namespace native
 
 # Retrieve the current process's main window handle and hide it (state = 0).
-[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
+#[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
 # Enable the use of Windows Forms for potential GUI elements (not used in this script, but prepares for it).
 Add-Type -AssemblyName System.Windows.Forms
@@ -346,41 +346,109 @@ function InstallOrUninstallApplications {
     ShowAppSelectionForm
 }
 
+# Function to Add Panels
+Function Add-Panel {
+    param (
+        [int]$Width,
+        [int]$Height,
+        [System.Drawing.Point]$Location
+    )
+    $panel = New-Object system.Windows.Forms.Panel
+    $panel.Width = $Width
+    $panel.Height = $Height
+    $panel.Location = $Location
+    return $panel
+}
+
+function Add-Control {
+    param (
+        [string]$Text,
+        [int]$X,
+        [int]$Y,
+        [int]$Width = 220,
+        [int]$Height = 30,
+        [string]$Font = 'Microsoft Sans Serif',
+        [int]$FontSize = 12,
+        [System.Drawing.Color]$BackColor = [System.Drawing.ColorTranslator]::FromHtml("#182C36"),
+        [System.Drawing.Color]$ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5"),
+        [System.Drawing.Color]$HoverColor = [System.Drawing.ColorTranslator]::FromHtml("#346075"),
+        [string]$ControlType = "Button" # Default to Button, can be "Label", "ComboBox"
+    )
+
+    switch ($ControlType) {
+        "Button" {
+            $control = New-Object system.Windows.Forms.Button -Property @{
+                Text = $Text
+                Width = $Width
+                Height = $Height
+                Location = New-Object System.Drawing.Point($X, $Y)
+                Font = New-Object System.Drawing.Font($Font, $FontSize)
+                BackColor = $BackColor
+                ForeColor = $ForeColor
+                FlatStyle = "Flat"
+            }
+            $control.FlatAppearance.MouseOverBackColor = $HoverColor
+        }
+        "Label" {
+            $control = New-Object system.Windows.Forms.Label -Property @{
+                Text = $Text
+                Width = $Width
+                Height = $Height
+                Location = New-Object System.Drawing.Point($X, $Y)
+                Font = New-Object System.Drawing.Font($Font, $FontSize, [System.Drawing.FontStyle]::Bold)
+                ForeColor = $ForeColor
+                TextAlign = "MiddleCenter"
+                AutoSize = $false
+            }
+        }
+        "ComboBox" {
+            $control = New-Object system.Windows.Forms.ComboBox -Property @{
+                Width = $Width
+                Height = $Height
+                Location = New-Object System.Drawing.Point($X, $Y)
+                Font = New-Object System.Drawing.Font($Font, $FontSize)
+                BackColor = $BackColor
+                ForeColor = $ForeColor
+            }
+            $control.DropDownStyle = "DropDownList"
+        }
+        default {
+            throw "Unsupported control type: $ControlType"
+        }
+    }
+    return $control
+}
+
 Function MakeForm {
-    if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '0') {
-        $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
-        $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
-        $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
-    }
-    elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme") -eq '1') {
-        $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#C40E61")
-        $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#FFE082")
-        $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#F8BBD0")
-    }
+     $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
+     $backcolor  = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
+     $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
 
-    if ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '0') {
-        $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
-        $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
-        $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
-    }
-    elseif ((Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme") -eq '1') {
-        $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#C40E61")
-        $backcolor = [System.Drawing.ColorTranslator]::FromHtml("#FFE082")
-        $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#F8BBD0")
-    }
+     #Form Design
+     $Form = New-Object system.Windows.Forms.Form
+     $Form.text = "WinTool by Alerion"
+     $Form.StartPosition = "CenterScreen"
+     $Form.TopMost = $false
+     $Form.BackColor = $backcolor
+     $Form.ForeColor = $frontcolor
+     $Form.AutoScaleDimensions = '192, 192'
+     $Form.AutoScaleMode = "Dpi"
+     $Form.AutoSize = $True
+     $Form.AutoScroll = $True
+     $Form.FormBorderStyle = 0
+ 
 
-    #Form Design
-    $Form = New-Object system.Windows.Forms.Form
-    $Form.text = "WinTool by Alerion"
-    $Form.StartPosition = "CenterScreen"
-    $Form.TopMost = $false
-    $Form.BackColor = $backcolor
-    $Form.ForeColor = $frontcolor
-    $Form.AutoScaleDimensions = '192, 192'
-    $Form.AutoScaleMode = "Dpi"
-    $Form.AutoSize = $True
-    $Form.AutoScroll = $True
-    $Form.FormBorderStyle = 0
+    # Add Form-Level Buttons
+    $xButton = New-Object system.Windows.Forms.Button
+    $xButton.Text = "X"
+    $xButton.Width = 25
+    $xButton.Height = 25
+    $xButton.Location = New-Object System.Drawing.Point(1125, 10)
+    $xButton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $xButton.BackColor = $frontcolor
+    $xButton.ForeColor = $backcolor
+    $xButton.FlatStyle = "Flat"
+    $xButton.FlatAppearance.MouseOverBackColor = $hovercolor
 
     # GUI Icon
     $iconBase64 = [Convert]::ToBase64String((Get-Content "C:\Windows\heart.ico" -Encoding Byte))
@@ -392,19 +460,6 @@ Function MakeForm {
     $Form.Height = $objImage.Height
     $Form.MinimizeBox = $false;
     $Form.MaximizeBox = $false;
-
-    $xButton = New-Object system.Windows.Forms.Button
-    $xButton.text = "X"
-    $xButton.width = 25
-    $xButton.height = 25
-    $xButton.location = New-Object System.Drawing.Point(1125, 10)
-    $xButton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
-    $xButton.BackColor = $frontcolor 
-    $xButton.ForeColor = $backcolor
-    $xButton.FlatStyle = "Flat"
-    $xbutton.BorderStyle = 0
-    $xButton.FlatAppearance.MouseOverBackColor = $hovercolor
-    $xButton.TabStop = $false
 
     $supportWintool = New-Object system.Windows.Forms.Button
     $supportWintool.text = "Support WinTool!"
@@ -453,39 +508,41 @@ Function MakeForm {
     $wintoollogo.Font = New-Object System.Drawing.Font('Impact', 40)
     $wintoollogo.ForeColor = $frontcolor 
 
-    $Panel1 = New-Object system.Windows.Forms.Panel
-    $Panel1.height = 440
-    $Panel1.width = 220
-    $Panel1.location = New-Object System.Drawing.Point(10, 100)
+    # Panels Definition
+    $Panel1 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(10, 100))
+    $Panel2 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(240, 100))
+    $Panel3 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(470, 100))
+    $Panel4 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(700, 100))
+    $Panel5 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(930, 100))
+    $Panel6 = Add-Panel -Width 1145 -Height 200 -Location (New-Object System.Drawing.Point(10, 700))
 
-    $Panel2 = New-Object system.Windows.Forms.Panel
-    $Panel2.height = 440
-    $Panel2.width = 220
-    $Panel2.location = New-Object System.Drawing.Point(240, 100)
+    # Add Panels to Form
+    $Form.Controls.AddRange(@($xButton, $createShortcutGit, $CreateShortcutTool, $wintoollogo, $supportWintool, $Panel1, $Panel2, $Panel3, $Panel4, $Panel5, $Panel6))
 
-    $Panel3 = New-Object system.Windows.Forms.Panel
-    $Panel3.height = 440
-    $Panel3.width = 220
-    $Panel3.location = New-Object System.Drawing.Point(470, 100)
+    # Result Text Panel
+    $ResultTextWrapper = New-Object system.Windows.Forms.TextBox
+    $ResultTextWrapper.Multiline = $true
+    $ResultTextWrapper.ReadOnly = $true
+    $ResultTextWrapper.Width = 1140
+    $ResultTextWrapper.Height = 195
+    $ResultTextWrapper.BackColor = $backcolor
+    $ResultTextWrapper.ForeColor = $frontcolor
+    $Panel6.Controls.Add($ResultTextWrapper)
 
-    $Panel4 = New-Object system.Windows.Forms.Panel
-    $Panel4.height = 440
-    $Panel4.width = 230
-    $Panel4.location = New-Object System.Drawing.Point(700, 100)
+    $ResultText = New-Object system.Windows.Forms.TextBox
+    $ResultText.Multiline = $true
+    $ResultText.ReadOnly = $true
+    $ResultText.AutoSize = $true
+    $ResultText.Width = 1110 # Adjust for padding
+    $ResultText.Height = 195 # Adjust for padding
+    $ResultText.Location = New-Object System.Drawing.Point(10, 10) # Padding
+    $ResultText.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $ResultText.BorderStyle = 0
+    $ResultText.BackColor = $backcolor
+    $ResultText.ForeColor = $frontcolor
 
-    $Panel5 = New-Object system.Windows.Forms.Panel
-    $Panel5.height = 440
-    $Panel5.width = 230
-    $Panel5.location = New-Object System.Drawing.Point(930, 100)
-
-    $Panel6 = New-Object system.Windows.Forms.Panel
-    $Panel6.height = 330
-    $Panel6.width = 1140
-    $Panel6.location = New-Object System.Drawing.Point(10, 540)
-
-    #######################################################################################################
-    # Tweaks starts here
-    #######################################################################################################
+    # Nest ResultText in Wrapper
+    $ResultTextWrapper.Controls.Add($ResultText)
 
     $performancetweaks = New-Object system.Windows.Forms.Label
     $performancetweaks.text = "Performance Tweaks"
@@ -616,167 +673,61 @@ Function MakeForm {
         $removehomegallery.FlatAppearance.MouseOverBackColor = $hovercolor
     }
 
-    #######################################################################################################
-    # Tweaks ends here
-    #######################################################################################################
-    # Fixes starts here
-    #######################################################################################################
+    #####################
+    ## Panel 2 begins! ##
+    #####################
+    $YPosition = 10
+    $XPosition = 0
+    $spacing = 35 # Control height plus consistent margin
 
-    $fixes = New-Object system.Windows.Forms.Label
-    $fixes.text = "Fixes"
-    $fixes.AutoSize = $false
-    $fixes.width = 220
-    $fixes.height = 35
-    $fixes.TextAlign = "MiddleCenter"
-    $fixes.location = New-Object System.Drawing.Point(0, 10)
-    $fixes.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $fixes.ForeColor = $frontcolor 
+    # Add controls with consistent spacing
+    $fixes = Add-Control -Text "Fixes" -X $XPosition -Y $YPosition -Height 35 -FontSize 10 -ControlType "Label"
+    $YPosition += $spacing
 
-    $errorscanner = New-Object system.Windows.Forms.Button
-    $errorscanner.text = "Error Scanner"
-    $errorscanner.width = 220
-    $errorscanner.height = 30
-    $errorscanner.location = New-Object System.Drawing.Point(0, 45)
-    $errorscanner.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $errorscanner.BackColor = $frontcolor 
-    $errorscanner.ForeColor = $backcolor
-    $errorscanner.FlatStyle = "Flat"
-    $errorscanner.FlatAppearance.MouseOverBackColor = $hovercolor
+    $errorscanner = Add-Control -Text "Error Scanner" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    $changedns = New-Object system.Windows.Forms.ComboBox
-    $changedns.text = ""
-    $changedns.width = 220
-    $changedns.height = 30
-    $changedns.autosize = $true
+    $changedns = Add-Control -Text "" -X $XPosition -Y $YPosition -ControlType "ComboBox"
+    @(
+        '          Change DNS Here', 
+        '               Google DNS', 
+        '            Cloudflare DNS', 
+        '               Level3 DNS', 
+        '                 OpenDNS', 
+        '         Restore Default DNS'
+    ) | ForEach-Object { [void] $changedns.Items.Add($_) }
+    $changedns.SelectedIndex = 0
+    $YPosition += $spacing
 
+    $resetnetwork = Add-Control -Text "Reset Network" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
+    $forcenorkeyboard = Add-Control -Text "Force NO/NB Language" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    @('          Change DNS Here', 
-      '               Google DNS', 
-      '            Cloudflare DNS', 
-      '               Level3 DNS', 
-      '                 OpenDNS', 
-      '         Restore Default DNS'
-      ) | ForEach-Object { [void] $changedns.Items.Add($_) }
+    $dualboottime = Add-Control -Text "Set Time to UTC" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    $changedns.SelectedIndex = 0   # Select the default value
-    $changedns.location = New-Object System.Drawing.Point(0, 80)
-    $changedns.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $changedns.BackColor = $frontcolor 
-    $changedns.ForeColor = $backcolor
+    # Continue adding more controls, starting at $YPosition
+    $ncpa = Add-Control -Text "Network Panel" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    $changedns.ReadOnly = $true
-    $changedns.SelectionLength = 0;
+    $oldcontrolpanel = Add-Control -Text "Control Panel" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    $resetnetwork = New-Object system.Windows.Forms.Button
-    $resetnetwork.text = "Reset Network"
-    $resetnetwork.width = 220
-    $resetnetwork.height = 30
-    $resetnetwork.location = New-Object System.Drawing.Point(0, 115)
-    $resetnetwork.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $resetnetwork.BackColor = $frontcolor 
-    $resetnetwork.ForeColor = $backcolor
-    $resetnetwork.FlatStyle = "Flat"
-    $resetnetwork.FlatAppearance.MouseOverBackColor = $hovercolor
+    $oldsoundpanel = Add-Control -Text "Sound Panel" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    $forcenorkeyboard = New-Object system.Windows.Forms.Button
-    $forcenorkeyboard.text = "Force NO/NB Language"
-    $forcenorkeyboard.width = 220
-    $forcenorkeyboard.height = 30
-    $forcenorkeyboard.location = New-Object System.Drawing.Point(0, 150)
-    $forcenorkeyboard.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $forcenorkeyboard.BackColor = $frontcolor 
-    $forcenorkeyboard.ForeColor = $backcolor
-    $forcenorkeyboard.FlatStyle = "Flat"
-    $forcenorkeyboard.FlatAppearance.MouseOverBackColor = $hovercolor
+    $oldsystempanel = Add-Control -Text "System Panel" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    $dualboottime = New-Object system.Windows.Forms.Button
-    $dualboottime.text = "Set Time to UTC"
-    $dualboottime.width = 220
-    $dualboottime.height = 30
-    $dualboottime.location = New-Object System.Drawing.Point(0, 185)
-    $dualboottime.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $dualboottime.BackColor = $frontcolor 
-    $dualboottime.ForeColor = $backcolor
-    $dualboottime.FlatStyle = "Flat"
-    $dualboottime.FlatAppearance.MouseOverBackColor = $hovercolor
+    $oldpower = Add-Control -Text "Power Panel" -X $XPosition -Y $YPosition
+    $YPosition += $spacing
 
-    #######################################################################################################
-    # Fixes ends here
-    #######################################################################################################
-    # Old menus starts here
-    #######################################################################################################
-
-    $oldmenu = New-Object system.Windows.Forms.Label
-    $oldmenu.text = "Classic Menus"
-    $oldmenu.AutoSize = $false
-    $oldmenu.width = 220
-    $oldmenu.height = 35
-    $oldmenu.TextAlign = "MiddleCenter"
-    $oldmenu.location = New-Object System.Drawing.Point(0, 220)
-    $oldmenu.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $oldmenu.ForeColor = $frontcolor 
-
-    $ncpa = New-Object system.Windows.Forms.Button
-    $ncpa.text = "Network Panel"
-    $ncpa.width = 220
-    $ncpa.height = 30
-    $ncpa.location = New-Object System.Drawing.Point(0, 255)
-    $ncpa.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $ncpa.BackColor = $frontcolor 
-    $ncpa.ForeColor = $backcolor
-    $ncpa.FlatStyle = "Flat"
-    $ncpa.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $oldcontrolpanel = New-Object system.Windows.Forms.Button
-    $oldcontrolpanel.text = "Control Panel"
-    $oldcontrolpanel.width = 220
-    $oldcontrolpanel.height = 30
-    $oldcontrolpanel.location = New-Object System.Drawing.Point(0, 290)
-    $oldcontrolpanel.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $oldcontrolpanel.BackColor = $frontcolor 
-    $oldcontrolpanel.ForeColor = $backcolor
-    $oldcontrolpanel.FlatStyle = "Flat"
-    $oldcontrolpanel.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $oldsoundpanel = New-Object system.Windows.Forms.Button
-    $oldsoundpanel.text = "Sound Panel"
-    $oldsoundpanel.width = 220
-    $oldsoundpanel.height = 30
-    $oldsoundpanel.location = New-Object System.Drawing.Point(0, 325)
-    $oldsoundpanel.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $oldsoundpanel.BackColor = $frontcolor 
-    $oldsoundpanel.ForeColor = $backcolor
-    $oldsoundpanel.FlatStyle = "Flat"
-    $oldsoundpanel.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $oldsystempanel = New-Object system.Windows.Forms.Button
-    $oldsystempanel.text = "System Panel"
-    $oldsystempanel.width = 220
-    $oldsystempanel.height = 30
-    $oldsystempanel.location = New-Object System.Drawing.Point(0, 360)
-    $oldsystempanel.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $oldsystempanel.BackColor = $frontcolor 
-    $oldsystempanel.ForeColor = $backcolor
-    $oldsystempanel.FlatStyle = "Flat"
-    $oldsystempanel.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $oldpower = New-Object system.Windows.Forms.Button
-    $oldpower.text = "Power Panel"
-    $oldpower.width = 220
-    $oldpower.height = 30
-    $oldpower.location = New-Object System.Drawing.Point(0, 395)
-    $oldpower.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $oldpower.BackColor = $frontcolor 
-    $oldpower.ForeColor = $backcolor
-    $oldpower.FlatStyle = "Flat"
-    $oldpower.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    #######################################################################################################
-    # Old menus ends here
-    #######################################################################################################
-    # Windows update starts here
-    #######################################################################################################
+    $oldmenu = Add-Control -Text "Old Menu" -X $XPosition -Y $YPosition
+    #####################
+    ## Panel 2 ends!   ##
+    #####################
 
     $windowsupdate = New-Object system.Windows.Forms.Label
     $windowsupdate.text = "Windows Update"
@@ -821,12 +772,6 @@ Function MakeForm {
     $windowsupdatefix.FlatStyle = "Flat"
     $windowsupdatefix.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    #######################################################################################################
-    # Windows update ends here
-    #######################################################################################################
-    # Microsoft store starts here
-    #######################################################################################################
-
     $microsoftstore = New-Object system.Windows.Forms.Label
     $microsoftstore.text = "Microsoft Store"
     $microsoftstore.AutoSize = $false
@@ -859,12 +804,6 @@ Function MakeForm {
     $reinstallbloat.FlatStyle = "Flat"
     $reinstallbloat.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    #######################################################################################################
-    # Microsoft store ends here
-    #######################################################################################################
-    # Cleaning starts here
-    #######################################################################################################
-
     $cleaning = New-Object system.Windows.Forms.Label
     $cleaning.text = "Cleaning"
     $cleaning.AutoSize = $false
@@ -885,12 +824,6 @@ Function MakeForm {
     $ultimateclean.ForeColor = $backcolor
     $ultimateclean.FlatStyle = "Flat"
     $ultimateclean.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    #######################################################################################################
-    # Cleaning ends here
-    #######################################################################################################
-    # Visual Tweaks starts here
-    #######################################################################################################
 
     $visualtweaks = New-Object system.Windows.Forms.Label
     $visualtweaks.text = "Visual Tweaks"
@@ -923,12 +856,6 @@ Function MakeForm {
     $lightmode.ForeColor = $backcolor
     $lightmode.FlatStyle = "Flat"
     $lightmode.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    #######################################################################################################
-    # Visual Tweaks ends here
-    #######################################################################################################
-    # Install Apps starts here
-    #######################################################################################################
 
     $extras = New-Object system.Windows.Forms.Label
     $extras.text = "Install Apps"
@@ -1069,41 +996,6 @@ Function MakeForm {
     $resetbutton.FlatStyle = "Flat"
     $resetbutton.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    #######################################################################################################
-    # Install Apps ends here
-    #######################################################################################################
-    # Result box starts here
-    #######################################################################################################
-
-    $ResultTextWrapper = New-Object system.Windows.Forms.TextBox
-    $ResultTextWrapper.multiline = $true
-    $ResultTextWrapper.ReadOnly = $true
-    $ResultTextWrapper.AutoSize = $true
-    $ResultTextWrapper.width = 1140
-    $ResultTextWrapper.height = 320
-    $ResultTextWrapper.location = New-Object System.Drawing.Point(0, 0)
-    $ResultTextWrapper.BorderStyle = "FixedSingle"
-    $ResultTextWrapper.BackColor = $backcolor 
-    $ResultTextWrapper.ForeColor = $frontcolor 
-
-    $ResultText = New-Object system.Windows.Forms.TextBox
-    $ResultText.multiline = $true
-    $ResultText.ReadOnly = $true
-    $ResultText.AutoSize = $true
-    $ResultText.width = 1110 #This needs to patch the padding so substract if needed
-    $ResultText.height = 300 #This needs to patch the padding so substract if needed
-    $ResultText.location = New-Object System.Drawing.Point(10, 10) #Padding is defined here
-    $ResultText.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
-    $ResultText.BorderStyle = 0
-    $ResultText.BackColor = $backcolor 
-    $ResultText.ForeColor = $frontcolor 
-
-    #######################################################################################################
-    # Result box ends here
-    #######################################################################################################
-    # placeholder starts here
-    #######################################################################################################
-
     $Mischeader = New-Object system.Windows.Forms.Label
     $Mischeader.text = "System Information"
     $Mischeader.AutoSize = $false
@@ -1236,24 +1128,6 @@ Function MakeForm {
     $btnOpenCustomization.FlatStyle = "Flat"
     $btnOpenCustomization.FlatAppearance.MouseOverBackColor = $hovercolor
 
-    #######################################################################################################
-    # Placeholder ends here
-    #######################################################################################################
-
-    $Form.controls.AddRange(@(
-            $xButton,
-            $createShortcutGit,
-            $CreateShortcutTool,
-            $wintoollogo,
-            $supportWintool,
-            $Panel1, 
-            $Panel2, 
-            $Panel3, 
-            $Panel4, 
-            $Panel5,
-            $Panel6
-        ))
-
     $Panel1.controls.AddRange(@(
             $performancetweaks, #header for the section below
             $essentialtweaks,
@@ -1333,11 +1207,6 @@ Function MakeForm {
             $btnOpenCustomization
         ))
 
-    $Panel6.controls.AddRange(@(
-            $ResultText,
-            $ResultTextWrapper
-        ))
-
     #Check if Chocolatey is installed
     if (Test-Path "$env:ProgramData\Chocolatey") {
          $ResultText.text = 
@@ -1360,13 +1229,12 @@ Function MakeForm {
                    
          Enjoy this free tool!
        "
-   }  
+    }  
 
-
-   $selectAppsButton.Add_Click({
+    $selectAppsButton.Add_Click({
     # Call the function to show the app selection form
     ShowAppSelectionForm
-})
+    })
 
 ## Customize About this computer, new form that allows the users to customize default Windows properties within the About this computer section.
 
@@ -4904,6 +4772,6 @@ public class Wallpaper {
             Start-Process 'https://paypal.me/KLuneborg'
         })
 
-    $Form.ShowDialog() | Out-Null
+    $Form.ShowDialog()
 }
 MakeForm
