@@ -381,10 +381,12 @@ function Add-Control {
                 Height = $Height
                 Location = New-Object System.Drawing.Point($X, $Y)
                 Font = New-Object System.Drawing.Font($Font, $FontSize)
-                BackColor = $ForeColor
-                ForeColor = $BackColor
+                FlatStyle = "Flat" # Match button style
+                BackColor = $BackColor
+                ForeColor = $ForeColor
             }
             $control.DropDownStyle = "DropDownList"
+            $control.Refresh()
         }
         "CheckBox" {
             $control = New-Object system.Windows.Forms.CheckBox -Property @{
