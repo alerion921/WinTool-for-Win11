@@ -76,145 +76,200 @@ function IsAppInstalled {
 }
 
 function ShowAppSelectionForm {
+    $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
+    $backcolor  = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
+    $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
+
     $appSelectionForm = New-Object System.Windows.Forms.Form
-    $appSelectionForm.Text = "Select Applications to Install (The time it takes to install will vary and the window will be frozen until installation is complete!)"
+    $appSelectionForm.Text = "Select Applications to Install"
     $appSelectionForm.StartPosition = "CenterScreen"
-    $appSelectionForm.Size = New-Object System.Drawing.Size(800, 600)
+    $appSelectionForm.Size = New-Object System.Drawing.Size(1000, 1000)
 
-    $applications = @(
-        @{ Name = "Brave Browser"; AppName = "BraveSoftware"; WingetID = "Brave.Brave"; AdditionalPaths = @("Brave-Browser\Application") },
-        @{ Name = "Dropbox"; AppName = "Dropbox"; WingetID = "Dropbox.Dropbox"; AdditionalPaths = @() },
-        @{ Name = "7-Zip"; AppName = "7-Zip"; WingetID = "7zip.7zip"; AdditionalPaths = @() },
-        @{ Name = "Malwarebytes"; AppName = "Malwarebytes"; WingetID = "Malwarebytes.Malwarebytes"; AdditionalPaths = @() },
-        @{ Name = "Steam"; AppName = "Steam"; WingetID = "Valve.Steam"; AdditionalPaths = @("Steam.exe") },
-        @{ Name = "Discord"; AppName = "Discord"; WingetID = "Discord.Discord"; AdditionalPaths = @("Update.exe") },
-        @{ Name = "TeamViewer"; AppName = "TeamViewer"; WingetID = "TeamViewer.TeamViewer"; AdditionalPaths = @() },
-        @{ Name = "Epic Games"; AppName = "Epic Games"; WingetID = "EpicGames.EpicGamesLauncher"; AdditionalPaths = @("Launcher\EpicGamesLauncher.exe") },
-        @{ Name = "GitHub Desktop"; AppName = "GitHubDesktop"; WingetID = "GitHub.GitHubDesktop"; AdditionalPaths = @("GitHubDesktop.exe") },
-        @{ Name = "Visual Studio Code"; AppName = "Microsoft VS Code"; WingetID = "Microsoft.VisualStudioCode"; AdditionalPaths = @("$([Environment]::GetFolderPath('LocalApplicationData'))\Programs\Microsoft VS Code\Code.exe")  },
-        @{ Name = "qBittorrent"; AppName = "qBittorrent"; WingetID = "qBittorrent.qBittorrent"; AdditionalPaths = @() },
-        @{ Name = "Notepad++"; AppName = "Notepad++"; WingetID = "Notepad++.Notepad++"; AdditionalPaths = @() },
-        @{ Name = "Foxit PDF Reader"; AppName = "Foxit Reader"; WingetID = "Foxit.FoxitReader"; AdditionalPaths = @() },
-        @{ Name = "DS4Windows"; AppName = "DS4Windows"; WingetID = "Ryochan7.DS4Windows"; AdditionalPaths = @() },
-        @{ Name = "Instagram"; AppName = "Instagram"; WingetID = "9nblggh5l9xt"; AdditionalPaths = @() },
-        @{ Name = "Netflix"; AppName = "Netflix"; WingetID = "9wzdncrfj3tj"; AdditionalPaths = @() },
-        @{ Name = "Spotify"; AppName = "Spotify"; WingetID = "9ncbcszsjrsb"; AdditionalPaths = @("Spotify.exe") },
-        @{ Name = "WhatsApp Desktop"; AppName = "WhatsApp"; WingetID = "9nksqgp7f2nh"; AdditionalPaths = @() },
-        @{ Name = "Google Chrome"; AppName = "Google"; WingetID = "Google.Chrome"; AdditionalPaths = @("Google Chrome\Application\chrome.exe") },
-        @{ Name = "Mozilla Firefox"; AppName = "Mozilla Firefox"; WingetID = "Mozilla.Firefox"; AdditionalPaths = @("firefox.exe") },
-        @{ Name = "OBS Studio"; AppName = "obs-studio"; WingetID = "OBSProject.OBSStudio"; AdditionalPaths = @() },
-        @{ Name = "VLC Media Player"; AppName = "VideoLAN"; WingetID = "VideoLAN.VLC"; AdditionalPaths = @("VLC\vlc.exe") },
-        @{ Name = "Adobe Acrobat Reader"; AppName = "Adobe"; WingetID = "Adobe.Acrobat.Reader.64-bit"; AdditionalPaths = @("Reader\AcroRd32.exe") },
-        @{ Name = "WinRAR"; AppName = "WinRAR"; WingetID = "RARLab.WinRAR"; AdditionalPaths = @("WinRAR.exe") },
-        @{ Name = "GIMP"; AppName = "GIMP"; WingetID = "GIMP.GIMP"; AdditionalPaths = @() },
-        @{ Name = "Zoom"; AppName = "Zoom"; WingetID = "Zoom.Zoom"; AdditionalPaths = @("bin\Zoom.exe") },
-        @{ Name = "Slack"; AppName = "Slack Technologies"; WingetID = "SlackTechnologies.Slack"; AdditionalPaths = @("Slack.exe") },
-        @{ Name = "Microsoft Edge"; AppName = "Microsoft Edge"; WingetID = "Microsoft.Edge"; AdditionalPaths = @("Microsoft\Edge\Application\msedge.exe") },
-        @{ Name = "Battle.net"; AppName = "Battle.net"; WingetID = "Blizzard.BattleNet"; AdditionalPaths = @("Battle.net.exe") },
-        @{ Name = "EA Play"; AppName = "EA Play"; WingetID = "ElectronicArts.EADesktop"; AdditionalPaths = @("EA Desktop\EA Desktop.exe") },
-        @{ Name = "Ubisoft Connect"; AppName = "Ubisoft"; WingetID = "Ubisoft.Connect"; AdditionalPaths = @("Ubisoft Game Launcher\UbisoftConnect.exe") },
-        @{ Name = "GOG Galaxy"; AppName = "GOG Galaxy"; WingetID = "GOG.Galaxy"; AdditionalPaths = @("GalaxyClient.exe") },
-        @{ Name = "Valorant"; AppName = "Valorant"; WingetID = "RiotGames.Valorant.EU"; AdditionalPaths = @("Valorant.exe") },
-        @{ Name = "Minecraft"; AppName = "Minecraft Launcher"; WingetID = "Mojang.MinecraftLauncher"; AdditionalPaths = @("Minecraft.exe") },
-        @{ Name = "LibreOffice"; AppName = "LibreOffice"; WingetID = "TheDocumentFoundation.LibreOffice"; AdditionalPaths = @() },
-        @{ Name = "HandBrake"; AppName = "HandBrake"; WingetID = "HandBrake.HandBrake"; AdditionalPaths = @() },
-        @{ Name = "FileZilla"; AppName = "FileZilla"; WingetID = "FileZilla.Client"; AdditionalPaths = @() },
-        @{ Name = "PuTTY"; AppName = "PuTTY"; WingetID = "PuTTY.PuTTY"; AdditionalPaths = @() },
-        @{ Name = "Notion"; AppName = "Notion"; WingetID = "Notion.Notion"; AdditionalPaths = @() },
-        @{ Name = "Postman"; AppName = "Postman"; WingetID = "Postman.Postman"; AdditionalPaths = @() },
-        @{ Name = "Telegram"; AppName = "Telegram Desktop"; WingetID = "Telegram.TelegramDesktop"; AdditionalPaths = @("Telegram.exe") },
-        @{ Name = "OpenVPN"; AppName = "OpenVPN"; WingetID = "OpenVPNTechnologies.OpenVPN"; AdditionalPaths = @() },
-        @{ Name = "KeePass"; AppName = "KeePass"; WingetID = "DominikReichl.KeePass"; AdditionalPaths = @() },
-        @{ Name = "Audacity"; AppName = "Audacity"; WingetID = "Audacity.Audacity"; AdditionalPaths = @() },
-        @{ Name = "Amazon Games"; AppName = "Amazon Games"; WingetID = "Amazon.Games"; AdditionalPaths = @() },
-        @{ Name = "Visual Studio Community"; AppName = "Microsoft Visual Studio"; WingetID = "Microsoft.VisualStudio.2022.Community"; AdditionalPaths = @("Common7\IDE\devenv.exe") }
-    )
+    # Helper function to create bordered panels for categories
+    function CreateCategoryPanel($category, $startX, $startY, $width) {
+        $panel = New-Object System.Windows.Forms.Panel
+        $panel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+        $panel.Size = New-Object System.Drawing.Size($width, 260)
+        $panel.Location = New-Object System.Drawing.Point($startX, $startY)
 
-    # Layout properties
-    $maxRows = 6
-    $checkboxWidth = 120
-    $checkboxHeight = 25
-    $paddingX = 20
-    $paddingY = 10
-    $startX = 20
-    $startY = 20
+        $label = New-Object System.Windows.Forms.Label
+        $label.Text = $category.Name
+        $label.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
+        $label.AutoSize = $true
+        $label.Location = New-Object System.Drawing.Point(5, 5)
+        $panel.Controls.Add($label)
 
-    $checkboxes = @()
-    $currentX = $startX
-    $currentY = $startY
-    $rowCount = 0
+        $currentX = 10
+        $currentY = 30
+        $maxRow = 3
+        $colWidth = 200
 
-    # Add label for grayed-out explanation
-    $statusLabel = New-Object System.Windows.Forms.Label
-    $statusLabel.Text = "Gray = Application already installed!"
-    $statusLabel.ForeColor = 'Gray'
-    $statusLabel.AutoSize = $true
-    $statusLabel.Location = New-Object System.Drawing.Point($startX, $currentY)
-    $appSelectionForm.Controls.Add($statusLabel)
-    $currentY += $statusLabel.Height + 10
+        foreach ($app in $category.Applications) {
+            $isInstalled = IsAppInstalled -AppName $app.AppName -AdditionalPaths $app.AdditionalPaths
 
-    foreach ($app in $applications) {
-        # Check if the app is already installed
-        $isInstalled = IsAppInstalled -AppName $app.AppName -AdditionalPaths $app.AdditionalPaths
+            $checkbox = New-Object System.Windows.Forms.CheckBox
+            $checkbox.Text = $app.Name
+            $checkbox.Enabled = -not $isInstalled
+            $checkbox.Size = New-Object System.Drawing.Size(180, 20)
+            $checkbox.Location = New-Object System.Drawing.Point($currentX, $currentY)
+            $panel.Controls.Add($checkbox)
 
-        # Add checkbox for application
-        $checkbox = New-Object System.Windows.Forms.CheckBox
-        $checkbox.Text = $app.Name
-        $checkbox.Size = New-Object System.Drawing.Size($checkboxWidth, $checkboxHeight)
-        $checkbox.Location = New-Object System.Drawing.Point($currentX, $currentY)
-        $checkbox.Enabled = -not $isInstalled
-        $appSelectionForm.Controls.Add($checkbox)
-        $checkboxes += $checkbox
-        $app.Checkbox = $checkbox
-
-        # Update positions
-        $rowCount += 1
-        $currentY += $checkboxHeight + $paddingY
-        if ($rowCount -ge $maxRows) {
-            $rowCount = 0
-            $currentY = $startY + $statusLabel.Height + 20
-            $currentX += $checkboxWidth + $paddingX
+            $currentX += $colWidth
+            if ($currentX + $colWidth -ge $width) {
+                $currentX = 10
+                $currentY += 25
+            }
         }
+
+        return $panel
     }
+            $categories = @(
+                @{ Name = "Browsers"; Applications = @(
+                    @{ Name = "Brave Browser"; AppName = "BraveSoftware"; WingetID = "Brave.Brave"; AdditionalPaths = @("Brave-Browser\Application") },
+                    @{ Name = "Google Chrome"; AppName = "Google"; WingetID = "Google.Chrome"; AdditionalPaths = @("Google Chrome\Application\chrome.exe") },
+                    @{ Name = "Mozilla Firefox"; AppName = "Mozilla Firefox"; WingetID = "Mozilla.Firefox"; AdditionalPaths = @("firefox.exe") },
+                    @{ Name = "Microsoft Edge"; AppName = "Microsoft Edge"; WingetID = "Microsoft.Edge"; AdditionalPaths = @("Microsoft\Edge\Application\msedge.exe") },
+                    @{ Name = "Opera"; AppName = "Opera Software"; WingetID = "Opera.Opera"; AdditionalPaths = @("Opera\launcher.exe") },
+                    @{ Name = "Vivaldi"; AppName = "Vivaldi Technologies"; WingetID = "Vivaldi.Vivaldi"; AdditionalPaths = @("Vivaldi\Application\vivaldi.exe") },
+                    @{ Name = "Tor Browser"; AppName = "The Tor Project"; WingetID = "TorProject.TorBrowser"; AdditionalPaths = @("Tor Browser\Browser\firefox.exe") }
+                )},
+                @{ Name = "Video Apps"; Applications = @(
+                    @{ Name = "Netflix"; AppName = "Netflix"; WingetID = "9wzdncrfj3tj"; AdditionalPaths = @() },
+                    @{ Name = "Disney+"; AppName = "DisneyPlus"; WingetID = "Disney.DisneyPlus"; AdditionalPaths = @() },
+                    @{ Name = "Hulu"; AppName = "Hulu"; WingetID = "Hulu.HuluApp"; AdditionalPaths = @() },
+                    @{ Name = "VLC Media Player"; AppName = "VideoLAN"; WingetID = "VideoLAN.VLC"; AdditionalPaths = @("VLC\vlc.exe") },
+                    @{ Name = "Amazon Prime Video"; AppName = "Prime Video"; WingetID = "Amazon.PrimeVideo"; AdditionalPaths = @() },
+                    @{ Name = "YouTube"; AppName = "YouTube"; WingetID = "Google.YouTube"; AdditionalPaths = @() },
+                    @{ Name = "Plex"; AppName = "Plex"; WingetID = "Plex.PlexMediaServer"; AdditionalPaths = @() },
+                    @{ Name = "Kodi"; AppName = "Kodi"; WingetID = "XBMCFoundation.Kodi"; AdditionalPaths = @() },
+                    @{ Name = "Twitch"; AppName = "Twitch"; WingetID = "Twitch.Twitch"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Music Apps"; Applications = @(
+                    @{ Name = "Spotify"; AppName = "Spotify"; WingetID = "9ncbcszsjrsb"; AdditionalPaths = @("Spotify.exe") },
+                    @{ Name = "Apple Music"; AppName = "Apple Music"; WingetID = "Apple.Music"; AdditionalPaths = @() },
+                    @{ Name = "YouTube Music"; AppName = "YouTube Music"; WingetID = "YouTube.Music"; AdditionalPaths = @() },
+                    @{ Name = "Amazon Music"; AppName = "Amazon Music"; WingetID = "Amazon.AmazonMusic"; AdditionalPaths = @() },
+                    @{ Name = "Tidal"; AppName = "Tidal"; WingetID = "TIDAL.TIDAL"; AdditionalPaths = @() },
+                    @{ Name = "Pandora"; AppName = "Pandora"; WingetID = "Pandora.Pandora"; AdditionalPaths = @() },
+                    @{ Name = "Deezer"; AppName = "Deezer"; WingetID = "Deezer.Deezer"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Social Media"; Applications = @(
+                    @{ Name = "Instagram"; AppName = "Instagram"; WingetID = "9nblggh5l9xt"; AdditionalPaths = @() },
+                    @{ Name = "WhatsApp Desktop"; AppName = "WhatsApp"; WingetID = "9nksqgp7f2nh"; AdditionalPaths = @() },
+                    @{ Name = "Telegram"; AppName = "Telegram Desktop"; WingetID = "Telegram.TelegramDesktop"; AdditionalPaths = @("Telegram.exe") },
+                    @{ Name = "Discord"; AppName = "Discord"; WingetID = "Discord.Discord"; AdditionalPaths = @("Update.exe") },
+                    @{ Name = "Zoom"; AppName = "Zoom"; WingetID = "Zoom.Zoom"; AdditionalPaths = @("bin\Zoom.exe") },
+                    @{ Name = "Slack"; AppName = "Slack Technologies"; WingetID = "SlackTechnologies.Slack"; AdditionalPaths = @("Slack.exe") },
+                    @{ Name = "Facebook"; AppName = "Facebook"; WingetID = "Facebook.Facebook"; AdditionalPaths = @() },
+                    @{ Name = "Twitter"; AppName = "Twitter"; WingetID = "Twitter.Twitter"; AdditionalPaths = @() },
+                    @{ Name = "LinkedIn"; AppName = "LinkedIn"; WingetID = "LinkedIn.LinkedIn"; AdditionalPaths = @() },
+                    @{ Name = "Snapchat"; AppName = "Snapchat"; WingetID = "Snapchat.Snapchat"; AdditionalPaths = @() },
+                    @{ Name = "TikTok"; AppName = "TikTok"; WingetID = "TikTok.TikTok"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Tools"; Applications = @(
+                    @{ Name = "Visual Studio Code"; AppName = "Microsoft VS Code"; WingetID = "Microsoft.VisualStudioCode"; AdditionalPaths = @("$([Environment]::GetFolderPath('LocalApplicationData'))\Programs\Microsoft VS Code\Code.exe") },
+                    @{ Name = "Visual Studio Community"; AppName = "Microsoft Visual Studio"; WingetID = "Microsoft.VisualStudio.2022.Community"; AdditionalPaths = @("Common7\IDE\devenv.exe") },
+                    @{ Name = "GitHub Desktop"; AppName = "GitHubDesktop"; WingetID = "GitHub.GitHubDesktop"; AdditionalPaths = @("GitHubDesktop.exe") },
+                    @{ Name = "Postman"; AppName = "Postman"; WingetID = "Postman.Postman"; AdditionalPaths = @() },
+                    @{ Name = "PuTTY"; AppName = "PuTTY"; WingetID = "PuTTY.PuTTY"; AdditionalPaths = @() },
+                    @{ Name = "Dropbox"; AppName = "Dropbox"; WingetID = "Dropbox.Dropbox"; AdditionalPaths = @() },
+                    @{ Name = "TeamViewer"; AppName = "TeamViewer"; WingetID = "TeamViewer.TeamViewer"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Utilities"; Applications = @(
+                    @{ Name = "7-Zip"; AppName = "7-Zip"; WingetID = "7zip.7zip"; AdditionalPaths = @() },
+                    @{ Name = "WinRAR"; AppName = "WinRAR"; WingetID = "RARLab.WinRAR"; AdditionalPaths = @("WinRAR.exe") },
+                    @{ Name = "Malwarebytes"; AppName = "Malwarebytes"; WingetID = "Malwarebytes.Malwarebytes"; AdditionalPaths = @() },
+                    @{ Name = "FileZilla"; AppName = "FileZilla"; WingetID = "FileZilla.Client"; AdditionalPaths = @() },
+                    @{ Name = "Notion"; AppName = "Notion"; WingetID = "Notion.Notion"; AdditionalPaths = @() },
+                    @{ Name = "OpenVPN"; AppName = "OpenVPN"; WingetID = "OpenVPNTechnologies.OpenVPN"; AdditionalPaths = @() },
+                    @{ Name = "KeePass"; AppName = "KeePass"; WingetID = "DominikReichl.KeePass"; AdditionalPaths = @() },
+                    @{ Name = "Authy"; AppName = "Authy"; WingetID = "Twilio.Authy"; AdditionalPaths = @() },
+                    @{ Name = "qBittorrent"; AppName = "qBittorrent"; WingetID = "qBittorrent.qBittorrent"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Creative Tools"; Applications = @(
+                    @{ Name = "Audacity"; AppName = "Audacity"; WingetID = "Audacity.Audacity"; AdditionalPaths = @() },
+                    @{ Name = "OBS Studio"; AppName = "obs-studio"; WingetID = "OBSProject.OBSStudio"; AdditionalPaths = @() },
+                    @{ Name = "GIMP"; AppName = "GIMP"; WingetID = "GIMP.GIMP"; AdditionalPaths = @() },
+                    @{ Name = "Blender"; AppName = "Blender"; WingetID = "BlenderFoundation.Blender"; AdditionalPaths = @() },
+                    @{ Name = "Inkscape"; AppName = "Inkscape"; WingetID = "Inkscape.Inkscape"; AdditionalPaths = @() },
+                    @{ Name = "Paint.NET"; AppName = "Paint.NET"; WingetID = "dotPDNLLC.paintdotnet"; AdditionalPaths = @() },
+                    @{ Name = "Adobe Creative Cloud"; AppName = "Adobe Creative Cloud"; WingetID = "Adobe.CreativeCloud"; AdditionalPaths = @() },
+                    @{ Name = "Canva"; AppName = "Canva"; WingetID = "Canva.Canva"; AdditionalPaths = @() },
+                    @{ Name = "HandBrake"; AppName = "HandBrake"; WingetID = "HandBrake.HandBrake"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Documents/Editing"; Applications = @(
+                    @{ Name = "LibreOffice"; AppName = "LibreOffice"; WingetID = "TheDocumentFoundation.LibreOffice"; AdditionalPaths = @() },
+                    @{ Name = "Foxit PDF Reader"; AppName = "Foxit Reader"; WingetID = "Foxit.FoxitReader"; AdditionalPaths = @() },
+                    @{ Name = "Notepad++"; AppName = "Notepad++"; WingetID = "Notepad++.Notepad++"; AdditionalPaths = @() },
+                    @{ Name = "Adobe Acrobat Reader"; AppName = "Adobe"; WingetID = "Adobe.Acrobat.Reader.64-bit"; AdditionalPaths = @("Reader\AcroRd32.exe") },
+                    @{ Name = "WPS Office"; AppName = "WPS Office"; WingetID = "Kingsoft.WPSOffice"; AdditionalPaths = @() },
+                    @{ Name = "OnlyOffice"; AppName = "OnlyOffice"; WingetID = "OnlyOffice.DesktopEditors"; AdditionalPaths = @() },
+                    @{ Name = "Sublime Text"; AppName = "Sublime Text"; WingetID = "SublimeHQ.SublimeText"; AdditionalPaths = @() }
+                )},
+                @{ Name = "Gaming"; Applications = @(
+                    @{ Name = "Steam"; AppName = "Steam"; WingetID = "Valve.Steam"; AdditionalPaths = @("Steam.exe") },
+                    @{ Name = "Epic Games"; AppName = "Epic Games"; WingetID = "EpicGames.EpicGamesLauncher"; AdditionalPaths = @("Launcher\EpicGamesLauncher.exe") },
+                    @{ Name = "Battle.net"; AppName = "Battle.net"; WingetID = "Blizzard.BattleNet"; AdditionalPaths = @("Battle.net.exe") },
+                    @{ Name = "EA Play"; AppName = "EA Play"; WingetID = "ElectronicArts.EADesktop"; AdditionalPaths = @("EA Desktop\EA Desktop.exe") },
+                    @{ Name = "Ubisoft Connect"; AppName = "Ubisoft"; WingetID = "Ubisoft.Connect"; AdditionalPaths = @("Ubisoft Game Launcher\UbisoftConnect.exe") },
+                    @{ Name = "GOG Galaxy"; AppName = "GOG Galaxy"; WingetID = "GOG.Galaxy"; AdditionalPaths = @("GalaxyClient.exe") },
+                    @{ Name = "Valorant"; AppName = "Valorant"; WingetID = "RiotGames.Valorant.EU"; AdditionalPaths = @("Valorant.exe") },
+                    @{ Name = "Minecraft"; AppName = "Minecraft Launcher"; WingetID = "Mojang.MinecraftLauncher"; AdditionalPaths = @("Minecraft.exe") },
+                    @{ Name = "DS4Windows"; AppName = "DS4Windows"; WingetID = "Ryochan7.DS4Windows"; AdditionalPaths = @() },
+                    @{ Name = "Amazon Games"; AppName = "Amazon Games"; WingetID = "Amazon.Games"; AdditionalPaths = @() }
+                )}
+            )
 
-    # Add progress bar
-    $progressBar = New-Object System.Windows.Forms.ProgressBar
-    $progressBar.Size = New-Object System.Drawing.Size(($currentX + $checkboxWidth + $paddingX), 20)
-    $progressBar.Location = New-Object System.Drawing.Point(10, 300)
-    $progressBar.Minimum = 0
-    $progressBar.Maximum = $applications.Count
-    $appSelectionForm.Controls.Add($progressBar)
-
-    # Add buttons below progress bar
-    $buttonYPosition = $progressBar.Location.Y + 40
-
-    # OK Button
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Text = "OK"
-    $okButton.Size = New-Object System.Drawing.Size(100, 30)
-    $okButton.Location = New-Object System.Drawing.Point(10, 330)
-    $okButton.Add_Click({
-        $selectedApps = $applications | Where-Object { $_.Checkbox.Checked }
-        InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
-    })
-    $appSelectionForm.Controls.Add($okButton)
-
-    # Cancel Button
-    $cancelButton = New-Object System.Windows.Forms.Button
-    $cancelButton.Text = "Cancel"
-    $cancelButton.Size = New-Object System.Drawing.Size(100, 30)
-    $cancelButton.Location = New-Object System.Drawing.Point(120, 330)
-    $cancelButton.Add_Click({
-        $appSelectionForm.Close()
-    })
-    $appSelectionForm.Controls.Add($cancelButton)
-
-    # Adjust form height dynamically based on content
-    $appSelectionForm.Height = $buttonYPosition + 100
-    $appSelectionForm.Width = ($currentX + $checkboxWidth + $paddingX + 40)
-
-    [void]$appSelectionForm.ShowDialog()
-}
+            $startX = 20
+            $startY = 20
+            $panelWidth = 300
+            $panelHeight = 260
+            $gapX = 20
+            $gapY = 20
+            $currentRow = 0
+            $maxRow = 3
+    
+            foreach ($category in $categories) {
+                $panel = CreateCategoryPanel $category ($startX + ($currentRow * ($panelWidth + $gapX))) $startY $panelWidth
+                $appSelectionForm.Controls.Add($panel)
+        
+                $currentRow += 1
+                if ($currentRow -ge $maxRow) {
+                    $currentRow = 0
+                    $startY += ($panelHeight + $gapY) # Adjust based on new panel height and desired spacing
+                }
+            }
+    
+        # Add progress bar and buttons
+        $progressBar = New-Object System.Windows.Forms.ProgressBar
+        $progressBar.Size = New-Object System.Drawing.Size(940, 20)
+        $progressBar.Location = New-Object System.Drawing.Point(20, ($startY + 10))
+        $progressBar.Minimum = 0
+        $progressBar.Maximum = $categories.Applications.Count
+        $appSelectionForm.Controls.Add($progressBar)
+    
+        $okButton = New-Object System.Windows.Forms.Button
+        $okButton.Text = "Install Selected"
+        $okButton.Size = New-Object System.Drawing.Size(200, 30)
+        $okButton.Location = New-Object System.Drawing.Point(20, ($startY + 50))
+        $okButton.Add_Click({
+            $selectedApps = $checkboxes | Where-Object { $_.Checked }
+            InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
+        })
+        $appSelectionForm.Controls.Add($okButton)
+    
+        $cancelButton = New-Object System.Windows.Forms.Button
+        $cancelButton.Text = "Cancel / Exit"
+        $cancelButton.Size = New-Object System.Drawing.Size(200, 30)
+        $cancelButton.Location = New-Object System.Drawing.Point(240, ($startY + 50))
+        $cancelButton.Add_Click({
+            $appSelectionForm.Close()
+        })
+        $appSelectionForm.Controls.Add($cancelButton)
+    
+        [void]$appSelectionForm.ShowDialog()
+    }
+        
 
 function InstallApplications {
     param (
