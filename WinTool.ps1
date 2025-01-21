@@ -77,7 +77,7 @@ function IsAppInstalled {
 
 function ShowAppSelectionForm {
     $appSelectionForm = New-Object System.Windows.Forms.Form
-    $appSelectionForm.Text = "Select Applications to Install"
+    $appSelectionForm.Text = "Select Applications to Install (The time it takes to install will vary and the window will be frozen until installation is complete!)"
     $appSelectionForm.StartPosition = "CenterScreen"
     $appSelectionForm.Size = New-Object System.Drawing.Size(800, 600)
 
@@ -98,7 +98,6 @@ function ShowAppSelectionForm {
         @{ Name = "DS4Windows"; AppName = "DS4Windows"; WingetID = "Ryochan7.DS4Windows"; AdditionalPaths = @() },
         @{ Name = "Instagram"; AppName = "Instagram"; WingetID = "9nblggh5l9xt"; AdditionalPaths = @() },
         @{ Name = "Netflix"; AppName = "Netflix"; WingetID = "9wzdncrfj3tj"; AdditionalPaths = @() },
-        @{ Name = "Microsoft To Do"; AppName = "Microsoft To Do"; WingetID = "9nblggh5r558"; AdditionalPaths = @() },
         @{ Name = "Spotify"; AppName = "Spotify"; WingetID = "9ncbcszsjrsb"; AdditionalPaths = @("Spotify.exe") },
         @{ Name = "WhatsApp Desktop"; AppName = "WhatsApp"; WingetID = "9nksqgp7f2nh"; AdditionalPaths = @() },
         @{ Name = "Google Chrome"; AppName = "Google"; WingetID = "Google.Chrome"; AdditionalPaths = @("Google Chrome\Application\chrome.exe") },
@@ -112,11 +111,11 @@ function ShowAppSelectionForm {
         @{ Name = "Slack"; AppName = "Slack Technologies"; WingetID = "SlackTechnologies.Slack"; AdditionalPaths = @("Slack.exe") },
         @{ Name = "Microsoft Edge"; AppName = "Microsoft Edge"; WingetID = "Microsoft.Edge"; AdditionalPaths = @("Microsoft\Edge\Application\msedge.exe") },
         @{ Name = "Battle.net"; AppName = "Battle.net"; WingetID = "Blizzard.BattleNet"; AdditionalPaths = @("Battle.net.exe") },
-        @{ Name = "EA Play"; AppName = "Electronic Arts"; WingetID = ""; AdditionalPaths = @("EA Desktop\EA Desktop.exe") },
-        @{ Name = "Ubisoft Connect"; AppName = "Ubisoft"; WingetID = ""; AdditionalPaths = @("Ubisoft Game Launcher\UbisoftConnect.exe") },
-        @{ Name = "GOG Galaxy"; AppName = "GOG Galaxy"; WingetID = ""; AdditionalPaths = @("GalaxyClient.exe") },
-        @{ Name = "League of Legends"; AppName = "Riot Games"; WingetID = ""; AdditionalPaths = @("LeagueClient.exe") },
-        @{ Name = "Adobe Photoshop"; AppName = "Adobe Photoshop"; WingetID = ""; AdditionalPaths = @("Photoshop.exe") },
+        @{ Name = "EA Play"; AppName = "EA Play"; WingetID = "ElectronicArts.EADesktop"; AdditionalPaths = @("EA Desktop\EA Desktop.exe") },
+        @{ Name = "Ubisoft Connect"; AppName = "Ubisoft"; WingetID = "Ubisoft.Connect"; AdditionalPaths = @("Ubisoft Game Launcher\UbisoftConnect.exe") },
+        @{ Name = "GOG Galaxy"; AppName = "GOG Galaxy"; WingetID = "GOG.Galaxy"; AdditionalPaths = @("GalaxyClient.exe") },
+        @{ Name = "Valorant"; AppName = "Valorant"; WingetID = "RiotGames.Valorant.EU"; AdditionalPaths = @("Valorant.exe") },
+        @{ Name = "Minecraft"; AppName = "Minecraft Launcher"; WingetID = "Mojang.MinecraftLauncher"; AdditionalPaths = @("Minecraft.exe") },
         @{ Name = "LibreOffice"; AppName = "LibreOffice"; WingetID = "TheDocumentFoundation.LibreOffice"; AdditionalPaths = @() },
         @{ Name = "HandBrake"; AppName = "HandBrake"; WingetID = "HandBrake.HandBrake"; AdditionalPaths = @() },
         @{ Name = "FileZilla"; AppName = "FileZilla"; WingetID = "FileZilla.Client"; AdditionalPaths = @() },
@@ -127,6 +126,7 @@ function ShowAppSelectionForm {
         @{ Name = "OpenVPN"; AppName = "OpenVPN"; WingetID = "OpenVPNTechnologies.OpenVPN"; AdditionalPaths = @() },
         @{ Name = "KeePass"; AppName = "KeePass"; WingetID = "DominikReichl.KeePass"; AdditionalPaths = @() },
         @{ Name = "Audacity"; AppName = "Audacity"; WingetID = "Audacity.Audacity"; AdditionalPaths = @() },
+        @{ Name = "Amazon Games"; AppName = "Amazon Games"; WingetID = "Amazon.Games"; AdditionalPaths = @() },
         @{ Name = "Visual Studio Community"; AppName = "Microsoft Visual Studio"; WingetID = "Microsoft.VisualStudio.2022.Community"; AdditionalPaths = @("Common7\IDE\devenv.exe") }
     )
 
@@ -350,7 +350,7 @@ function Add-Control {
     return $control
 }
 
-function Perform-Cleaning {
+function Initialize-Cleaning {
     param (
         [string]$Target,                    # Path to the folder or special target
         [string[]]$FileTypes = @("*.*"),   # File types to clean, default is all
@@ -1375,10 +1375,10 @@ $ultimateclean.Add_Click({
 
     # Clean up local explorer-related files
     $ResultText.text = "Cleaning local explorer-related files..."
-    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Explorer" -Description "Explorer files"
-    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent" -Description "Recent files"
-    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations" -Description "Recent Automatic Destinations"
-    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations" -Description "Recent Custom Destinations"
+    Initialize-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Explorer" -Description "Explorer files"
+    Initialize-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent" -Description "Recent files"
+    Initialize-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations" -Description "Recent Automatic Destinations"
+    Initialize-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations" -Description "Recent Custom Destinations"
 
     # Fetch user profiles
     $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object -ExpandProperty Name
@@ -1386,21 +1386,21 @@ $ultimateclean.Add_Click({
 
     # Clear Inetpub Logs Folder
     if (Test-Path "C:\inetpub\logs\LogFiles\") {
-        Perform-Cleaning -Target "C:\inetpub\logs\LogFiles" -Description "Inetpub Logs Folder"
+        Initialize-Cleaning -Target "C:\inetpub\logs\LogFiles" -Description "Inetpub Logs Folder"
     }
 
     # Clear Microsoft Teams Previous Versions
     if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
         foreach ($user in $Users) {
-            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Teams\previous" -Description "Microsoft Teams previous versions"
-            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Teams\stage" -Description "Microsoft Teams staging files"
+            Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Teams\previous" -Description "Microsoft Teams previous versions"
+            Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Teams\stage" -Description "Microsoft Teams staging files"
         }
     }
 
     # Clear SnagIt Crash Dump Files
     if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
         foreach ($user in $Users) {
-            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps" -Description "SnagIt crash dumps"
+            Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps" -Description "SnagIt crash dumps"
         }
     }
 
@@ -1408,7 +1408,7 @@ $ultimateclean.Add_Click({
     if (Test-Path "C:\Program Files (x86)\Dropbox\Client") {
         $ResultText.text = "Checking Dropbox caches..."
         foreach ($user in $Users) {
-            Perform-Cleaning -Target "C:\Users\$user\Dropbox\.dropbox.cache" -Description "Dropbox cache"
+            Initialize-Cleaning -Target "C:\Users\$user\Dropbox\.dropbox.cache" -Description "Dropbox cache"
         }
     } else {
         $ResultText.text = "No Dropbox installation found. Skipping Dropbox cleanup."
@@ -1416,91 +1416,91 @@ $ultimateclean.Add_Click({
 
     # Clear HP Support Assistant Installation Folder
     if (Test-Path "C:\swsetup") {
-        Perform-Cleaning -Target "C:\swsetup" -Description "HP Support Assistant installation folder"
+        Initialize-Cleaning -Target "C:\swsetup" -Description "HP Support Assistant installation folder"
     }
 
     # Clear User Downloads Folder
     foreach ($user in $Users) {
-        Perform-Cleaning -Target "C:\Users\$user\Downloads" -Description "User Downloads folder"
+        Initialize-Cleaning -Target "C:\Users\$user\Downloads" -Description "User Downloads folder"
     }
 
     # Clear Azure Logs Folder
     if (Test-Path "C:\WindowsAzure\Logs") {
-        Perform-Cleaning -Target "C:\WindowsAzure\Logs" -Description "Azure Logs folder"
+        Initialize-Cleaning -Target "C:\WindowsAzure\Logs" -Description "Azure Logs folder"
     }
 
     # Clear Office Cache
     if (Test-Path "$env:LocalAppData\Microsoft\Office") {
         foreach ($user in $Users) {
-            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache" -Description "Office Cache folder"
+            Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache" -Description "Office Cache folder"
         }
     }
 
     # Clear LFSAgent Log Folder
     if (Test-Path "$env:windir\LFSAgent\Logs") {
-        Perform-Cleaning -Target "$env:windir\LFSAgent\Logs" -Description "LFSAgent Log folder"
+        Initialize-Cleaning -Target "$env:windir\LFSAgent\Logs" -Description "LFSAgent Log folder"
     }
 
     # Clear SOTI MobiController Log Files
     if (Test-Path "C:\Program Files (x86)\SOTI\MobiControl") {
-        Perform-Cleaning -Target "C:\Program Files (x86)\SOTI\MobiControl" -FileTypes @("*.log") -Description "SOTI MobiController log files"
+        Initialize-Cleaning -Target "C:\Program Files (x86)\SOTI\MobiControl" -FileTypes @("*.log") -Description "SOTI MobiController log files"
     }
 
     # Clear Cylance Log Files
     if (Test-Path "C:\Program Files\Cylance\Desktop") {
-        Perform-Cleaning -Target "C:\Program Files\Cylance\Desktop" -FileTypes @("cylog-*.log") -Description "Cylance log files"
+        Initialize-Cleaning -Target "C:\Program Files\Cylance\Desktop" -FileTypes @("cylog-*.log") -Description "Cylance log files"
     }
 
     # Inform user about the start of cleaning
     $ResultText.text = "Checking System, User, and Common Temp Folders..."
 
     # Common Temp Folders
-    Perform-Cleaning -Target "$env:windir\Prefetch" -Description "Prefetch files"
-    Perform-Cleaning -Target "$env:windir\Temp" -Description "Windows Temp files"
-    Perform-Cleaning -Target "$env:systemdrive\Temp" -Description "System Temp files"
+    Initialize-Cleaning -Target "$env:windir\Prefetch" -Description "Prefetch files"
+    Initialize-Cleaning -Target "$env:windir\Temp" -Description "Windows Temp files"
+    Initialize-Cleaning -Target "$env:systemdrive\Temp" -Description "System Temp files"
 
     # User-Specific Temp Folders
     foreach ($user in $Users) {
-        Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Temp" -Description "User Temp files"
-        Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Windows\WER" -Description "Windows Error Reporting (WER) files"
-        Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Windows\AppCache" -Description "App Cache files"
-        Perform-Cleaning -Target "C:\Users\$user\cookies" -Description "Cookies"
-        Perform-Cleaning -Target "C:\Users\$user\Local Settings\Temporary Internet Files" -Description "Temporary Internet Files"
-        Perform-Cleaning -Target "C:\Users\$user\recent" -Description "Recent files"
+        Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\Temp" -Description "User Temp files"
+        Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Windows\WER" -Description "Windows Error Reporting (WER) files"
+        Initialize-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Windows\AppCache" -Description "App Cache files"
+        Initialize-Cleaning -Target "C:\Users\$user\cookies" -Description "Cookies"
+        Initialize-Cleaning -Target "C:\Users\$user\Local Settings\Temporary Internet Files" -Description "Temporary Internet Files"
+        Initialize-Cleaning -Target "C:\Users\$user\recent" -Description "Recent files"
     }
 
     # Windows System Temp and Logs Folders
-    Perform-Cleaning -Target "$env:systemroot\SoftwareDistribution.bak" -Description "SoftwareDistribution backup files"
-    Perform-Cleaning -Target "$env:systemroot\System32\Catroot2.bak" -Description "Catroot2 backup files"
-    Perform-Cleaning -Target "$env:windir\Logs\CBS" -Description "CBS logs"
-    Perform-Cleaning -Target "$env:ProgramData\Microsoft\Windows\WER" -Description "Windows Error Reporting logs"
-    Perform-Cleaning -Target "$env:systemdrive\Windows.old" -Description "Windows.old folder"
-    Perform-Cleaning -Target "$env:ProgramData\Microsoft\Windows\RetailDemo" -Description "RetailDemo folder"
+    Initialize-Cleaning -Target "$env:systemroot\SoftwareDistribution.bak" -Description "SoftwareDistribution backup files"
+    Initialize-Cleaning -Target "$env:systemroot\System32\Catroot2.bak" -Description "Catroot2 backup files"
+    Initialize-Cleaning -Target "$env:windir\Logs\CBS" -Description "CBS logs"
+    Initialize-Cleaning -Target "$env:ProgramData\Microsoft\Windows\WER" -Description "Windows Error Reporting logs"
+    Initialize-Cleaning -Target "$env:systemdrive\Windows.old" -Description "Windows.old folder"
+    Initialize-Cleaning -Target "$env:ProgramData\Microsoft\Windows\RetailDemo" -Description "RetailDemo folder"
 
     # Vendor-Specific Caches
-    Perform-Cleaning -Target "$env:LOCALAPPDATA\AMD" -Description "AMD local cache"
-    Perform-Cleaning -Target "$env:windir/../AMD/" -Description "AMD system cache"
-    Perform-Cleaning -Target "$env:LOCALAPPDATA\NVIDIA\DXCache" -Description "NVIDIA DXCache"
-    Perform-Cleaning -Target "$env:LOCALAPPDATA\NVIDIA\GLCache" -Description "NVIDIA GLCache"
-    Perform-Cleaning -Target "$env:APPDATA\..\locallow\Intel\ShaderCache" -Description "Intel Shader Cache"
+    Initialize-Cleaning -Target "$env:LOCALAPPDATA\AMD" -Description "AMD local cache"
+    Initialize-Cleaning -Target "$env:windir/../AMD/" -Description "AMD system cache"
+    Initialize-Cleaning -Target "$env:LOCALAPPDATA\NVIDIA\DXCache" -Description "NVIDIA DXCache"
+    Initialize-Cleaning -Target "$env:LOCALAPPDATA\NVIDIA\GLCache" -Description "NVIDIA GLCache"
+    Initialize-Cleaning -Target "$env:APPDATA\..\locallow\Intel\ShaderCache" -Description "Intel Shader Cache"
 
     # Custom Folders
-    Perform-Cleaning -Target "C:\Intel" -Description "Intel folder"
-    Perform-Cleaning -Target "C:\PerfLogs" -Description "Performance Logs folder"
-    Perform-Cleaning -Target "C:\Temp" -Description "Temp folder on root"
-    Perform-Cleaning -Target "C:\Drivers" -Description "Drivers folder"
-    Perform-Cleaning -Target "C:\Scripts" -Description "Scripts folder"
-    Perform-Cleaning -Target "C:\Script" -Description "Script folder"
-    Perform-Cleaning -Target "C:\Nvidia" -Description "NVIDIA folder"
+    Initialize-Cleaning -Target "C:\Intel" -Description "Intel folder"
+    Initialize-Cleaning -Target "C:\PerfLogs" -Description "Performance Logs folder"
+    Initialize-Cleaning -Target "C:\Temp" -Description "Temp folder on root"
+    Initialize-Cleaning -Target "C:\Drivers" -Description "Drivers folder"
+    Initialize-Cleaning -Target "C:\Scripts" -Description "Scripts folder"
+    Initialize-Cleaning -Target "C:\Script" -Description "Script folder"
+    Initialize-Cleaning -Target "C:\Nvidia" -Description "NVIDIA folder"
 
     # Specific Log Files
-    Perform-Cleaning -Target "$env:windir\System32\LogFiles" -FileTypes @("*.log") -Description "System32 Log files"
+    Initialize-Cleaning -Target "$env:windir\System32\LogFiles" -FileTypes @("*.log") -Description "System32 Log files"
 
     $ResultText.text = "All System, User, and Common Temp Files have been checked and cleaned as per user confirmation."
 
     # Perform cleanup for the Windows Updates folder (SoftwareDistribution)
     $ResultText.text = "Checking size of the SoftwareDistribution folder..."
-    Perform-Cleaning -Target "$env:windir\SoftwareDistribution" -Description "Windows Update folder (SoftwareDistribution)" -BeforeCleanScript {
+    Initialize-Cleaning -Target "$env:windir\SoftwareDistribution" -Description "Windows Update folder (SoftwareDistribution)" -BeforeCleanScript {
         # Additional actions before cleanup (e.g., stopping the Windows Update service)
         $ResultText.text = "Stopping Windows Update service..."
         try {
@@ -1526,7 +1526,7 @@ $ultimateclean.Add_Click({
 
     # Empty Recycle Bin
     $ResultText.text = "Initializing Recycle Bin cleaning. Analyzing folders and calculating total size..."
-    Perform-Cleaning -IsRecycleBin -Description "Recycle Bin files" 
+    Initialize-Cleaning -IsRecycleBin -Description "Recycle Bin files" 
 
     # SuperDeepCleaner
     $ResultText.text = "Initializing Superdeep Cleaner. Waiting for user confirmation (WILL FREEZE FOR A GOOD WHILE HERE)..."
@@ -1571,7 +1571,7 @@ $ultimateclean.Add_Click({
                 $folderDetails += "Folder: $folder - Size: $folderSizeGB GB"
     
                 # Perform cleaning for this folder
-                Perform-Cleaning -Target $folder -Description "Superdeep Cleaning in $folder" -FileTypes $patterns
+                Initialize-Cleaning -Target $folder -Description "Superdeep Cleaning in $folder" -FileTypes $patterns
             } else {
                 $folderDetails += "Folder not found: $folder"
             }
