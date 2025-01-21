@@ -1,12 +1,12 @@
 # Import the ShowWindow function from user32.dll to manipulate the PowerShell window state.
 # This allows us to hide the PowerShell console window.
-#$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
 
 # Add the ShowWindow method to the PowerShell runtime as a .NET class.
-#add-type -name win -member $HidePowershellWindow -namespace native
+add-type -name win -member $HidePowershellWindow -namespace native
 
 # Retrieve the current process's main window handle and hide it (state = 0).
-#[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
+[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
 # Enable the use of Windows Forms for potential GUI elements (not used in this script, but prepares for it).
 Add-Type -AssemblyName System.Windows.Forms
@@ -31,8 +31,8 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 $pathDesktop        = [Environment]::GetFolderPath("Desktop")                # Path to the Desktop folder
 #$pathDocuments      = [Environment]::GetFolderPath("MyDocuments")           # Path to the Documents folder
 #$pathPictures       = [Environment]::GetFolderPath("MyPictures")            # Path to the Pictures folder
-$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
-$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
+#$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
+#$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
 #$pathWindows        = [Environment]::GetFolderPath("Windows")               # Path to the Windows folder
 #$pathSystem         = [Environment]::GetFolderPath("System")                # Path to the System folder (e.g., System32)
 ####################################################################################
@@ -350,6 +350,104 @@ function Add-Control {
     return $control
 }
 
+function Perform-Cleaning {
+    param (
+        [string]$Target,                    # Path to the folder or special target
+        [string[]]$FileTypes = @("*.*"),   # File types to clean, default is all
+        [string]$Description = "files",    # Description for user prompts
+        [switch]$IsRecycleBin = $false,    # Special handling for Recycle Bin
+        [switch]$IsWindowsUpdate = $false # Special handling for Windows Update folder
+    )
+
+    # Define target path for special cases
+    if ($IsRecycleBin) {
+        $Target = "C:\`$Recycle.Bin"
+    }
+
+    # Check if target exists
+    if (Test-Path $Target) {
+        # Calculate size
+        $size = if ($IsRecycleBin -or $IsWindowsUpdate) {
+            (Get-ChildItem -Path $Target -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum / 1GB
+        } else {
+            (Get-ChildItem -Path $Target -Recurse -Include $FileTypes -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum / 1GB
+        }
+
+        # Display size and prompt user
+        if ($size -gt 0.1) {
+            $prompt = [System.Windows.Forms.MessageBox]::Show(
+                "The $Description in $Target contains {0:N2} GB. Do you want to clean it?" -f $size,
+                "Confirm Cleaning",
+                [System.Windows.Forms.MessageBoxButtons]::YesNo
+            )
+
+            if ($prompt -eq [System.Windows.Forms.DialogResult]::Yes) {
+                if ($IsRecycleBin) {
+                    # Special handling for Recycle Bin
+                    Write-Host "Starting cleanup of Recycle Bin..."
+                    $binFolders = Get-ChildItem -Path $Target -Directory -Force
+                    foreach ($folder in $binFolders) {
+                        try {
+                            $sid = New-Object System.Security.Principal.SecurityIdentifier($folder.Name)
+                            $user = $sid.Translate([System.Security.Principal.NTAccount])
+                            Write-Host "Cleaning $user's Recycle Bin..."
+                            $ResultText.text = "Cleaning $user's Recycle Bin..."
+                        } catch {
+                            $user = $folder.Name
+                            Write-Host "Cleaning Recycle Bin for SID: $user..."
+                            $ResultText.text = "Cleaning Recycle Bin for SID: $user..."
+                        }
+
+                        # Delete files with progress
+                        $files = Get-ChildItem -Path $folder.FullName -Recurse -Force -ErrorAction SilentlyContinue
+                        $totalFiles = $files.Count
+                        for ($i = 0; $i -lt $totalFiles; $i++) {
+                            $file = $files[$i]
+                            Write-Progress -Activity "Recycle Bin Cleanup" -Status "Deleting file [$($i + 1)/$totalFiles]: $($file.Name)" -PercentComplete ((($i + 1) / $totalFiles) * 100)
+                            Remove-Item -Path $file.FullName -Recurse -Force
+                        }
+                    }
+
+                } elseif ($IsWindowsUpdate) {
+                    # Special handling for Windows Update folder
+                    Write-Host "Cleaning Windows Update folder..."
+                    $ResultText.text = "Cleaning Windows Update folder..."
+                    try {
+                        Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
+                        Remove-Item -Path "$Target\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+                        Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+                    } catch {
+                        Write-Warning "Failed to clean Windows Update folder: $_"
+                        $ResultText.text = "Failed to clean Windows Update folder."
+                    }
+
+                } else {
+                    # General folder/file cleaning
+                    Write-Host "Cleaning $Description in $Target..."
+                    $ResultText.text = "Cleaning $Description in $Target..."
+                    Get-ChildItem -Path $Target -Recurse -Include $FileTypes -ErrorAction SilentlyContinue | ForEach-Object {
+                        Remove-Item -Path $_.FullName -Recurse -Force -Verbose
+                    }
+                }
+
+                Write-Progress -Activity "Cleaning $Description" -Status "Complete" -Completed
+                $ResultText.text = "Cleaned $Description in $Target. Freed {0:N2} GB." -f $size
+                Write-Host "Cleaned $Target. Freed {0:N2} GB." -f $size
+            } else {
+                Write-Host "User canceled cleaning of $Target."
+                $ResultText.text = "Cleaning of $Description in $Target was canceled."
+            }
+        } else {
+            Write-Host "The $Description in $Target is negligible ({0:N2} GB). Skipping cleanup." -f $size
+            $ResultText.text = "The $Description in $Target is negligible ({0:N2} GB). Skipping cleanup." -f $size
+        }
+    } else {
+        Write-Host "Target $Target does not exist. Skipping..."
+        $ResultText.text = "Target $Target does not exist. Skipping..."
+    }
+}
+
+
 Function MakeForm {
      $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
      $backcolor  = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
@@ -511,9 +609,9 @@ Function MakeForm {
     $firstlabelstartpos = 5
 
     #checkboxes
-    $checkboxspacing = 25
-    $checkboxheight = 26
-    $checkboxfontsize = 10
+    #$checkboxspacing = 25
+    #$checkboxheight = 26
+    #$checkboxfontsize = 10
 
     #####################
     ## Panel 1 begins! ##
@@ -814,89 +912,161 @@ Function MakeForm {
             $btnOpenCustomization
         ))
 
-    #Check if Chocolatey is installed
-    if (Test-Path "$env:ProgramData\Chocolatey") {
-         $ResultText.text = 
-        "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
-        `r`n  List of things that are required in order for this to run smoothly:
-        --->  Chocolatey App Automation - Already installed!
-        --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
-        --->  Windows 10 or Windows 11 - All builds are supported!
-                    
-          Enjoy this free tool!
-        "
-    }  
-    else {
-        $ResultText.text = 
-       "Welcome to the WinTool by Alerion, this is a powerfull tool so make sure you read the instructions on GitHub before you get going. 
-       `r`n  List of things that are required in order for this to run smoothly:
-       --->  Chocolatey App Automation - Will install automaticly upon choosing an app to install!
-       --->  Administrator Elevation - (This script should do this automaticly, but first time an elevated promt is needed)
-       --->  Windows 10 or Windows 11 - All builds are supported!
-                   
-         Enjoy this free tool!
-       "
-    }  
+    # Check if Winget is installed
+if (Get-Command "winget" -ErrorAction SilentlyContinue) {
+    $ResultText.text = @"
+Welcome to WinTool by Alerion! This is a powerful tool, so be sure to read the instructions on GitHub before diving in.  
+Here's what you need to ensure everything runs smoothly:
+  
+  --> Winget App Automation - Already installed and ready to go!  
+  --> Administrator Elevation - This script handles it automatically, but the first time an elevated prompt is required.  
+  --> Windows 10 or Windows 11 - Fully supported on all builds!
+
+Enjoy this free tool and make the most of it!
+"@
+} else {
+    $ResultText.text = @"
+Welcome to WinTool by Alerion! This is a powerful tool, so be sure to read the instructions on GitHub before diving in.  
+Here's what you need to ensure everything runs smoothly:
+  
+  --> Winget App Automation - Will be installed automatically when you choose an app!  
+  --> Administrator Elevation - This script handles it automatically, but the first time an elevated prompt is required.  
+  --> Windows 10 or Windows 11 - Fully supported on all builds!
+
+Enjoy this free tool and make the most of it!
+"@
+}
 
     $selectAppsButton.Add_Click({
         ShowAppSelectionForm
     })
 
-## Customize About this computer, new form that allows the users to customize default Windows properties within the About this computer section.
+    function Set-DesktopBackgroundColor {
+        param (
+            [int]$Red,
+            [int]$Green,
+            [int]$Blue
+        )
+    
+        # Validate RGB values
+        if ($Red -lt 0 -or $Red -gt 255 -or $Green -lt 0 -or $Green -gt 255 -or $Blue -lt 0 -or $Blue -gt 255) {
+            Write-Error "RGB values must be between 0 and 255."
+            return
+        }
+    
+        # Convert RGB to string format required by the registry
+        $rgbString = "$Red $Green $Blue"
+    
+        # Set the desktop background color in the registry
+        Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name "Background" -Value $rgbString
+    
+        # Remove any existing wallpaper to apply the solid color
+        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "Wallpaper" -Value ""
+    
+        # Refresh the desktop to apply changes
+        RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters
+    }
 
 # Event handler for opening the customization form
 $btnOpenCustomization.Add_Click({
     # Secondary Customization Form
     $customForm = New-Object System.Windows.Forms.Form
     $customForm.Text = "Customize About This Computer"
-    $customForm.Size = New-Object System.Drawing.Size(500, 400)
+    $customForm.Size = New-Object System.Drawing.Size(550, 450)
     $customForm.StartPosition = "CenterScreen"
 
-    # Label for Manufacturer
+    # Label and Textbox for Manufacturer
     $labelManufacturer = New-Object System.Windows.Forms.Label
     $labelManufacturer.Text = "Manufacturer:"
     $labelManufacturer.Location = New-Object System.Drawing.Point(10, 20)
     $labelManufacturer.Size = New-Object System.Drawing.Size(100, 20)
-    $customForm.Controls.Add($labelManufacturer)
 
-    # Textbox for Manufacturer
     $textManufacturer = New-Object System.Windows.Forms.TextBox
     $textManufacturer.Location = New-Object System.Drawing.Point(120, 20)
     $textManufacturer.Size = New-Object System.Drawing.Size(350, 20)
-    $customForm.Controls.Add($textManufacturer)
 
-    # Label for Support URL
+    # Label and Textbox for Support URL
     $labelSupportURL = New-Object System.Windows.Forms.Label
     $labelSupportURL.Text = "Support URL:"
     $labelSupportURL.Location = New-Object System.Drawing.Point(10, 60)
     $labelSupportURL.Size = New-Object System.Drawing.Size(100, 20)
-    $customForm.Controls.Add($labelSupportURL)
 
-    # Textbox for Support URL
     $textSupportURL = New-Object System.Windows.Forms.TextBox
     $textSupportURL.Location = New-Object System.Drawing.Point(120, 60)
     $textSupportURL.Size = New-Object System.Drawing.Size(350, 20)
-    $customForm.Controls.Add($textSupportURL)
 
-    # Label for Background Image
-    $labelBackground = New-Object System.Windows.Forms.Label
-    $labelBackground.Text = "Background Image:"
-    $labelBackground.Location = New-Object System.Drawing.Point(10, 100)
-    $labelBackground.Size = New-Object System.Drawing.Size(120, 20)
-    $customForm.Controls.Add($labelBackground)
+    # Radio Buttons for Background Options
+    $radioBackgroundImage = New-Object System.Windows.Forms.RadioButton
+    $radioBackgroundImage.Text = "Set Background Image"
+    $radioBackgroundImage.Location = New-Object System.Drawing.Point(10, 100)
+    $radioBackgroundImage.Size = New-Object System.Drawing.Size(200, 20)
 
-    # Textbox to Display Selected Background Image Path
+    $radioBackgroundColor = New-Object System.Windows.Forms.RadioButton
+    $radioBackgroundColor.Text = "Set Desktop Color"
+    $radioBackgroundColor.Location = New-Object System.Drawing.Point(10, 130)
+    $radioBackgroundColor.Size = New-Object System.Drawing.Size(200, 20)
+
+    # Textbox and Browse Button for Background Image
     $textBackgroundPath = New-Object System.Windows.Forms.TextBox
-    $textBackgroundPath.Location = New-Object System.Drawing.Point(120, 100)
+    $textBackgroundPath.Location = New-Object System.Drawing.Point(120, 160)
     $textBackgroundPath.Size = New-Object System.Drawing.Size(250, 20)
-    $customForm.Controls.Add($textBackgroundPath)
+    $textBackgroundPath.Enabled = $false
 
-    # Button to Browse Background Image
     $btnBrowseImage = New-Object System.Windows.Forms.Button
     $btnBrowseImage.Text = "Browse"
-    $btnBrowseImage.Location = New-Object System.Drawing.Point(380, 100)
+    $btnBrowseImage.Location = New-Object System.Drawing.Point(380, 160)
     $btnBrowseImage.Size = New-Object System.Drawing.Size(90, 25)
+    $btnBrowseImage.Enabled = $false
+
+    # Label and Color Picker for Desktop Color
+    $labelDesktopColor = New-Object System.Windows.Forms.Label
+    $labelDesktopColor.Text = "Choose Color:"
+    $labelDesktopColor.Location = New-Object System.Drawing.Point(10, 200)
+    $labelDesktopColor.Size = New-Object System.Drawing.Size(100, 20)
+
+    $colorPicker = New-Object System.Windows.Forms.ComboBox
+    $colorPicker.Location = New-Object System.Drawing.Point(120, 200)
+    $colorPicker.Size = New-Object System.Drawing.Size(350, 20)
+    $colorPicker.Items.AddRange(@("Red", "Green", "Blue", "Black", "White", "Gray", "Yellow"))
+    $colorPicker.Enabled = $false
+
+    # Apply and Close Buttons
+    $btnApply = New-Object System.Windows.Forms.Button
+    $btnApply.Text = "Apply"
+    $btnApply.Location = New-Object System.Drawing.Point(120, 250)
+    $btnApply.Size = New-Object System.Drawing.Size(100, 30)
+
+    $btnCloseCustom = New-Object System.Windows.Forms.Button
+    $btnCloseCustom.Text = "Close"
+    $btnCloseCustom.Location = New-Object System.Drawing.Point(230, 250)
+    $btnCloseCustom.Size = New-Object System.Drawing.Size(100, 30)
+
+    # Add controls to the form
+    $customForm.Controls.Add($labelManufacturer)
+    $customForm.Controls.Add($textManufacturer)
+    $customForm.Controls.Add($labelSupportURL)
+    $customForm.Controls.Add($textSupportURL)
+    $customForm.Controls.Add($radioBackgroundImage)
+    $customForm.Controls.Add($radioBackgroundColor)
+    $customForm.Controls.Add($textBackgroundPath)
     $customForm.Controls.Add($btnBrowseImage)
+    $customForm.Controls.Add($labelDesktopColor)
+    $customForm.Controls.Add($colorPicker)
+    $customForm.Controls.Add($btnApply)
+    $customForm.Controls.Add($btnCloseCustom)
+
+    # Dynamically manage visibility and enable inputs based on radio button selection
+    $radioBackgroundImage.Add_CheckedChanged({
+        $textBackgroundPath.Enabled = $radioBackgroundImage.Checked
+        $btnBrowseImage.Enabled = $radioBackgroundImage.Checked
+        $colorPicker.Enabled = -not $radioBackgroundImage.Checked
+    })
+
+    $radioBackgroundColor.Add_CheckedChanged({
+        $colorPicker.Enabled = $radioBackgroundColor.Checked
+        $textBackgroundPath.Enabled = -not $radioBackgroundColor.Checked
+        $btnBrowseImage.Enabled = -not $radioBackgroundColor.Checked
+    })
 
     # Event handler for browsing background image
     $btnBrowseImage.Add_Click({
@@ -907,26 +1077,13 @@ $btnOpenCustomization.Add_Click({
         }
     })
 
-    # Button to Apply Settings
-    $btnApply = New-Object System.Windows.Forms.Button
-    $btnApply.Text = "Apply"
-    $btnApply.Location = New-Object System.Drawing.Point(120, 150)
-    $btnApply.Size = New-Object System.Drawing.Size(100, 30)
-    $customForm.Controls.Add($btnApply)
-
-    # Button to Close Customization Form
-    $btnCloseCustom = New-Object System.Windows.Forms.Button
-    $btnCloseCustom.Text = "Close"
-    $btnCloseCustom.Location = New-Object System.Drawing.Point(230, 150)
-    $btnCloseCustom.Size = New-Object System.Drawing.Size(100, 30)
-    $customForm.Controls.Add($btnCloseCustom)
-
     # Event handler for Apply button
     $btnApply.Add_Click({
         # Get the values from the textboxes
         $manufacturer = $textManufacturer.Text
         $supportURL = $textSupportURL.Text
         $backgroundPath = $textBackgroundPath.Text
+        $desktopColor = $colorPicker.SelectedItem
 
         # Validate and Apply Manufacturer and Support URL
         If (-not [string]::IsNullOrWhiteSpace($manufacturer)) {
@@ -936,9 +1093,10 @@ $btnOpenCustomization.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" -Name "SupportURL" -Type String -Value $supportURL
         }
 
-        # Validate and Set Background Image
-        If (-not [string]::IsNullOrWhiteSpace($backgroundPath) -and (Test-Path $backgroundPath)) {
-            Add-Type @"
+         # Apply Desktop Settings
+    If ($radioBackgroundImage.Checked -and (Test-Path $backgroundPath)) {
+        # Set Background Image
+        Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 public class Wallpaper {
@@ -946,11 +1104,39 @@ public class Wallpaper {
     public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
 }
 "@
-            [Wallpaper]::SystemParametersInfo(0x0014, 0, $backgroundPath, 0x0001 -bor 0x0002)
+        [Wallpaper]::SystemParametersInfo(0x0014, 0, $backgroundPath, 0x0001 -bor 0x0002)
+    } elseif ($radioBackgroundColor.Checked -and $desktopColor) {
+        # Clear existing background image
+        Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Wallpaper {
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+}
+"@
+        [Wallpaper]::SystemParametersInfo(0x0014, 0, "", 0x0001 -bor 0x0002)
+
+        # Set Desktop Color using the function
+        $colorMap = @{
+            "Red"   = [int[]](255, 0, 0)
+            "Green" = [int[]](0, 255, 0)
+            "Blue"  = [int[]](0, 0, 255)
+            "Black" = [int[]](0, 0, 0)
+            "White" = [int[]](255, 255, 255)
+            "Gray"  = [int[]](128, 128, 128)
+            "Yellow"= [int[]](255, 255, 0)
         }
 
+        if ($colorMap.ContainsKey($desktopColor)) {
+            $selectedColor = $colorMap[$desktopColor]
+            SetDesktopBackgroundColor $selectedColor
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Invalid color selection.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+        }
+    }
         # Show confirmation
-        [System.Windows.Forms.MessageBox]::Show("Information updated successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        [System.Windows.Forms.MessageBox]::Show("Settings updated successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
     })
 
     # Event handler for Close button
@@ -963,606 +1149,466 @@ public class Wallpaper {
 })
 
 
+# Event handler for DNS selection
+$changedns.add_SelectedIndexChanged({
+    $selected = $changedns.SelectedIndex
 
-    ##DNS CHANGER TEST HERE
-    $changedns.add_SelectedIndexChanged({
-            $selected = $changedns.SelectedIndex
+    # Function to set DNS
+    function Set-DNS {
+        param (
+            [string[]]$dnsAddresses
+        )
+        $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+        $Interfaces.SetDNSServerSearchOrder($dnsAddresses) | Out-Null
+    }
 
-            switch ($selected) {
-                1 {
-                    $ResultText.text = "DNS set to Google on all network adapters. `r`n Ready for Next Task!"
-                    $DNS1 = "8.8.8.8"
-                    $DNS2 = "8.8.4.4"
-                    $dns = "$DNS1", "$DNS2"
-                    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-                    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
+    switch ($selected) {
+        1 {
+            $ResultText.text = "DNS set to Google on all network adapters. `r`n Ready for Next Task!"
+            Set-DNS -dnsAddresses @("8.8.8.8", "8.8.4.4")
+        }
+        2 {
+            $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n Ready for Next Task!"
+            Set-DNS -dnsAddresses @("1.1.1.1", "1.0.0.1")
+        }
+        3 {
+            $ResultText.text = "DNS set to Level3 on all network adapters. `r`n Ready for Next Task!"
+            Set-DNS -dnsAddresses @("4.2.2.2", "4.2.2.1")
+        }
+        4 {
+            $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n Ready for Next Task!"
+            Set-DNS -dnsAddresses @("208.67.222.222", "208.67.220.220")
+        }
+        5 {
+            $ResultText.text = "Resetting DNS to Windows Default. This will break any VPNs too."
+            $confirmReset = [System.Windows.Forms.MessageBox]::Show('Are you sure?', 'Reset DNS to Windows Default?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
+            if ($confirmReset -eq [System.Windows.Forms.DialogResult]::Yes) {
+                $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+                foreach ($interface in $Interfaces) {
+                    $interface.SetDNSServerSearchOrder($null) | Out-Null
                 }
-                2 {
-                    $ResultText.text = "DNS set to Cloudflare on all network adapters. `r`n Ready for Next Task!"
-                    $DNS1 = "1.1.1.1"
-                    $DNS2 = "1.0.0.1"
-                    $dns = "$DNS1", "$DNS2"
-                    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-                    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-                }
-                3 {
-                    $ResultText.text = "DNS set to Level3 on all network adapters. `r`n Ready for Next Task!"
-                    $DNS1 = "4.2.2.2"
-                    $DNS2 = "4.2.2.1"
-                    $dns = "$DNS1", "$DNS2"
-                    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-                    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-                }
-                4 {
-                    $ResultText.text = "DNS set to OpenDNS on all network adapters. `r`n Ready for Next Task!"
-                    $DNS1 = "208.67.222.222"
-                    $DNS2 = "208.67.220.220"
-                    $dns = "$DNS1", "$DNS2"
-                    $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-                    $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-                }
-                5 {
-                    $ResultText.text = "Not sure why this would be needed since Cloudflare provides the fastest DNS connection..."
-                    $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Reset DNS to Windows Default, this will break any VPNs too?" , 4)
-                    if ($regcachclean -eq 'Yes') {
-                        $Interface = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-                        $interface | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
-                        $interface | Set-NetIPInterface -Dhcp Enabled
-                        $interface | Set-DnsClientServerAddress -ResetServerAddresses
-                        $ResultText.text = "The Network Adapters has been reset properly. `r`n Ready for Next Task!"
-                    }
-                }
-                default {
-                    $ResultText.text = "You need to press an option to change the DNS Address to your liking :)"
-                }
+                $ResultText.text = "DNS settings reset to Windows Default. `r`n Ready for Next Task!"
             }
-        })
+        }
+        6 {
+            # Custom DNS Entry
+            $customDnsForm = New-Object System.Windows.Forms.Form
+            $customDnsForm.Text = "Custom DNS Input"
+            $customDnsForm.Size = New-Object System.Drawing.Size(300, 200)
+            $customDnsForm.StartPosition = "CenterScreen"
+
+            # Label for DNS Input
+            $labelDns = New-Object System.Windows.Forms.Label
+            $labelDns.Text = "Enter custom DNS (comma separated):"
+            $labelDns.Size = New-Object System.Drawing.Size(260, 20)
+            $labelDns.Location = New-Object System.Drawing.Point(10, 10)
+            $customDnsForm.Controls.Add($labelDns)
+
+            # Textbox for DNS Input
+            $textCustomDns = New-Object System.Windows.Forms.TextBox
+            $textCustomDns.Size = New-Object System.Drawing.Size(260, 20)
+            $textCustomDns.Location = New-Object System.Drawing.Point(10, 40)
+            $customDnsForm.Controls.Add($textCustomDns)
+
+            # Apply Button
+            $btnApplyCustomDns = New-Object System.Windows.Forms.Button
+            $btnApplyCustomDns.Text = "Apply"
+            $btnApplyCustomDns.Size = New-Object System.Drawing.Size(100, 30)
+            $btnApplyCustomDns.Location = New-Object System.Drawing.Point(50, 80)
+            $btnApplyCustomDns.Add_Click({
+                $customDns = $textCustomDns.Text.Split(",") | ForEach-Object { $_.Trim() }
+                if ($customDns -and $customDns.Count -ge 1) {
+                    Set-DNS -dnsAddresses $customDns
+                    $ResultText.text = "Custom DNS set: $($customDns -join ", "). `r`n Ready for Next Task!"
+                    $customDnsForm.Close()
+                } else {
+                    [System.Windows.Forms.MessageBox]::Show("Invalid DNS input. Please enter valid IP addresses.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+                }
+            })
+            $customDnsForm.Controls.Add($btnApplyCustomDns)
+
+            # Cancel Button
+            $btnCancelCustomDns = New-Object System.Windows.Forms.Button
+            $btnCancelCustomDns.Text = "Cancel"
+            $btnCancelCustomDns.Size = New-Object System.Drawing.Size(100, 30)
+            $btnCancelCustomDns.Location = New-Object System.Drawing.Point(160, 80)
+            $btnCancelCustomDns.Add_Click({
+                $customDnsForm.Close()
+            })
+            $customDnsForm.Controls.Add($btnCancelCustomDns)
+
+            $customDnsForm.ShowDialog()
+        }
+        default {
+            $ResultText.text = "Please select an option to change the DNS settings."
+        }
+    }
+})
     
-        $errorscanner.Add_Click({
-            $ResultText.text = "System error scan has started, select your options and wait..."
+# Function to start a system scan
+function Start-SystemScan {
+    param (
+        [string]$scanType,
+        [scriptblock]$scanCommand,
+        [string]$logFile
+    )
+
+    $ResultText.text = "$scanType has started. Please wait..."
+
+    try {
+        # Execute the scan command and redirect output to log file
+        & $scanCommand *>&1 | Tee-Object -FilePath $logFile
+        $ResultText.text = "$scanType completed successfully. Please review the log at $logFile."
+    } catch {
+        $ResultText.text = "Error during $scanType : $_"
+    }
+}
+
+$errorscanner.Add_Click({
+    $ResultText.text = "System error scan has started. Please wait..."
+
+    # Define log file paths
+    $logDirectory = "$env:SystemDrive\Logs"
+    $sfcLog = Join-Path -Path $logDirectory -ChildPath "SFC_Log.txt"
+    $dismLog = Join-Path -Path $logDirectory -ChildPath "DISM_Log.txt"
+
+    # Create Logs directory if it doesn't exist
+    if (-not (Test-Path $logDirectory)) {
+        New-Item -Path $logDirectory -ItemType Directory | Out-Null
+    }
+
+    # DISM Scan
+    $dismConfirmation = [System.Windows.Forms.MessageBox]::Show('This may take a while. Do you want to proceed?', 'Initiate DISM Scan?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
+    if ($dismConfirmation -eq [System.Windows.Forms.DialogResult]::Yes) {
+        Start-SystemScan -scanType 'DISM Restore Health' -scanCommand { Repair-WindowsImage -Online -RestoreHealth } -logFile $dismLog
+    }
+
+    # SFC Scan
+    $sfcConfirmation = [System.Windows.Forms.MessageBox]::Show('This may take a while. Do you want to proceed?', 'Run SFC Scan now?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
+    if ($sfcConfirmation -eq [System.Windows.Forms.DialogResult]::Yes) {
+        Start-SystemScan -scanType 'SFC Scannow' -scanCommand { sfc /scannow } -logFile $sfcLog
+    }
+
+    $ResultText.text = "System error scans have been completed. Please review the logs and restart your computer if necessary."
+})
         
-            # Load Windows Forms for MessageBox
-            [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-        
-            # Function to initiate system scans
-            function Start-SystemScan {
-                param (
-                    [string]$scanType,
-                    [string]$scanCommand
-                )
-        
-                $name = "$scanType - Offload Process"
-                $host.ui.RawUI.WindowTitle = $name
-        
-                try {
-                    # Start the scan process
-                    Start-Process cmd.exe -ArgumentList "/c $scanCommand" -Wait
-                    $ResultText.text = "$scanType scan completed successfully. You may need to restart your system."
-                } catch {
-                    $ResultText.text = "Error during $scanType scan: $_"
+
+
+$ultimateclean.Add_Click({
+
+    # Initial Setup
+    $ResultText.text = "Cleaning initiated, empty folders will be skipped automatically..."
+    [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+    $Form.text = "WinTool by Alerion - Initializing Ultimate Cleaning..."
+
+    # Restart Explorer to free access for files cached into memory
+    $ResultText.text = "Restarting Explorer to apply changes..."
+    Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
+    taskkill /F /IM explorer.exe
+
+    # Step 1: Create Restore Point
+    $ResultText.text = "Creating a restore point named: WinTool-Ultimate-Cleaning-Restorepoint, in case something bad happens..."
+    try {
+        Enable-ComputerRestore -Drive "C:\"
+        Checkpoint-Computer -Description "WinTool-Ultimate-Cleaning-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
+        $ResultText.text = "Restore point created successfully."
+    } catch {
+        $ResultText.text = "Failed to create a restore point. Proceeding with cleaning."
+    }
+
+    # Step 2: Clean Shadow Copies and Component Store
+    $componentCachePrompt = [System.Windows.Forms.MessageBox]::Show(
+        "Are you sure you want to clean Shadow Copies and Windows Store Component Cache?",
+        "Confirmation",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo
+    )
+    if ($componentCachePrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
+        $ResultText.text = "Cleaning Windows Store Component Cache. Please be patient..."
+        try {
+            Start-Process -FilePath "cmd.exe" -ArgumentList "/c vssadmin delete shadows /all /quiet" -Wait -NoNewWindow
+            Start-Process -FilePath "cmd.exe" -ArgumentList "/c DISM /Online /Cleanup-Image /AnalyzeComponentStore" -Wait -NoNewWindow
+            Start-Process -FilePath "cmd.exe" -ArgumentList "/c DISM /Online /Cleanup-Image /spsuperseded" -Wait -NoNewWindow
+            Start-Process -FilePath "cmd.exe" -ArgumentList "/c DISM /Online /Cleanup-Image /StartComponentCleanup" -Wait -NoNewWindow
+            $ResultText.text = "Shadow copies and Windows Store Component Cache cleaned successfully."
+
+            # Clean unnecessary Windows Store caches
+            $ResultText.text = "Cleaning unnecessary Windows Store caches..."
+            $volumeCaches = Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches" |
+                            Where-Object { $_.Name -ne "DownloadsFolder" }
+            foreach ($cache in $volumeCaches) {
+                $registryKey = 'HKLM:' + $cache.Name.Substring(18)
+                New-ItemProperty -Path $registryKey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+            Clear-BCCache -Force -ErrorAction SilentlyContinue
+            $ResultText.text = "Windows Store caches cleaned."
+        } catch {
+            $ResultText.text = "Error while cleaning Shadow Copies or Component Store: $_"
+        }
+    }
+
+    # Step 3: Clean Registry Junk
+    $regCachePrompt = [System.Windows.Forms.MessageBox]::Show(
+        "Are you sure you want to clean up a collection of useless registry files?",
+        "Confirmation",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo
+    )
+    if ($regCachePrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
+        $ResultText.text = "Cleaning registry junk files. Please wait..."
+        $registryPaths = @(
+            "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles\*",
+            "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Managed\*",
+            "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Unmanaged\*",
+            "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*",
+            "HKLM:\SYSTEM\CurrentControlSet\Control\usbflags\*",
+            "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache\Intranet\*",
+            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\*",
+            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths\*",
+            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\*",
+            "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\*",
+            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\*"
+        )
+        foreach ($path in $registryPaths) {
+            Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue -Verbose
+        }
+        $ResultText.text = "Registry junk files cleaned."
+    }
+
+    # Clean up local explorer-related files
+    $ResultText.text = "Cleaning local explorer-related files..."
+    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Explorer" -Description "Explorer files"
+    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent" -Description "Recent files"
+    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations" -Description "Recent Automatic Destinations"
+    Perform-Cleaning -Target "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations" -Description "Recent Custom Destinations"
+
+    # Fetch user profiles
+    $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object -ExpandProperty Name
+    $ResultText.text = "User profiles fetched: $($Users -join ', ')"
+
+    # Clear Inetpub Logs Folder
+    if (Test-Path "C:\inetpub\logs\LogFiles\") {
+        Perform-Cleaning -Target "C:\inetpub\logs\LogFiles" -Description "Inetpub Logs Folder"
+    }
+
+    # Clear Microsoft Teams Previous Versions
+    if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
+        foreach ($user in $Users) {
+            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Teams\previous" -Description "Microsoft Teams previous versions"
+            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Teams\stage" -Description "Microsoft Teams staging files"
+        }
+    }
+
+    # Clear SnagIt Crash Dump Files
+    if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
+        foreach ($user in $Users) {
+            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps" -Description "SnagIt crash dumps"
+        }
+    }
+
+    # Clear Dropbox Cache
+    if (Test-Path "C:\Program Files (x86)\Dropbox\Client") {
+        $ResultText.text = "Checking Dropbox caches..."
+        foreach ($user in $Users) {
+            Perform-Cleaning -Target "C:\Users\$user\Dropbox\.dropbox.cache" -Description "Dropbox cache"
+        }
+    } else {
+        $ResultText.text = "No Dropbox installation found. Skipping Dropbox cleanup."
+    }
+
+    # Clear HP Support Assistant Installation Folder
+    if (Test-Path "C:\swsetup") {
+        Perform-Cleaning -Target "C:\swsetup" -Description "HP Support Assistant installation folder"
+    }
+
+    # Clear User Downloads Folder
+    foreach ($user in $Users) {
+        Perform-Cleaning -Target "C:\Users\$user\Downloads" -Description "User Downloads folder"
+    }
+
+    # Clear Azure Logs Folder
+    if (Test-Path "C:\WindowsAzure\Logs") {
+        Perform-Cleaning -Target "C:\WindowsAzure\Logs" -Description "Azure Logs folder"
+    }
+
+    # Clear Office Cache
+    if (Test-Path "$env:LocalAppData\Microsoft\Office") {
+        foreach ($user in $Users) {
+            Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache" -Description "Office Cache folder"
+        }
+    }
+
+    # Clear LFSAgent Log Folder
+    if (Test-Path "$env:windir\LFSAgent\Logs") {
+        Perform-Cleaning -Target "$env:windir\LFSAgent\Logs" -Description "LFSAgent Log folder"
+    }
+
+    # Clear SOTI MobiController Log Files
+    if (Test-Path "C:\Program Files (x86)\SOTI\MobiControl") {
+        Perform-Cleaning -Target "C:\Program Files (x86)\SOTI\MobiControl" -FileTypes @("*.log") -Description "SOTI MobiController log files"
+    }
+
+    # Clear Cylance Log Files
+    if (Test-Path "C:\Program Files\Cylance\Desktop") {
+        Perform-Cleaning -Target "C:\Program Files\Cylance\Desktop" -FileTypes @("cylog-*.log") -Description "Cylance log files"
+    }
+
+    # Inform user about the start of cleaning
+    $ResultText.text = "Checking System, User, and Common Temp Folders..."
+
+    # Common Temp Folders
+    Perform-Cleaning -Target "$env:windir\Prefetch" -Description "Prefetch files"
+    Perform-Cleaning -Target "$env:windir\Temp" -Description "Windows Temp files"
+    Perform-Cleaning -Target "$env:systemdrive\Temp" -Description "System Temp files"
+
+    # User-Specific Temp Folders
+    foreach ($user in $Users) {
+        Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Temp" -Description "User Temp files"
+        Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Windows\WER" -Description "Windows Error Reporting (WER) files"
+        Perform-Cleaning -Target "C:\Users\$user\AppData\Local\Microsoft\Windows\AppCache" -Description "App Cache files"
+        Perform-Cleaning -Target "C:\Users\$user\cookies" -Description "Cookies"
+        Perform-Cleaning -Target "C:\Users\$user\Local Settings\Temporary Internet Files" -Description "Temporary Internet Files"
+        Perform-Cleaning -Target "C:\Users\$user\recent" -Description "Recent files"
+    }
+
+    # Windows System Temp and Logs Folders
+    Perform-Cleaning -Target "$env:systemroot\SoftwareDistribution.bak" -Description "SoftwareDistribution backup files"
+    Perform-Cleaning -Target "$env:systemroot\System32\Catroot2.bak" -Description "Catroot2 backup files"
+    Perform-Cleaning -Target "$env:windir\Logs\CBS" -Description "CBS logs"
+    Perform-Cleaning -Target "$env:ProgramData\Microsoft\Windows\WER" -Description "Windows Error Reporting logs"
+    Perform-Cleaning -Target "$env:systemdrive\Windows.old" -Description "Windows.old folder"
+    Perform-Cleaning -Target "$env:ProgramData\Microsoft\Windows\RetailDemo" -Description "RetailDemo folder"
+
+    # Vendor-Specific Caches
+    Perform-Cleaning -Target "$env:LOCALAPPDATA\AMD" -Description "AMD local cache"
+    Perform-Cleaning -Target "$env:windir/../AMD/" -Description "AMD system cache"
+    Perform-Cleaning -Target "$env:LOCALAPPDATA\NVIDIA\DXCache" -Description "NVIDIA DXCache"
+    Perform-Cleaning -Target "$env:LOCALAPPDATA\NVIDIA\GLCache" -Description "NVIDIA GLCache"
+    Perform-Cleaning -Target "$env:APPDATA\..\locallow\Intel\ShaderCache" -Description "Intel Shader Cache"
+
+    # Custom Folders
+    Perform-Cleaning -Target "C:\Intel" -Description "Intel folder"
+    Perform-Cleaning -Target "C:\PerfLogs" -Description "Performance Logs folder"
+    Perform-Cleaning -Target "C:\Temp" -Description "Temp folder on root"
+    Perform-Cleaning -Target "C:\Drivers" -Description "Drivers folder"
+    Perform-Cleaning -Target "C:\Scripts" -Description "Scripts folder"
+    Perform-Cleaning -Target "C:\Script" -Description "Script folder"
+    Perform-Cleaning -Target "C:\Nvidia" -Description "NVIDIA folder"
+
+    # Specific Log Files
+    Perform-Cleaning -Target "$env:windir\System32\LogFiles" -FileTypes @("*.log") -Description "System32 Log files"
+
+    $ResultText.text = "All System, User, and Common Temp Files have been checked and cleaned as per user confirmation."
+
+    # Perform cleanup for the Windows Updates folder (SoftwareDistribution)
+    $ResultText.text = "Checking size of the SoftwareDistribution folder..."
+    Perform-Cleaning -Target "$env:windir\SoftwareDistribution" -Description "Windows Update folder (SoftwareDistribution)" -BeforeCleanScript {
+        # Additional actions before cleanup (e.g., stopping the Windows Update service)
+        $ResultText.text = "Stopping Windows Update service..."
+        try {
+            Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
+            $ResultText.text = "Windows Update service stopped."
+        } catch {
+            $ErrorMessage = $_.Exception.Message
+            Write-Warning "Failed to stop Windows Update service: $ErrorMessage"
+            $ResultText.text = "Warning: Could not stop the Windows Update service. Cleanup may not proceed as expected."
+        }
+    } -AfterCleanScript {
+        # Additional actions after cleanup (e.g., restarting the Windows Update service)
+        $ResultText.text = "Restarting Windows Update service..."
+        try {
+            Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+            $ResultText.text = "Windows Update service restarted successfully."
+        } catch {
+            $ErrorMessage = $_.Exception.Message
+            Write-Warning "Failed to restart Windows Update service: $ErrorMessage"
+            $ResultText.text = "Warning: Could not restart the Windows Update service. Please check manually."
+        }
+    }
+
+    # Empty Recycle Bin
+    $ResultText.text = "Initializing Recycle Bin cleaning. Analyzing folders and calculating total size..."
+    Perform-Cleaning -IsRecycleBin -Description "Recycle Bin files" 
+
+    # SuperDeepCleaner
+    $ResultText.text = "Initializing Superdeep Cleaner. Waiting for user confirmation (WILL FREEZE FOR A GOOD WHILE HERE)..."
+    
+    # Prompt the user for confirmation
+    $superdeepclean = [System.Windows.Forms.MessageBox]::Show(
+        "Do you want to proceed with the super deep clean? This might take around 1 hour to complete.",
+        "Confirmation",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo
+    )
+    
+    # Handle user confirmation
+    if ($superdeepclean -eq [System.Windows.Forms.DialogResult]::Yes) {
+        $ResultText.text = "User confirmed. Analyzing folders and calculating total size (WILL FREEZE FOR A GOOD WHILE HERE)..."
+    
+        # Define patterns and folders to clean
+        $patterns = @("*.tmp", "*._mp", "*.log", "*.gid", "*.chk", "*.old", "*.bak")
+        $foldersToClean = @(
+            "$env:systemdrive",
+            "$env:windir",
+            "$env:systemdrive\Windows.old"
+        )
+    
+        # Initialize variables to collect details
+        $totalSize = 0
+        $folderDetails = @()
+    
+        # Analyze and clean each folder
+        foreach ($folder in $foldersToClean) {
+            if (Test-Path $folder) {
+                $folderSize = 0
+                foreach ($pattern in $patterns) {
+                    $size = (Get-ChildItem -Path $folder -Recurse -Filter $pattern -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+                    $folderSize += $size
+                    $totalSize += $size
                 }
+    
+                # Convert folder size to GB
+                $folderSizeGB = "{0:N2}" -f ($folderSize / 1GB)
+    
+                # Append details for this folder
+                $folderDetails += "Folder: $folder - Size: $folderSizeGB GB"
+    
+                # Perform cleaning for this folder
+                Perform-Cleaning -Target $folder -Description "Superdeep Cleaning in $folder" -FileTypes $patterns
+            } else {
+                $folderDetails += "Folder not found: $folder"
             }
-        
-            # SFC Scan
-            $sfcConfirmation = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?', 'Run SFC Scan now?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
-            if ($sfcConfirmation -eq [System.Windows.Forms.DialogResult]::Yes) {
-                Start-SystemScan -scanType 'SFC Scannow' -scanCommand 'sfc /scannow'
-            }
-        
-            # DISM Scan
-            $dismConfirmation = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?', 'Initiate DISM Scans?', [System.Windows.Forms.MessageBoxButtons]::YesNo)
-            if ($dismConfirmation -eq [System.Windows.Forms.DialogResult]::Yes) {
-                Start-SystemScan -scanType 'DISM Error Scanner' -scanCommand 'DISM /Online /Cleanup-Image /ScanHealth'
-                Start-SystemScan -scanType 'DISM Check Health' -scanCommand 'DISM /Online /Cleanup-Image /CheckHealth'
-                Start-SystemScan -scanType 'DISM Restore Health' -scanCommand 'DISM /Online /Cleanup-Image /RestoreHealth'
-            }
-        
-            if ($?) {
-                $ResultText.text = "System error scans have been initiated. Please wait for them to complete and then restart your computer."
-            }
-        })
-        
+        }
+    
+        # Convert total size to GB
+        $totalSizeGB = "{0:N2}" -f ($totalSize / 1GB)
+    
+        # Display completion details
+        $ResultText.text = "Superdeep Cleaner completed. Total size cleaned: $totalSizeGB GB. Completed, doing a restart is recommended!
+        `r`nDetails:
+        `r`n- $($folderDetails -join "`n- ")`r`n"
+    } else {
+        # Handle cancel gracefully
+        $ResultText.text = "Superdeep Cleaner was canceled by the user. No changes were made."
+    }
+
+     # Restart explorer.exe
+     Start-Process explorer.exe
+})
+
+$forcenorkeyboard.Add_Click({
+    $ResultText.text = "Removing secondary keyboard settings and forcing nb-NO to default..."
+
+    # Set Norwegian as the only language/keyboard layout
+    Set-WinUserLanguageList -LanguageList nb-NO -Force
+
+    Start-Sleep -Seconds 5  # Allow time for the system to apply changes
+
+    # Remove en-US and other 'en*' layouts if they exist
+    $currentLanguages = Get-WinUserLanguageList
+    $filteredLanguages = $currentLanguages.Where({ $_.LanguageTag -notlike 'en*' -and $_.LanguageTag -notlike 'us*' })
+    Set-WinUserLanguageList -LanguageList $filteredLanguages -Force
+
+    $ResultText.text = "Secondary keyboard removed. Norwegian (nb-NO) layout has been set as default."
+})
 
-
-    $ultimateclean.Add_Click({
-	
-            $ResultText.text = "Cleaning initiated, empty folders will be skipped automaticly..." 
-
-            [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-
-            $Form.text = "WinTool by Alerion - Initializing Ultimate Cleaning..."
-
-            $ResultText.text = "Creating a restore point named: WinTool-Ultimate-Cleaning-Restorepoint, incase something bad happens.."
-            Enable-ComputerRestore -Drive "C:\"
-            Checkpoint-Computer -Description "WinTool-Ultimate-Cleaning-Restorepoint" -RestorePointType "MODIFY_SETTINGS"
-
-            $componentcache = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Clean Shadow Copies cache and Windows Store Component cache?" , 4)
-
-            if ($componentcache -eq 'Yes') {
-                $ResultText.text = "Windows Store Component cache is being cleaned, please be patient..."
-                
-                # Delete shadow copies and cleanup component store in one go
-                vssadmin delete shadows /all | Out-Null
-                cmd /c DISM /Online /Cleanup-Image /AnalyzeComponentStore | Out-Null
-                cmd /c DISM /Online /Cleanup-Image /spsuperseded | Out-Null
-                cmd /c DISM /Online /Cleanup-Image /StartComponentCleanup | Out-Null
-                
-                $ResultText.text = "Shadow copies and Windows Store component cache cleaned..."
-                
-                # Clean unnecessary Windows Store caches efficiently
-                $Key = Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches" | 
-                       Where-Object { $_.Name -ne "DownloadsFolder" }
-                
-                $Form.text = "WinTool by Alerion - Please wait, Ultimate Cleaning in progress..."
-                $ResultText.text = "Cleaning unnecessary Windows Store caches..."
-            
-                # Update registry in bulk without unnecessary looping and checking
-                foreach ($result in $Key) {
-                    $Regkey = 'HKLM:' + $result.Name.Substring(18)
-                    New-ItemProperty -Path $Regkey -Name 'StateFlags0001' -Value 2 -PropertyType DWORD -Force -EA SilentlyContinue | Out-Null
-                }
-            
-                # Clear BCCache if necessary
-                Clear-BCCache -Force -ErrorAction SilentlyContinue
-            }
-
-            $regcachclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?', "Clean up a collection of useless registry files?", [System.Windows.Forms.MessageBoxButtons]::YesNo)
-
-            if ($regcachclean -eq [System.Windows.Forms.DialogResult]::Yes) {
-                # List of registry paths to clean
-                $regPaths = @(
-                    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles\*",
-                    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Managed\*",
-                    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\Unmanaged\*",
-                    "HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*",
-                    "HKLM:\SYSTEM\CurrentControlSet\Control\usbflags\*",
-                    "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache\Intranet\*",
-                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU\*",
-                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths\*",
-                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\*",
-                    "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\*",
-                    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\*"
-                )
-                
-                # Remove registry paths in bulk
-                foreach ($path in $regPaths) {
-                    Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                
-                # Stop and restart explorer.exe
-                Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
-                taskkill /F /IM explorer.exe
-                
-                # Wait for a moment before clearing Explorer-related files
-                Start-Sleep -Seconds 3
-                
-                # Clean up local explorer-related files
-                $localPaths = @(
-                    "$env:LocalAppData\Microsoft\Windows\Explorer",
-                    "$env:LocalAppData\Microsoft\Windows\Recent",
-                    "$env:LocalAppData\Microsoft\Windows\Recent\AutomaticDestinations",
-                    "$env:LocalAppData\Microsoft\Windows\Recent\CustomDestinations"
-                )
-
-                foreach ($path in $localPaths) {
-                    Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                
-                # Restart explorer.exe
-                Start-Process explorer.exe
-                
-                # Final delay and message update
-                Start-Sleep -Seconds 3
-                $ResultText.text = "Windows registry junk files deleted successfully..."
-            }
-
-            $Users = Get-ChildItem "$env:systemdrive\Users" | Select-Object Name
-            $users = $Users.Name 
-
-            # Clear Inetpub Logs Folder
-            if (Test-Path "C:\inetpub\logs\LogFiles\") {
-                $ResultText.text = "Clearing Inetpub Logs Folder..." 
-                $Folders = Get-ChildItem -Path "C:\inetpub\logs\LogFiles\" | Select-Object Name
-                foreach ($Folder in $Folders) {
-                    $folder = $Folder.Name
-                    Remove-Item -Path "C:\inetpub\logs\LogFiles\$Folder\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                $ResultText.text = "Deleted Inetpub Logs Folder..." 
-            }
-
-            if (Test-Path "$env:LocalAppData\Microsoft\Teams\") {
-                # Delete Microsoft Teams Previous Version files
-                $ResultText.text = "Clearing Microsoft Teams previous versions..." 
-                Foreach ($user in $Users) {
-                    if (Test-Path "C:\Users\$user\AppData\Local\Microsoft\Teams\") {
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\previous\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\Microsoft\Teams\stage\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    } 
-                }
-                $ResultText.text = "Deleted old Microsoft Teams versions..." 
-            }
-
-            if (Test-Path "$env:LocalAppData\TechSmith\SnagIt") {
-                # Delete SnagIt Crash Dump files
-                $ResultText.text = "Clearing SnagIt crash dumps..." 
-                Foreach ($user in $Users) {
-                    if (Test-Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt") {
-                        Remove-Item -Path "C:\Users\$user\AppData\Local\TechSmith\SnagIt\CrashDumps\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    } 
-                }
-        
-                $ResultText.text = "Deleted SnagIt crash dumps..." 
-            }
-
-            if (Test-Path "C:\Program Files (x86)\Dropbox\Client") {
-                $Dropboxclean = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete all Dropbox Caches?" , 4)
-                if ($Dropboxclean -eq 'Yes') {
-                    # Clear Dropbox Cache
-                    $ResultText.text = "Clearing Dropbox Cache..." 
-                    Foreach ($user in $Users) {
-                        if (Test-Path "C:\Users\$user\Dropbox\") {
-                            Remove-Item -Path "C:\Users\$user\Dropbox\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                            Remove-Item -Path "C:\Users\$user\Dropbox*\.dropbox.cache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                        }
-                    }
-                    $ResultText.text = "Dropbox caches deleted..." 
-                }
-            }
-            else {
-                Start-Sleep -s 2
-                $ResultText.text = "No Dropbox installation can be found.. Skipping clean..." 
-            }
-
-            # Clear HP Support Assistant Installation Folder
-            if (Test-Path "C:\swsetup") {
-                Remove-Item -Path "C:\swsetup" -Force -ErrorAction SilentlyContinue -Verbose
-            } 
-
-            $DeleteOldDownloads = [System.Windows.Forms.MessageBox]::Show('Are you sure?' , "Delete User files from Download folder?" , 4)
-            # Delete files from Downloads folder
-            if ($DeleteOldDownloads -eq 'Yes') { 
-                $ResultText.text = "Deleting files from User Download folder..." 
-                Foreach ($user in $Users) {
-                    $UserDownloads = "C:\Users\$user\Downloads"
-                    $OldFiles = Get-ChildItem -Path "$UserDownloads\" -Recurse -File -ErrorAction SilentlyContinue
-                    foreach ($file in $OldFiles) {
-                        Remove-Item -Path "$UserDownloads\$file" -Force -ErrorAction SilentlyContinue -Verbose
-                    }
-                }
-                Start-Sleep -s 2
-                $ResultText.text = "All files in the User Download folder have been deleted..." 
-            }
-
-            # Delete files from Azure Log folder
-            if (Test-Path "C:\WindowsAzure\Logs") {
-                $ResultText.text = "Deleting files from Azure Log folder..." 
-                $AzureLogs = "C:\WindowsAzure\Logs"
-                $OldFiles = Get-ChildItem -Path "$AzureLogs\" -Recurse -File -ErrorAction SilentlyContinue
-                foreach ($file in $OldFiles) {
-                    Remove-Item -Path "$AzureLogs\$file" -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                $ResultText.text = "Azure log files removed..." 
-            } 
-
-            if (Test-Path "$env:LocalAppData\Microsoft\Office") {
-                # Delete files from Office Cache Folder
-                $ResultText.text = "Clearing Office Cache Folder..." 
-                Foreach ($user in $Users) {
-                    $officecache = "C:\Users\$user\AppData\Local\Microsoft\Office\16.0\GrooveFileCache"
-                    if (Test-Path $officecache) {
-                        $OldFiles = Get-ChildItem -Path "$officecache\" -Recurse -File -ErrorAction SilentlyContinue
-                        foreach ($file in $OldFiles) {
-                            Remove-Item -Path "$officecache\$file" -Force -ErrorAction SilentlyContinue -Verbose
-                        }
-                    } 
-                }
-                $ResultText.text = "Office cache has been cleared..." 
-            }
-
-            # Delete files from LFSAgent Log folder https://www.lepide.com/
-            if (Test-Path "$env:windir\LFSAgent\Logs") {
-                $ResultText.text = "Deleting files from LFSAgent Log folder..." 
-                $LFSAgentLogs = "$env:windir\LFSAgent\Logs"
-                $OldFiles = Get-ChildItem -Path "$LFSAgentLogs\" -Recurse -File -ErrorAction SilentlyContinue
-                foreach ($file in $OldFiles) {
-                    Remove-Item -Path "$LFSAgentLogs\$file" -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                $ResultText.text = "LFSAgent log folder has been deleted..." 
-            }         
-
-            # Delete SOTI MobiController Log files
-            if (Test-Path "C:\Program Files (x86)\SOTI\MobiControl") {
-                $ResultText.text = "Deleting SOTI MobiController Log files..." 
-                $SotiLogFiles = Get-ChildItem -Path "C:\Program Files (x86)\SOTI\MobiControl" | Where-Object { ($_.name -like "*Device*.log" -or $_.name -like "*Server*.log" ) }
-                foreach ($File in $SotiLogFiles) {
-                    Remove-Item -Path "C:\Program Files (x86)\SOTI\MobiControl\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                $ResultText.text = "SOTI MobiController log files removed..." 
-            }
-
-            # Delete old Cylance Log files
-            if (Test-Path "C:\Program Files\Cylance\Desktop") {
-                $ResultText.text = "Deleting Cylance Log files..." 
-                $OldCylanceLogFiles = Get-ChildItem -Path "C:\Program Files\Cylance\Desktop" | Where-Object name -Like "cylog-*.log"
-                foreach ($File in $OldCylanceLogFiles) {
-                    Remove-Item -Path "C:\Program Files\Cylance\Desktop\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
-                }
-                $ResultText.text = "Cylance log files deleted..." 
-            }
-
-            $getSize = "{0:N2} " -f ((@(
-
-                        if (Test-Path "$env:windir\Prefetch") {
-(Get-ChildItem "$env:windir\Prefetch" -Force -Recurse  | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:windir\SoftwareDistribution.bak") {
-    (Get-ChildItem "$env:windir\SoftwareDistribution.bak" -Force -Recurse  | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:windir\Temp") {
-(Get-ChildItem "$env:windir\Temp" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:windir\Logs\CBS") {
-(Get-ChildItem "$env:windir\Logs\CBS" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Windows.old") {
-(Get-ChildItem "$env:systemdrive\Windows.old" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:ProgramData\Microsoft\Windows\RetailDemo") {
-(Get-ChildItem "$env:ProgramData\Microsoft\Windows\RetailDemo" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:LOCALAPPDATA\AMD") {
-(Get-ChildItem "$env:LOCALAPPDATA\AMD" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:windir\..\AMD\") {
-(Get-ChildItem "$env:windir\..\AMD\" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:LOCALAPPDATA\NVIDIA\DXCache") {
-(Get-ChildItem "$env:LOCALAPPDATA\NVIDIA\DXCache" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:LOCALAPPDATA\NVIDIA\GLCache") {
-(Get-ChildItem "$env:LOCALAPPDATA\NVIDIA\GLCache" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:APPDATA\..\locallow\Intel\ShaderCache") {
-(Get-ChildItem "$env:APPDATA\..\locallow\Intel\ShaderCache"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Intel") {
-(Get-ChildItem "$env:systemdrive\Intel" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\PerfLogs") {
-(Get-ChildItem "$env:systemdrive\PerfLogs" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Temp") {
-(Get-ChildItem "$env:systemdrive\Temp" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Drivers") {
-(Get-ChildItem "$env:systemdrive\Drivers" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Scripts") {
-(Get-ChildItem "$env:systemdrive\Scripts" -Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Script") {
-(Get-ChildItem "$env:systemdrive\Script"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemdrive\Nvidia") {
-(Get-ChildItem "$env:systemdrive\Nvidia"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:LOCALAPPDATA\temp") {
-    (Get-ChildItem "$env:LOCALAPPDATA\temp"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemroot\System32\Catroot2.bak") {
-    (Get-ChildItem "$env:systemroot\System32\Catroot2.bak"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                        if (Test-Path "$env:systemroot\SoftwareDistribution.bak") {
-    (Get-ChildItem "$env:systemroot\SoftwareDistribution.bak"-Force -Recurse | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                        }
-
-                    ) | Measure-Object -Sum).Sum / 1GB)
-
-            if ($getSize -gt 0.1) {
-                $ResultText.text = "Folders for System, User and Common Temp Files contain: ", ("{0:N2} GB" -f $getSize) 
-                $CleanKnownTemp = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $getSize) , "Clear all System, User and Common Temp Files?" , 4)
-            }
-            else {
-                Start-Sleep -s 3
-                $ResultText.text = "No need to clean the System, User and Common Temp folders right now..." 
-            }
-
-            if ($CleanKnownTemp -eq 'Yes') {
-                # Clear Common Temp Folders
-                $ResultText.text = "Clearing Common Temp Folders..." 
-                Foreach ($user in $Users) {
-                    Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "$env:systemdrive\Users\$user\AppData\Local\Microsoft\Windows\AppCache\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "$env:systemdrive\Users\$user\cookies\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "$env:systemdrive\Users\$user\Local Settings\Temporary Internet Files\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                    Remove-Item -Path "$env:systemdrive\Users\$user\recent\*.*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                }
-
-                # Clear Windows Temp Folder
-                $ResultText.text = "Clearing Windows Temp, Logs and Prefetch Folders..." 
-                Remove-Item -Path "$env:systemroot\SoftwareDistribution.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:systemroot\System32\Catroot2.bak" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:systemdrive\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:windir\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:windir\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:windir\Logs\CBS\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:ProgramData\Microsoft\Windows\WER\*" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:systemdrive\Windows.old" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:ProgramData\Microsoft\Windows\RetailDemo" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:LOCALAPPDATA\AMD" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:windir/../AMD/" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:LOCALAPPDATA\NVIDIA\DXCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:LOCALAPPDATA\NVIDIA\GLCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "$env:APPDATA\..\locallow\Intel\ShaderCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-
-                # Clear Custom folders
-                Remove-Item -Path "C:\Intel" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\PerfLogs" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Temp" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Drivers" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Scripts" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Script" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\Nvidia" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-
-                # Only grab log files sitting in the root of the Logfiles directory
-                $Sys32Files = Get-ChildItem -Path "$env:windir\System32\LogFiles" | Where-Object { ($_.name -like "*.log") }
-                foreach ($File in $Sys32Files) {
-                    Remove-Item -Path "$env:windir\System32\LogFiles\$($file.name)" -Force -ErrorAction SilentlyContinue -Verbose
-                }
-
-                $ResultText.text = "All System, User and Common Temp Files have been deleted successfully..." 
-            } 
-
-            # Get the size of the Windows Updates folder (SoftwareDistribution)
-            $WUfoldersize = (Get-ChildItem "$env:windir\SoftwareDistribution" -Recurse | Measure-Object Length -s).sum / 1Gb
-
-            # Ask the user if they would like to clean the Windows Update folder
-            if ($WUfoldersize -gt 0.2) {
-                $ResultText.text = "The Software Distribution folder is", ("{0:N2} GB" -f $WUFoldersize) 
-                $CleanWU = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $WUFoldersize) , "Do you want clean the Software Distribution folder?" , 4)
-            }
-            else {
-                Start-Sleep -s 3
-                $ResultText.text = "There is no need for cleaning Software Distribution folder right now..." 
-            }
-
-            if ($CleanWU -eq 'Yes') { 
-                $ResultText.text = "Restarting Windows Update Service and Deleting SoftwareDistribution Folder"
-                # Stop the Windows Update service
-                try {
-                    Stop-Service -Name wuauserv
-                }
-                catch {
-                    $ErrorMessage = $_.Exception.Message
-                    Write-Warning "$ErrorMessage" 
-                }
-                # Delete the folder
-                Remove-Item "$env:windir\SoftwareDistribution" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Start-Sleep -s 3
-
-                # Start the Windows Update service
-                try {
-                    Start-Service -Name wuauserv
-                }
-                catch {
-                    $ErrorMessage = $_.Exception.Message
-                    Write-Warning "$ErrorMessage" 
-                }
-                $ResultText.text = "SoftwareDistribution folder removed, reinitiate Windows Update to reaquire updates..." 
-            }
-
-            $binfoldersize = (Get-ChildItem "C:\`$Recycle.Bin" -Recurse | Measure-Object Length -s).sum / 1Gb
-            if ($binfoldersize -gt 0.2) {
-                $ResultText.text = "The Recycling Bing is", ("{0:N2} GB" -f $binfoldersize) 
-                $CleanBin = [System.Windows.Forms.MessageBox]::Show('Are you sure?' + "`r`n`n" + 'Total size: ' + ("{0:N2} GB" -f $binfoldersize) , "Would you like to empty the Recycle Bin for All Users?" , 4)
-            }
-            else {
-                $ResultText.text = "There is no need for cleaning the Recycling Bin right now..." 
-            }
-
-            if ($Cleanbin -eq 'Yes') {
-                $ResultText.text = "Cleaning Recycle Bin..." 
-                $ErrorActionPreference = 'SilentlyContinue'
-                $RecycleBin = "C:\`$Recycle.Bin"
-                $BinFolders = Get-ChildItem $RecycleBin -Directory -Force
-
-                Foreach ($Folder in $BinFolders) {
-                    # Translate the SID to a User Account
-                    $objSID = New-Object System.Security.Principal.SecurityIdentifier ($folder)
-                    try {
-                        $objUser = $objSID.Translate( [System.Security.Principal.NTAccount])
-                        $ResultText.text = "Cleaning $objUser Recycle Bin..." 
-                    }
-                    # If SID cannot be Translated, Throw out the SID instead of error
-                    catch {
-                        $objUser = $objSID.Value
-                        $ResultText.text = "$objUser"
-                    }
-                    $Files = @()
-
-                    if ($PSVersionTable.PSVersion -Like "*2*") {
-                        $Files = Get-ChildItem $Folder.FullName -Recurse -Force
-                    }
-                    else {
-                        $Files = Get-ChildItem $Folder.FullName -File -Recurse -Force
-                        $Files += Get-ChildItem $Folder.FullName -Directory -Recurse -Force
-                    }
-
-                    $FileTotal = $Files.Count
-
-                    for ($i = 1; $i -le $Files.Count; $i++) {
-                        $FileName = Select-Object -InputObject $Files[($i - 1)]
-                        Write-Progress -Activity "Recycle Bin Clean-up" -Status "Attempting to Delete File [$i / $FileTotal]: $FileName" -PercentComplete (($i / $Files.count) * 100) -Id 1
-                        Remove-Item -Path $Files[($i - 1)].FullName -Recurse -Force
-                    }
-                    Write-Progress -Activity "Recycle Bin Clean-up" -Status "Complete" -Completed -Id 1
-                }
-                $ResultText.text = "Recycle Bin has been emptied..." 
-            }
-
-            $SuperCleanOffload = [System.Windows.Forms.MessageBox]::Show('This may take over an hour to complete, are you sure you want to continue?', "Launch Superdeep Cleaner?" , 4)
-            if ($SuperCleanOffload -eq 'Yes') {
-
-                $OffloadScript = {
-                    $name = 'Superdeep Cleaner - Offload Process'
-                    $host.ui.RawUI.WindowTitle = $name
-                    cmd /C del /f /s /q %systemdrive%\*.tmp
-                    cmd /C del /f /s /q %systemdrive%\*._mp
-                    cmd /C del /f /s /q %systemdrive%\*.log
-                    cmd /C del /f /s /q %systemdrive%\*.gid
-                    cmd /C del /f /s /q %systemdrive%\*.chk
-                    cmd /C del /f /s /q %systemdrive%\*.old
-                    cmd /C del /f /s /q %windir%\*.bak
-                    cmd /C del /f /s /q %systemdrive%\Windows.old
-                }
-       
-                Start-Process powershell.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $OffloadScript"
-
-                $ResultText.text = "Clearing Temporary hidden system files, a new window will open, let that run in the background..." 
-            }
-            $ResultText.text = "Standard cleaning process has been completed. `r`n  Superdeep Cleaner will still be running if you you pressed yes on that, but the window will close once completed. `r`n `r`n Ready for Next Task!" 
-            $Form.text = "WinTool by Alerion"
-        })
-
-    $forcenorkeyboard.Add_Click({
-            $ResultText.text = "Removing secondary en-US keyboard settings nb-NO to default."
-
-            Set-WinUserLanguageList -LanguageList nb-NO, nb-NO -Force
-
-            Start-Sleep -s 5
-
-            $1 = Get-WinUserLanguageList
-            $1.RemoveAll( { $args[0].LanguageTag -clike 'us*' } )
-            Set-WinUserLanguageList $1 -Force
-
-            $2 = Get-WinUserLanguageList
-            $2.RemoveAll( { $args[0].LanguageTag -clike 'en*' } )
-            Set-WinUserLanguageList $2 -Force
-
-            $ResultText.text = "Secondary keyboard removed and Norwegian keyboard layout has been forced to be default."
-        })
-        
         $essentialtweaks.Add_Click({
             $Form.text = "WinTool by Alerion - Initializing Essential Tweaks... `r`n"
             $ResultText.text = "Activating Essential Tweaks... Please Wait... `r`n"
@@ -1753,13 +1799,7 @@ public class Wallpaper {
             $Form.text = "WinTool by Alerion"
         })
         
-
-    $dualboottime.Add_Click({
-            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n Ready for Next Task!"
-        })
-
-    $essentialundo.Add_Click({
+        $essentialundo.Add_Click({
             $Form.text = "WinTool by Alerion - Initializing Undo Essential Tweaks... `r`n"
             $ResultText.text = "Activating Undo Essential Tweaks... Please Wait... `r`n"
 
@@ -1831,10 +1871,29 @@ public class Wallpaper {
             Set-Service "WSearch" -StartupType Automatic
             Start-Service "WSearch" -WarningAction SilentlyContinue
 
+            # Re-enabling Background Apps
+            $ResultText.text += "Re-enabling background applications access... `r`n"
+            $backgroundAppsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications"
+
+            if (Test-Path $backgroundAppsPath) {
+                Get-ChildItem -Path $backgroundAppsPath | ForEach-Object {
+                    Remove-ItemProperty -Path $_.PsPath -Name "Disabled" -ErrorAction SilentlyContinue
+                    Remove-ItemProperty -Path $_.PsPath -Name "DisabledByUser" -ErrorAction SilentlyContinue
+                }
+                $ResultText.text += "Background application access has been restored. `r`n"
+            } else {
+                $ResultText.text += "No background application settings found to restore. `r`n"
+            }
+
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")) { powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a }
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")) { powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e }
             if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")) { powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 }
-            $ResultText.text = " Restored all power plans: Power Saver, Balanced, and Ultimate Performance."
+            $ResultText.text = " Restored all original power plans: Power Saver, Balanced, and Ultimate Performance."
+
+            # Set Balanced as the active plan
+            powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
+
+            $ResultText.text += "Balanced (Default Option) Power Plan is now set to active. `r`n"
 
             $ResultText.text = " Setting visual effects back to default values (Appearance)... `r`n" 
             Start-Sleep -s 1
@@ -1904,6 +1963,12 @@ public class Wallpaper {
 
             $ResultText.text = " Essential Undo Completed. `r`n Ready for Next Task!"
             $Form.text = "WinTool by Alerion"
+        })
+
+
+    $dualboottime.Add_Click({
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
+            $ResultText.text = " Time set to UTC for consistent time in Dual Boot Systems. `r`n Ready for Next Task!"
         })
 
     #Valuable Windows 10 AppX apps that most people want to keep. Protected from DeBloat All.
@@ -2336,8 +2401,16 @@ public class Wallpaper {
             $ErrorActionPreference = 'SilentlyContinue'
             #This function will revert the changes you made when running the Start-Debloat function.
 
-            #This line reinstalls all of the bloatware that was removed
-            Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" } 
+            # Reinstalling all removed AppxPackages
+            $ResultText.text += "`r`nReinstalling MS Store apps for all users..."
+            Get-AppxPackage -AllUsers | ForEach-Object {
+                try {
+                    Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" -Verbose
+                    $ResultText.text += "`r`nReinstalled: $($_.Name)"
+                } catch {
+                    $ResultText.text += "`r`nFailed to reinstall: $($_.Name)"
+                }
+            }
 
             #Tells Windows to enable your advertising information.    
             $ResultText.text = " Re-enabling key to show advertisement information"
@@ -2369,14 +2442,23 @@ public class Wallpaper {
             }
             Set-ItemProperty $Live  NoTileApplicationNotification -Value 0 
    
-            #Re-enables scheduled tasks that were disabled when running the Debloat switch
-            $ResultText.text = " Enabling scheduled tasks that were disabled"
-            Get-ScheduledTask XblGameSaveTaskLogon | Enable-ScheduledTask 
-            Get-ScheduledTask  XblGameSaveTask | Enable-ScheduledTask 
-            Get-ScheduledTask  Consolidator | Enable-ScheduledTask 
-            Get-ScheduledTask  UsbCeip | Enable-ScheduledTask 
-            Get-ScheduledTask  DmClient | Enable-ScheduledTask 
-            Get-ScheduledTask  DmClientOnScenarioDownload | Enable-ScheduledTask 
+            # Re-enabling scheduled tasks
+            $ResultText.text += "`r`nRe-enabling scheduled tasks..."
+            $tasksToEnable = @(
+                "XblGameSaveTaskLogon",
+                "XblGameSaveTask",
+                "Consolidator",
+                "UsbCeip",
+                "DmClient",
+                "DmClientOnScenarioDownload"
+            )
+            foreach ($task in $tasksToEnable) {
+                try {
+                    Get-ScheduledTask -TaskName $task | Enable-ScheduledTask
+                } catch {
+                    $ResultText.text += "`r`nFailed to enable task: $task"
+                }
+            }
 
             $ResultText.text = " Re-enabling and starting WAP Push Service"
             #Enable and start WAP Push Service
@@ -3271,15 +3353,21 @@ public class Wallpaper {
         })
 
         $onedrive.Add_Click({
+            # Define potential OneDrive installation paths
+            $oneDrivePaths = @(
+                "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
+                "C:\Program Files\Microsoft OneDrive\OneDrive.exe",
+                "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe"
+            )
+        
             # Check if OneDrive is installed
-            if ((Test-Path "$env:programdata\Microsoft OneDrive") -or 
-                (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or 
-                (Test-Path "C:\Program Files\Microsoft OneDrive")) {
-                
+            $oneDriveInstalled = $oneDrivePaths | Where-Object { Test-Path $_ }
+        
+            if ($oneDriveInstalled) {
                 $confirmOneDrive = [System.Windows.Forms.MessageBox]::Show(
-                    "This may take a while, are you sure you want to proceed?", 
-                    "Remove OneDrive?", 
-                    [System.Windows.Forms.MessageBoxButtons]::YesNo, 
+                    "This may take a while. Are you sure you want to proceed? (THIS HAS NOT BEEN TESTED PROPERLY. THE WORST THAT CAN HAPPEN IS THAT YOU WONT BE ABLE TO REINSTALL ONEDRIVE, WHO CARES)",
+                    "Remove OneDrive?",
+                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
                     [System.Windows.Forms.MessageBoxIcon]::Question
                 )
         
@@ -3287,80 +3375,144 @@ public class Wallpaper {
                     $Form.text = "WinTool by Alerion - Removing OneDrive..."
                     $ResultText.text = "Uninstalling OneDrive..."
         
-                    # Attempt to uninstall OneDrive
-                    $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe"
-                    if (Test-Path $regPath) {
-                        $uninstallString = Get-ItemPropertyValue -Path $regPath -Name "UninstallString"
-                        $oneDriveExe, $oneDriveArgs = $uninstallString.Split(" ")
-                        Start-Process -FilePath $oneDriveExe -ArgumentList "$oneDriveArgs /silent" -NoNewWindow -Wait
-                    }
-        
-                    # Check if uninstallation succeeded
-                    if (-not (Test-Path $regPath)) {
-                        $Form.text = "WinTool by Alerion - Cleaning Up..."
-                        $ResultText.text = "OneDrive has been removed. Cleaning up leftover files..."
-        
-                        # Remove leftover files and registry entries
-                        foreach ($path in @(
-                            "$env:localappdata\Microsoft\OneDrive",
-                            "$env:localappdata\OneDrive",
-                            "$env:programdata\Microsoft OneDrive",
-                            "$env:systemdrive\OneDriveTemp",
-                            "C:\Program Files\Microsoft OneDrive",
-                            "C:\Program Files (x86)\Microsoft OneDrive",
-                            "C:\Users\Default\OneDrive",
-                            "$env:userprofile\OneDrive"
-                        )) {
-                            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $path
+                    # Detect the OneDrive folder dynamically
+                    $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
+                    Where-Object { $_.Name -like "OneDrive*" } |
+                    Select-Object -ExpandProperty FullName -First 1
+                    
+                    if ($oneDriveFolder) {
+                        # Inform the user that files will be backed up from the detected folder
+                        $ResultText.text = "Detected OneDrive folder: $oneDriveFolder. Backing up files..."
+                    
+                        # Standard folders and their destinations
+                        $backupMappings = @(
+                            @{ Source = "Desktop"; Destination = "$env:USERPROFILE\Desktop" },
+                            @{ Source = "Documents"; Destination = "$env:USERPROFILE\Documents" },
+                            @{ Source = "Pictures"; Destination = "$env:USERPROFILE\Pictures" },
+                            @{ Source = "Downloads"; Destination = "$env:USERPROFILE\Downloads" },
+                            @{ Source = "Music"; Destination = "$env:USERPROFILE\Music" },
+                            @{ Source = "Videos"; Destination = "$env:USERPROFILE\Videos" },
+                            @{ Source = "Favorites"; Destination = "$env:USERPROFILE\Favorites" }
+                        )
+                    
+                        # Backup standard folders
+                        foreach ($mapping in $backupMappings) {
+                            $source = Join-Path -Path $oneDriveFolder -ChildPath $mapping.Source
+                            $destination = $mapping.Destination
+                            if (Test-Path $source) {
+                                $ResultText.text = "Copying $source to $destination..."
+                                Copy-Item -Path $source\* -Destination $destination -Recurse -Force -ErrorAction SilentlyContinue
+                            }
                         }
-        
-                        reg delete "HKEY_CURRENT_USER\Software\Microsoft\OneDrive" -f
-                        Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
-                        Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
-        
-                        # Remove scheduled tasks
-                        Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ErrorAction SilentlyContinue |
-                            Unregister-ScheduledTask -Confirm:$false
-        
-                        Start-Process "explorer.exe"
-                        $Form.text = "WinTool by Alerion - OneDrive Removed"
-                        $ResultText.text = "OneDrive has been completely removed. Ready for the next task!"
+                    
+                        # Copy any additional folders in OneDrive to the user's profile
+                        $allSubFolders = Get-ChildItem -Path $oneDriveFolder -Directory |
+                            Where-Object { $backupMappings.Source -notcontains $_.Name } # Exclude standard folders already handled
+                        foreach ($subFolder in $allSubFolders) {
+                            $source = $subFolder.FullName
+                            $destination = Join-Path -Path $env:USERPROFILE -ChildPath $subFolder.Name
+                    
+                            # Inform the user and copy the folder
+                            $ResultText.text = "Copying additional folder $source to $destination..."
+                            Copy-Item -Path $source -Destination $destination -Recurse -Force -ErrorAction SilentlyContinue
+                        }
+                    
+                        $ResultText.text = "Backup completed. Standard folders and additional files from OneDrive have been successfully copied."
                     } else {
-                        $ResultText.text = "Something went wrong during the uninstallation of OneDrive. Ready for the next task."
+                        $ResultText.text = "No OneDrive folder detected. Skipping file backup."
                     }
+
+                    # Attempt to uninstall OneDrive
+                    $oneDriveExe = $oneDriveInstalled | Select-Object -First 1
+                    if ($oneDriveExe) {
+                        Start-Process -FilePath $oneDriveExe -ArgumentList "/uninstall /silent" -NoNewWindow -Wait
+                    }
+        
+                    # Cleanup leftover files and registry entries
+                    $ResultText.text = "Cleaning up leftover files and registry entries..."
+                    $cleanupPaths = @(
+                        "$env:LOCALAPPDATA\Microsoft\OneDrive",
+                        "$env:LOCALAPPDATA\OneDrive",
+                        "$env:PROGRAMDATA\Microsoft OneDrive",
+                        "$env:SystemDrive\OneDriveTemp",
+                        "C:\Program Files\Microsoft OneDrive",
+                        "C:\Program Files (x86)\Microsoft OneDrive",
+                        "C:\Users\Default\OneDrive",
+                        "$env:USERPROFILE\OneDrive"
+                    )
+        
+                    foreach ($path in $cleanupPaths) {
+                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $path
+                    }
+        
+                    # Delete registry entries
+                    Remove-Item -Path "HKCU:\Software\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
+ 
+                    Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+                    Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+        
+                    # Remove scheduled tasks
+                    Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ErrorAction SilentlyContinue |
+                        Unregister-ScheduledTask -Confirm:$false
+        
+                    # Restore User Shell Folders
+                    $ResultText.text = "Restoring user shell folders to default locations..."
+                    $defaultPaths = @{
+                        "{0DDD015D-B06C-45D5-8C4C-F59713854639}" = "%USERPROFILE%\Pictures"      # Pictures
+                        "{374DE290-123F-4565-9164-39C4925E467B}" = "%USERPROFILE%\Downloads"    # Downloads
+                        "{F42EE2D3-909F-4907-8871-4C22FC0BF756}" = "%USERPROFILE%\Documents"    # Documents
+                        "Pictures" = "%USERPROFILE%\Pictures"      # Pictures
+                        "My Pictures" = "%USERPROFILE%\Pictures"      # Pictures
+                        "Downloads" = "%USERPROFILE%\Downloads"    # Downloads
+                        "Documents" = "%USERPROFILE%\Documents"    # Documents
+                        "Music" = "%USERPROFILE%\Music"        # Music
+                        "Videos" = "%USERPROFILE%\Videos"       # Videos
+                        "My Music" = "%USERPROFILE%\Music"        # Music
+                        "My Videos" = "%USERPROFILE%\Videos"       # Videos
+                        "Desktop" = "%USERPROFILE%\Desktop"      # Desktop
+                        "Favorites" = "%USERPROFILE%\Favorites"    # Favorites
+                        "Personal" = "%USERPROFILE%\Personal"    # Favorites
+                    }
+        
+                    foreach ($guid in $defaultPaths.Keys) {
+                        $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+                        $valuePath = $defaultPaths[$guid]
+                        Set-ItemProperty -Path $regPath -Name $guid -Value $valuePath
+                        Write-Output "Restored $guid to $valuePath"
+                    }
+        
+                    $Form.text = "WinTool by Alerion - OneDrive Removed"
+                    $ResultText.text = "OneDrive has been completely removed. User shell folders restored. Ready for the next task!"
                 } else {
                     $Form.text = "WinTool by Alerion - Operation Cancelled"
                     $ResultText.text = "OneDrive removal was cancelled. Ready for the next task!"
                 }
-        
             } else {
-                # Prompt to reinstall OneDrive if not found
+                # Offer to reinstall OneDrive if not detected
                 $confirmReinstall = [System.Windows.Forms.MessageBox]::Show(
-                    "OneDrive is not currently installed. Would you like to reinstall it?", 
-                    "Reinstall OneDrive?", 
-                    [System.Windows.Forms.MessageBoxButtons]::YesNo, 
+                    "OneDrive is not currently installed. Would you like to reinstall it?",
+                    "Reinstall OneDrive?",
+                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
                     [System.Windows.Forms.MessageBoxIcon]::Question
                 )
         
                 if ($confirmReinstall -eq [System.Windows.Forms.DialogResult]::Yes) {
                     $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
-                    $ResultText.text = "Downloading and reinstalling OneDrive. Please wait..."
-                    
-                    # Start OneDrive installer
-                    $installerUrl = "https://go.microsoft.com/fwlink/p/?LinkId=248256"  # OneDrive installer URL
-                    $installerPath = "$env:temp\OneDriveSetup.exe"
+                    $ResultText.text = "Reinstalling OneDrive using winget. Please wait..."
+
+                    Start-Process 'https://www.microsoft.com/en-us/microsoft-365/onedrive/'
         
-                    Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -ErrorAction SilentlyContinue
-                    Start-Process -FilePath $installerPath -ArgumentList "/silent" -NoNewWindow -Wait
+                    # Reinstall OneDrive using winget
+                    Start-Process -FilePath "winget" -ArgumentList "install --id Microsoft.OneDrive -e --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
         
-                    $Form.text = "WinTool by Alerion - OneDrive Reinstalled"
-                    $ResultText.text = "OneDrive has been successfully reinstalled. Ready for the next task!"
+                    $Form.text = "WinTool by Alerion - OneDrive Link given"
+                    $ResultText.text = "OneDrive has been successfully reinstalled using winget. Ready for the next task!"
                 } else {
                     $Form.text = "WinTool by Alerion - Reinstallation Cancelled"
                     $ResultText.text = "OneDrive reinstallation was cancelled. Ready for the next task!"
                 }
             }
-        })     
+        })
 
     $darkmode.Add_Click({
             $ResultText.text = " System dark mode set to active!"
@@ -3977,69 +4129,121 @@ public class Wallpaper {
         })
 
         $createShortcutTool.Add_Click({
+            # Define paths and icon URL
             $iconPath = 'C:\Windows\heart.ico'
             $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
-            Invoke-WebRequest -Uri $url -OutFile $iconPath
-
-            $WshShell = New-Object -comObject WScript.Shell #needed for Script Host things like making shortcuts
-
-            if (!(Test-Path "$pathDesktop\WinTool.lnk")){ 
-                $Shortcut = $WshShell.CreateShortcut("$pathDesktop\WinTool.lnk")
-                $Shortcut.IconLocation = "C:\Windows\heart.ico" # icon index 0
+            if (-not (Test-Path $iconPath)) {
+                Invoke-WebRequest -Uri $url -OutFile $iconPath -ErrorAction SilentlyContinue
+            }
+        
+            $WshShell = New-Object -comObject WScript.Shell # Needed for creating shortcuts
+        
+            # Define potential OneDrive installation paths
+            $oneDrivePaths = @(
+                "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
+                "C:\Program Files\Microsoft OneDrive\OneDrive.exe",
+                "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe"
+            )
+        
+            # Check if OneDrive is installed
+            $oneDriveInstalled = $oneDrivePaths | Where-Object { Test-Path $_ }
+        
+            # Determine shortcut location
+            if ($oneDriveInstalled) {
+                # Detect OneDrive Desktop folder dynamically
+                $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
+                    Where-Object { $_.Name -like "OneDrive*" } |
+                    Select-Object -ExpandProperty FullName -First 1
+        
+                $pathDesktop = Join-Path -Path $oneDriveFolder -ChildPath "Desktop"
+            } else {
+                # Default to standard desktop
+                $pathDesktop = [Environment]::GetFolderPath("Desktop")
+            }
+        
+            # Define the shortcut path
+            $shortcutPath = Join-Path -Path $pathDesktop -ChildPath "WinTool.lnk"
+        
+            # Check if the shortcut already exists
+            if (!(Test-Path $shortcutPath)) {
+                # Create the shortcut
+                $Shortcut = $WshShell.CreateShortcut($shortcutPath)
+                $Shortcut.IconLocation = $iconPath # Set the icon to heart.ico
                 $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
                 $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0\"
                 $Shortcut.Arguments = "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))"
                 $Shortcut.Save()
-
-                #This part makes sure the shortcut is automaticly starting as administrator so that there will be no errors..
-                $bytes = [System.IO.File]::ReadAllBytes("$pathDesktop\WinTool.lnk")
-                $bytes[0x15] = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
-                [System.IO.File]::WriteAllBytes("$pathDesktop\WinTool.lnk", $bytes)
-
-                $ResultText.text = "WinTool shortcut has been created and can be found at: $pathDesktop"
-            }
-            else {
-                $ResultText.text = "Failed to create WinTool shortcut it might already exist, please try again!"
-            }
-        })
-
-        $createShortcutGit.Add_Click({
-            # Define Desktop Path
-            $pathDesktop = [Environment]::GetFolderPath("Desktop")
         
-            # Download the icon file if it doesn't already exist
-            $iconPath = 'C:\Windows\heart.ico'
-            $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
-            if (-not (Test-Path $iconPath)) {
-                try {
-                    Invoke-WebRequest -Uri $url -OutFile $iconPath -ErrorAction SilentlyContinue
-                } catch {
-                    $ResultText.text = "Failed to download heart.ico file: $_"
-                    return
-                }
-            }
+                # Ensure the shortcut starts with administrative privileges
+                $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
+                $bytes[0x15] = $bytes[0x15] -bor 0x20 # Set byte 21 (0x15) bit 6 (0x20) ON
+                [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
         
-            # Check if the .URL shortcut already exists
-            if (!(Test-Path "$pathDesktop\Alerion921's Github.URL")) {
-                try {
-                    # Create the URL shortcut
-                    $shortcutContent = @"
-        [InternetShortcut]
-        URL=https://github.com/alerion921/WinTool-for-Win11
-        IconFile=$iconPath
-     IconIndex=0
-"@
-                    $shortcutPath = "$pathDesktop\Alerion921's Github.URL"
-                    Set-Content -Path $shortcutPath -Value $shortcutContent -Force -ErrorAction SilentlyContinue
-        
-                    $ResultText.text = "Github - WinTool URL shortcut has been created and can be found at: $pathDesktop"
-                } catch {
-                    $ResultText.text = "Error occurred while creating the URL shortcut: $_"
-                }
+                $ResultText.text = "WinTool shortcut has been created and can be found at: $shortcutPath"
             } else {
-                $ResultText.text = "Failed to create Github - WinTool URL shortcut. It might already exist. Please try again!"
+                $ResultText.text = "Failed to create WinTool shortcut. It might already exist. Please try again!"
             }
         })
+
+$createShortcutGit.Add_Click({
+    # Define potential OneDrive installation paths
+    $oneDrivePaths = @(
+        "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
+        "C:\Program Files\Microsoft OneDrive\OneDrive.exe",
+        "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe"
+    )
+
+    # Check if OneDrive is installed
+    $oneDriveInstalled = $oneDrivePaths | Where-Object { Test-Path $_ }
+
+    # Determine the desktop path
+    if ($oneDriveInstalled) {
+        # Detect OneDrive Desktop folder dynamically
+        $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
+            Where-Object { $_.Name -like "OneDrive*" } |
+            Select-Object -ExpandProperty FullName -First 1
+
+        $pathDesktop = Join-Path -Path $oneDriveFolder -ChildPath "Desktop"
+    } else {
+        # Default to standard desktop
+        $pathDesktop = [Environment]::GetFolderPath("Desktop")
+    }
+
+    # Define the icon path and URL
+    $iconPath = 'C:\Windows\heart.ico'
+    $url = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/heart.ico"
+
+    # Download the icon file if it doesn't already exist
+    if (-not (Test-Path $iconPath)) {
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $iconPath -ErrorAction SilentlyContinue
+        } catch {
+            $ResultText.text = "Failed to download heart.ico file: $_"
+            return
+        }
+    }
+
+    # Check if the .URL shortcut already exists
+    $shortcutPath = Join-Path -Path $pathDesktop -ChildPath "Alerion921's Github.URL"
+    if (!(Test-Path $shortcutPath)) {
+        try {
+            # Create the URL shortcut
+            $shortcutContent = @"
+[InternetShortcut]
+URL=https://github.com/alerion921/WinTool-for-Win11
+IconFile=$iconPath
+IconIndex=0
+"@
+            Set-Content -Path $shortcutPath -Value $shortcutContent -Force -ErrorAction SilentlyContinue
+
+            $ResultText.text = "Github - WinTool URL shortcut has been created and can be found at: $pathDesktop"
+        } catch {
+            $ResultText.text = "Error occurred while creating the URL shortcut: $_"
+        }
+    } else {
+        $ResultText.text = "Failed to create Github - WinTool URL shortcut. It might already exist. Please try again!"
+    }
+})
         
         $supportWintool.Add_Click({
             Start-Process 'https://paypal.me/KLuneborg'
