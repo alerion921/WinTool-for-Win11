@@ -1,7 +1,11 @@
-First time usage (Launch Powershell.exe as Administrator)
-After that a shortcut is automaticly created at the desktop for easy access! :)
+WinTool for Windows 11 🎯
 
-Long: 
+🚀 First-Time Setup
+
+Open PowerShell.exe as Administrator.
+
+Run the following command to get started:
+
 ```
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))
 ```
@@ -10,53 +14,146 @@ Or, shorter:
 iwr -useb  https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1 | iex
 ```
 
-Features:
-Essential Tweaks - Just provides a better look over all and removes some of the BS that was introduced with Windows 11 (Recommended!!!)
+After running for the first time, you can press the button to make a shortcut on your desktop for easy access!
 
-Undo Essential Tweaks - Well it does what it says it does :)
 
-Gaming Tweaks - This function i run on my gaming PC to make sure i have the lowest latency and highest responsiveness for a smoother over all gaming experience.
 
-Patch Security - Could be used on a server enviroment since it blocks out all scripting and known security issues, this one also works great for unsupported Operative Systems like Windows 7 or Windows XP (Not recommended for the average user!)
+---
 
-Remove OneDrive - Don't worry you can get it back by pressing the button bellow if you want to. (Recommended!)
+✨ Features
 
-Restore OneDrive - Ooof, please use Dropbox instead.
+🔧 Essential Tweaks
 
-Remove Microsoft Edge - This is experimental and i would just not use it right now since it comes back regardless, might get fixed at some point :)
+Enhances Windows 11's overall appearance and removes unnecessary clutter. (Highly Recommended!)
 
-Error Scanner - Uses features already in Windows command line like DISM.exe or SFC to repair errors in your operative system (Rebooting to Safe Mode is recommended if you want to use this)
 
-ChangeDNS - Bringing a more dynamic Domain Name System to you, i recommend picking Cloudflare since its the fastest one in my experience but Google's is also good!
+🛑 Undo Essential Tweaks
 
-Reset Network - Flushes and Resets all IP's and DNS'es. Very usefull if you get the Localhost "virus", that is why it's included here.
+Reverts all changes made by the Essential Tweaks feature.
 
-Force NO/NB Language - Had some issues where Windows would automaticly set the Keyboard Language to English based on the application i was using and found it annoying so i made a tiny script to Brute Force it to become Norwegian at all times :D
 
-Set Time to UTC - Very usefull after replacing a BIOS Battery/Clearing CMOS or if you just want to Dualboot Windows with OSX or Linux and can't get the time zone to synchronize properly.
+🎮 Gaming Tweaks
 
-Classic Menus - Gives easy access to needed menus for people that want that!
+Optimizes your system for minimal latency and maximum responsiveness for a smoother gaming experience.
 
-Windows Update - Default settings = Restore Settings if other options was used before. The Security update is if you only want that and not the large packets Windows Update sometimes push or any extra. Windows Update reset deletes all previously downloaded updates and restarts all services and clears all registry entries that are associated with it.
 
-Remove MS Store Apps - Highly recommended as it removes a ton of bloatware pre installed with all Windows 10/11 systems. It's magic!
+🔒 Patch Security
 
-Reinstall MS Store Apps - Reinstalls apps like Teams and OneDrive but does not bring back the bloatware that was pre installed, you will have to install that back yourself if you want it.
+Secures your system by blocking scripting and known vulnerabilities. Ideal for servers or unsupported OS (e.g., Windows 7, XP). (Not recommended for casual users.)
 
-Ultimate Cleaning - A good script to delete all hidden and visible temp files for known applications without destorying any personal documents or anything like that. (This tool provides a restore point if you are in doubt about doing this, so you are safe anyways!)
 
-Dark Mode - Easy access to enable system wide dark mode
+☁️ Remove OneDrive
 
-Light Mode - Does the same as the above but with light mode instead.
+Quickly remove OneDrive. (Recommended)
+Don't worry—it's reversible!
 
-Install apps---
 
-Added a couple of my favorite apps for easy access to this list, Spotify setup is downloaded to Desktop and DS4 + Bakkesmod are downloaded to C:/Users/[YOURUSERNAME]/documents/ for storage and since they would require user interactions anways.
+♻️ Restore OneDrive
 
-Update apps---
+Brings back OneDrive (though Dropbox is a better option).
 
-Utillity that uses Chocolatey to update all apps that you have installed now or before that are supported by Chocolatey.
 
-Reset button just resets the checkboxes if you want to start over.
+🧪 Remove Microsoft Edge
 
-Enjoy! :) Feel free to make changes!
+Experimental feature to remove Edge. (Currently not reliable, as Edge reinstalls itself.)
+
+
+🛠️ Error Scanner
+
+Utilizes Windows tools like DISM.exe and SFC to repair OS errors.
+(Reboot to Safe Mode for best results.)
+
+
+🌐 Change DNS
+
+Switch to faster, more reliable DNS servers.
+Recommended: Cloudflare (fastest) or Google.
+
+
+🌍 Reset Network
+
+Flushes and resets all IP and DNS configurations.
+(Great for resolving "localhost virus" issues.)
+
+
+📝 Force NO/NB Language
+
+Ensures your keyboard language stays Norwegian, no matter the application. (Handy for Norwegian users!)
+
+
+🕒 Set Time to UTC
+
+Syncs your system clock to UTC. Useful after BIOS/CMOS resets or dual-booting with Linux/OSX.
+
+
+📂 Classic Menus
+
+Quick access to classic menus for advanced users.
+
+
+🔄 Windows Update Tools
+
+Restore Default: Resets update settings to default.
+
+Security Only: Installs essential security patches without additional updates.
+
+Reset Updates: Deletes downloaded updates and resets associated services and registry entries.
+
+
+🗑️ Remove MS Store Apps
+
+Strips pre-installed bloatware from Windows 10/11. (Highly Recommended!)
+
+
+🔄 Reinstall MS Store Apps
+
+Reinstalls essential apps like Teams and OneDrive—without the pre-installed bloatware.
+
+
+🧹 Ultimate Cleaning
+
+Cleans hidden/visible temp files without touching personal documents.
+Includes a restore point for added safety.
+
+
+🌑 Dark Mode
+
+Enables system-wide dark mode.
+
+
+🌕 Light Mode
+
+Switches back to light mode.
+
+
+
+---
+
+📦 Install Apps
+
+Easily install useful apps like Spotify, DS4, and Bakkesmod.
+(Locations: Spotify on Desktop, others in C:/Users/[YOURUSERNAME]/Documents/.)
+
+
+
+---
+
+🔄 Update Apps
+
+Uses Winget to update all installed apps supported by it.
+
+
+
+---
+
+🔄 Reset Checkboxes
+
+Resets selections to start fresh.
+
+
+
+---
+
+Enjoy customizing your Windows 11 experience! 🌟
+Feel free to fork or adapt the script to your needs.
+
