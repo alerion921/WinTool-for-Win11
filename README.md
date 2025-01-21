@@ -24,7 +24,7 @@ After running for the first time, you can press the button to make a shortcut on
 
 🔧 Essential Tweaks
 
-Enhances Windows 11's overall appearance and removes unnecessary clutter. (Highly Recommended!)
+Enhances Windows 11's overall appearance and removes unnecessary clutter. Restores the best things from Windows 10(Highly Recommended!)
 
 
 🛑 Undo Essential Tweaks
@@ -50,7 +50,7 @@ Don't worry—it's reversible!
 
 ♻️ Restore OneDrive
 
-Brings back OneDrive (though Dropbox is a better option).
+Brings back OneDrive (though Dropbox is a better option). (Very unstable at the time being)
 
 
 🧪 Remove Microsoft Edge
@@ -131,26 +131,19 @@ Switches back to light mode.
 
 📦 Install Apps
 
-Easily install useful apps like Spotify, DS4, and Bakkesmod.
-(Locations: Spotify on Desktop, others in C:/Users/[YOURUSERNAME]/Documents/.)
-
-
+Easily install useful apps like Spotify, DS4, Visual Studio Community, Netflix and alot more!
 
 ---
 
-🔄 Update Apps
+🔄 Remove, Restore or Paritially Remove Hibernation
 
-Uses Winget to update all installed apps supported by it.
-
-
+With this you can save up to 13 GB extra from your C:/ drive if removed, fast boot won't work. If paritially removed you can save 7 GB, this will allow fast boot to continue working. Easily reset to default by pressing the restore button!
 
 ---
 
-🔄 Reset Checkboxes
+🔄 Update, reset and install
 
-Resets selections to start fresh.
-
-
+This too will be implemented later on for the Application Installer!
 
 ---
 
