@@ -29,321 +29,238 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 # Global Environment folder setup here
 # Retrieves commonly used folder paths using [Environment]::GetFolderPath
 $pathDesktop        = [Environment]::GetFolderPath("Desktop")                # Path to the Desktop folder
-$pathDocuments      = [Environment]::GetFolderPath("MyDocuments")           # Path to the Documents folder
+#$pathDocuments      = [Environment]::GetFolderPath("MyDocuments")           # Path to the Documents folder
 #$pathPictures       = [Environment]::GetFolderPath("MyPictures")            # Path to the Pictures folder
-#$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
-#$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
+$pathAppdataLocal   = [Environment]::GetFolderPath("LocalApplicationData")  # Path to the local AppData folder
+$pathAppdataRoaming = [Environment]::GetFolderPath("ApplicationData")       # Path to the roaming AppData folder
 #$pathWindows        = [Environment]::GetFolderPath("Windows")               # Path to the Windows folder
 #$pathSystem         = [Environment]::GetFolderPath("System")                # Path to the System folder (e.g., System32)
 ####################################################################################
 
-function EnsureChocolatey {
-    # Create Progress Form for feedback
-    $ProgressForm = New-Object System.Windows.Forms.Form
-    $ProgressForm.Text = "Processing..."
-    $ProgressForm.Size = New-Object System.Drawing.Size(400, 100)
-    $ProgressForm.StartPosition = "CenterScreen"
-
-    $ProgressLabel = New-Object System.Windows.Forms.Label
-    $ProgressLabel.AutoSize = $true
-    $ProgressLabel.Location = New-Object System.Drawing.Point(10, 10)
-    $ProgressLabel.Text = "Initializing..."
-    $ProgressForm.Controls.Add($ProgressLabel)
-
-    # Show the form
-    $ProgressForm.Show()
-
-    # Function to update progress label text safely
-    function UpdateProgress {
-        param (
-            [string]$Message
-        )
-        # Ensure the update occurs on the UI thread
-        $ProgressLabel.Invoke([Action]{ 
-            $ProgressLabel.Text = $Message
-            $ProgressLabel.Refresh()
-        })
-    }
-
-    # Check if Chocolatey is installed
-    if (!(Test-Path "C:\ProgramData\chocolatey\choco.exe")) {
+function EnsureWinget {
+    if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
         [System.Windows.Forms.MessageBox]::Show(
-            "Chocolatey is not installed. Installing now...", 
-            "Installing Chocolatey", 
-            [System.Windows.Forms.MessageBoxButtons]::OK, 
-            [System.Windows.Forms.MessageBoxIcon]::Information
-        )
-
-        # Install Chocolatey
-        try {
-            UpdateProgress -Message "Installing Chocolatey..."
-            Set-ExecutionPolicy Bypass -Scope Process -Force
-            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-            Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        } catch {
-            [System.Windows.Forms.MessageBox]::Show(
-                "Error installing Chocolatey: $_", 
-                "Error", 
-                [System.Windows.Forms.MessageBoxButtons]::OK, 
-                [System.Windows.Forms.MessageBoxIcon]::Error
-            )
-            $ProgressForm.Close()
-            return $false
-        }
-    }
-
-    # Update Chocolatey to ensure it's up to date
-    try {
-        UpdateProgress -Message "Updating Chocolatey..."
-        Start-Process -FilePath "choco" -ArgumentList "upgrade chocolatey -y" -NoNewWindow -Wait
-    } catch {
-        [System.Windows.Forms.MessageBox]::Show(
-            "Error updating Chocolatey: $_", 
-            "Error", 
+            "Winget (Windows Package Manager) is not available. Please update your Windows installation to use this script.", 
+            "Winget Not Found", 
             [System.Windows.Forms.MessageBoxButtons]::OK, 
             [System.Windows.Forms.MessageBoxIcon]::Error
         )
-        $ProgressForm.Close()
         return $false
     }
-
-    # Close the Progress Form after completion
-    UpdateProgress -Message "Chocolatey installation and update complete."
-    Start-Sleep -Seconds 2
-    $ProgressForm.Close()
     return $true
 }
 
-function ShowAppSelectionForm {
-    # Define the application selection form
-    $appSelectionForm = New-Object System.Windows.Forms.Form
-    $appSelectionForm.Text = "Select Applications"
-    $appSelectionForm.StartPosition = "CenterScreen"
-    $appSelectionForm.Size = New-Object System.Drawing.Size(400, 600)
-
-    # Define the application list
-    $applications = @(
-        @{ Name = "Brave Browser"; Path = "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"; Chocolatey = "brave" },
-        @{ Name = "Dropbox"; Path = "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"; Chocolatey = "dropbox" },
-        @{ Name = "7-Zip"; Path = "C:\Program Files\7-Zip\7z.exe"; Chocolatey = "7zip" },
-        @{ Name = "Malwarebytes"; Path = "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"; Chocolatey = "malwarebytes" },
-        @{ Name = "Steam"; Path = "C:\Program Files (x86)\Steam\steam.exe"; Chocolatey = "steam" },
-        @{ Name = "Discord"; Path = "$env:APPDATA\Local\Discord\update.exe"; Chocolatey = "discord" },
-        @{ Name = "Visual Studio Code"; Path = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\Code.exe"; Chocolatey = "vscode" }
+function IsAppInstalled {
+    param (
+        [string]$AppName,
+        [array]$AdditionalPaths = @()
+    )
+    # Base paths to check
+    $basePaths = @(
+        "C:\Program Files\$AppName",
+        "C:\Program Files (x86)\$AppName",
+        "$([Environment]::GetFolderPath('LocalApplicationData'))\$AppName",
+        "$([Environment]::GetFolderPath('ApplicationData'))\$AppName"
     )
 
-    # Dynamically add checkboxes for applications
-    $yPosition = 20
-    $checkboxes = @()  # To store checkbox references
+    # Include additional paths specific to certain applications
+    $allPaths = $basePaths + $AdditionalPaths
+
+    # Check each path
+    foreach ($path in $allPaths) {
+        if (Test-Path $path) {
+            return $true
+        }
+    }
+    return $false
+}
+
+function ShowAppSelectionForm {
+    $appSelectionForm = New-Object System.Windows.Forms.Form
+    $appSelectionForm.Text = "Select Applications to Install"
+    $appSelectionForm.StartPosition = "CenterScreen"
+    $appSelectionForm.Size = New-Object System.Drawing.Size(800, 600)
+
+    $applications = @(
+        @{ Name = "Brave Browser"; AppName = "BraveSoftware"; WingetID = "Brave.Brave"; AdditionalPaths = @("Brave-Browser\Application") },
+        @{ Name = "Dropbox"; AppName = "Dropbox"; WingetID = "Dropbox.Dropbox"; AdditionalPaths = @() },
+        @{ Name = "7-Zip"; AppName = "7-Zip"; WingetID = "7zip.7zip"; AdditionalPaths = @() },
+        @{ Name = "Malwarebytes"; AppName = "Malwarebytes"; WingetID = "Malwarebytes.Malwarebytes"; AdditionalPaths = @() },
+        @{ Name = "Steam"; AppName = "Steam"; WingetID = "Valve.Steam"; AdditionalPaths = @("Steam.exe") },
+        @{ Name = "Discord"; AppName = "Discord"; WingetID = "Discord.Discord"; AdditionalPaths = @("Update.exe") },
+        @{ Name = "TeamViewer"; AppName = "TeamViewer"; WingetID = "TeamViewer.TeamViewer"; AdditionalPaths = @() },
+        @{ Name = "Epic Games"; AppName = "Epic Games"; WingetID = "EpicGames.EpicGamesLauncher"; AdditionalPaths = @("Launcher\EpicGamesLauncher.exe") },
+        @{ Name = "GitHub Desktop"; AppName = "GitHubDesktop"; WingetID = "GitHub.GitHubDesktop"; AdditionalPaths = @("GitHubDesktop.exe") },
+        @{ Name = "Visual Studio Code"; AppName = "Microsoft VS Code"; WingetID = "Microsoft.VisualStudioCode"; AdditionalPaths = @("$([Environment]::GetFolderPath('LocalApplicationData'))\Programs\Microsoft VS Code\Code.exe")  },
+        @{ Name = "qBittorrent"; AppName = "qBittorrent"; WingetID = "qBittorrent.qBittorrent"; AdditionalPaths = @() },
+        @{ Name = "Notepad++"; AppName = "Notepad++"; WingetID = "Notepad++.Notepad++"; AdditionalPaths = @() },
+        @{ Name = "Foxit PDF Reader"; AppName = "Foxit Reader"; WingetID = "Foxit.FoxitReader"; AdditionalPaths = @() },
+        @{ Name = "DS4Windows"; AppName = "DS4Windows"; WingetID = "Ryochan7.DS4Windows"; AdditionalPaths = @() },
+        @{ Name = "Instagram"; AppName = "Instagram"; WingetID = "9nblggh5l9xt"; AdditionalPaths = @() },
+        @{ Name = "Netflix"; AppName = "Netflix"; WingetID = "9wzdncrfj3tj"; AdditionalPaths = @() },
+        @{ Name = "Microsoft To Do"; AppName = "Microsoft To Do"; WingetID = "9nblggh5r558"; AdditionalPaths = @() },
+        @{ Name = "Spotify"; AppName = "Spotify"; WingetID = "9ncbcszsjrsb"; AdditionalPaths = @("Spotify.exe") },
+        @{ Name = "WhatsApp Desktop"; AppName = "WhatsApp"; WingetID = "9nksqgp7f2nh"; AdditionalPaths = @() },
+        @{ Name = "Google Chrome"; AppName = "Google"; WingetID = "Google.Chrome"; AdditionalPaths = @("Google Chrome\Application\chrome.exe") },
+        @{ Name = "Mozilla Firefox"; AppName = "Mozilla Firefox"; WingetID = "Mozilla.Firefox"; AdditionalPaths = @("firefox.exe") },
+        @{ Name = "OBS Studio"; AppName = "obs-studio"; WingetID = "OBSProject.OBSStudio"; AdditionalPaths = @() },
+        @{ Name = "VLC Media Player"; AppName = "VideoLAN"; WingetID = "VideoLAN.VLC"; AdditionalPaths = @("VLC\vlc.exe") },
+        @{ Name = "Adobe Acrobat Reader"; AppName = "Adobe"; WingetID = "Adobe.Acrobat.Reader.64-bit"; AdditionalPaths = @("Reader\AcroRd32.exe") },
+        @{ Name = "WinRAR"; AppName = "WinRAR"; WingetID = "RARLab.WinRAR"; AdditionalPaths = @("WinRAR.exe") },
+        @{ Name = "GIMP"; AppName = "GIMP"; WingetID = "GIMP.GIMP"; AdditionalPaths = @() },
+        @{ Name = "Zoom"; AppName = "Zoom"; WingetID = "Zoom.Zoom"; AdditionalPaths = @("bin\Zoom.exe") },
+        @{ Name = "Slack"; AppName = "Slack Technologies"; WingetID = "SlackTechnologies.Slack"; AdditionalPaths = @("Slack.exe") },
+        @{ Name = "Microsoft Edge"; AppName = "Microsoft Edge"; WingetID = "Microsoft.Edge"; AdditionalPaths = @("Microsoft\Edge\Application\msedge.exe") },
+        @{ Name = "Battle.net"; AppName = "Battle.net"; WingetID = "Blizzard.BattleNet"; AdditionalPaths = @("Battle.net.exe") },
+        @{ Name = "EA Play"; AppName = "Electronic Arts"; WingetID = ""; AdditionalPaths = @("EA Desktop\EA Desktop.exe") },
+        @{ Name = "Ubisoft Connect"; AppName = "Ubisoft"; WingetID = ""; AdditionalPaths = @("Ubisoft Game Launcher\UbisoftConnect.exe") },
+        @{ Name = "GOG Galaxy"; AppName = "GOG Galaxy"; WingetID = ""; AdditionalPaths = @("GalaxyClient.exe") },
+        @{ Name = "League of Legends"; AppName = "Riot Games"; WingetID = ""; AdditionalPaths = @("LeagueClient.exe") },
+        @{ Name = "Adobe Photoshop"; AppName = "Adobe Photoshop"; WingetID = ""; AdditionalPaths = @("Photoshop.exe") },
+        @{ Name = "LibreOffice"; AppName = "LibreOffice"; WingetID = "TheDocumentFoundation.LibreOffice"; AdditionalPaths = @() },
+        @{ Name = "HandBrake"; AppName = "HandBrake"; WingetID = "HandBrake.HandBrake"; AdditionalPaths = @() },
+        @{ Name = "FileZilla"; AppName = "FileZilla"; WingetID = "FileZilla.Client"; AdditionalPaths = @() },
+        @{ Name = "PuTTY"; AppName = "PuTTY"; WingetID = "PuTTY.PuTTY"; AdditionalPaths = @() },
+        @{ Name = "Notion"; AppName = "Notion"; WingetID = "Notion.Notion"; AdditionalPaths = @() },
+        @{ Name = "Postman"; AppName = "Postman"; WingetID = "Postman.Postman"; AdditionalPaths = @() },
+        @{ Name = "Telegram"; AppName = "Telegram Desktop"; WingetID = "Telegram.TelegramDesktop"; AdditionalPaths = @("Telegram.exe") },
+        @{ Name = "OpenVPN"; AppName = "OpenVPN"; WingetID = "OpenVPNTechnologies.OpenVPN"; AdditionalPaths = @() },
+        @{ Name = "KeePass"; AppName = "KeePass"; WingetID = "DominikReichl.KeePass"; AdditionalPaths = @() },
+        @{ Name = "Audacity"; AppName = "Audacity"; WingetID = "Audacity.Audacity"; AdditionalPaths = @() },
+        @{ Name = "Visual Studio Community"; AppName = "Microsoft Visual Studio"; WingetID = "Microsoft.VisualStudio.2022.Community"; AdditionalPaths = @("Common7\IDE\devenv.exe") }
+    )
+
+    # Layout properties
+    $maxRows = 6
+    $checkboxWidth = 120
+    $checkboxHeight = 25
+    $paddingX = 20
+    $paddingY = 10
+    $startX = 20
+    $startY = 20
+
+    $checkboxes = @()
+    $currentX = $startX
+    $currentY = $startY
+    $rowCount = 0
+
+    # Add label for grayed-out explanation
+    $statusLabel = New-Object System.Windows.Forms.Label
+    $statusLabel.Text = "Gray = Application already installed!"
+    $statusLabel.ForeColor = 'Gray'
+    $statusLabel.AutoSize = $true
+    $statusLabel.Location = New-Object System.Drawing.Point($startX, $currentY)
+    $appSelectionForm.Controls.Add($statusLabel)
+    $currentY += $statusLabel.Height + 10
 
     foreach ($app in $applications) {
+        # Check if the app is already installed
+        $isInstalled = IsAppInstalled -AppName $app.AppName -AdditionalPaths $app.AdditionalPaths
+
+        # Add checkbox for application
         $checkbox = New-Object System.Windows.Forms.CheckBox
         $checkbox.Text = $app.Name
-        $checkbox.Location = New-Object System.Drawing.Point(20, $yPosition)
-        $checkbox.Width = 350
+        $checkbox.Size = New-Object System.Drawing.Size($checkboxWidth, $checkboxHeight)
+        $checkbox.Location = New-Object System.Drawing.Point($currentX, $currentY)
+        $checkbox.Enabled = -not $isInstalled
         $appSelectionForm.Controls.Add($checkbox)
         $checkboxes += $checkbox
-        $app.Checkbox = $checkbox  # Store checkbox reference for later processing
-        $yPosition += 30
+        $app.Checkbox = $checkbox
+
+        # Update positions
+        $rowCount += 1
+        $currentY += $checkboxHeight + $paddingY
+        if ($rowCount -ge $maxRows) {
+            $rowCount = 0
+            $currentY = $startY + $statusLabel.Height + 20
+            $currentX += $checkboxWidth + $paddingX
+        }
     }
 
-    # Adjust form height dynamically based on the number of checkboxes
-    $appSelectionForm.Size = New-Object System.Drawing.Size(400, $yPosition + 100)
+    # Add progress bar
+    $progressBar = New-Object System.Windows.Forms.ProgressBar
+    $progressBar.Size = New-Object System.Drawing.Size(($currentX + $checkboxWidth + $paddingX), 20)
+    $progressBar.Location = New-Object System.Drawing.Point(10, 300)
+    $progressBar.Minimum = 0
+    $progressBar.Maximum = $applications.Count
+    $appSelectionForm.Controls.Add($progressBar)
 
-    # Add OK Button
+    # Add buttons below progress bar
+    $buttonYPosition = $progressBar.Location.Y + 40
+
+    # OK Button
     $okButton = New-Object System.Windows.Forms.Button
     $okButton.Text = "OK"
     $okButton.Size = New-Object System.Drawing.Size(100, 30)
-    $okButton.Location = New-Object System.Drawing.Point(50, $yPosition)
+    $okButton.Location = New-Object System.Drawing.Point(10, 330)
     $okButton.Add_Click({
         $selectedApps = $applications | Where-Object { $_.Checkbox.Checked }
-        $appSelectionForm.Hide() # Hide the form temporarily
-        InstallOrUninstallApplications -SelectedApps $selectedApps
-
-        # After task completion, show the form again
-        $appSelectionForm.ShowDialog()
+        InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
     })
     $appSelectionForm.Controls.Add($okButton)
 
-    # Add Reset Button
-    $resetButton = New-Object System.Windows.Forms.Button
-    $resetButton.Text = "Reset"
-    $resetButton.Size = New-Object System.Drawing.Size(100, 30)
-    $resetButton.Location = New-Object System.Drawing.Point(150, $yPosition)
-    $resetButton.Add_Click({
-        foreach ($checkbox in $checkboxes) {
-            $checkbox.Checked = $false
-        }
-    })
-    $appSelectionForm.Controls.Add($resetButton)
-
-    # Add Cancel Button
+    # Cancel Button
     $cancelButton = New-Object System.Windows.Forms.Button
     $cancelButton.Text = "Cancel"
     $cancelButton.Size = New-Object System.Drawing.Size(100, 30)
-    $cancelButton.Location = New-Object System.Drawing.Point(250, $yPosition)
+    $cancelButton.Location = New-Object System.Drawing.Point(120, 330)
     $cancelButton.Add_Click({
         $appSelectionForm.Close()
     })
     $appSelectionForm.Controls.Add($cancelButton)
 
-    # Show the form
+    # Adjust form height dynamically based on content
+    $appSelectionForm.Height = $buttonYPosition + 100
+    $appSelectionForm.Width = ($currentX + $checkboxWidth + $paddingX + 40)
+
     [void]$appSelectionForm.ShowDialog()
 }
 
-function InstallOrUninstallApplications {
+function InstallApplications {
     param (
-        [array]$SelectedApps
+        [array]$SelectedApps,
+        [System.Windows.Forms.ProgressBar]$ProgressBar
     )
 
-    # Ensure Chocolatey is available
-    if (-not (EnsureChocolatey)) {
-        [System.Windows.Forms.MessageBox]::Show(
-            "Chocolatey is not available. Aborting process.", 
-            "Error", 
-            [System.Windows.Forms.MessageBoxButtons]::OK, 
-            [System.Windows.Forms.MessageBoxIcon]::Error
-        )
+    if (-not (EnsureWinget)) {
         return
     }
 
-    # Create progress form
-    $progressForm = New-Object System.Windows.Forms.Form
-    $progressForm.Text = "Processing Applications"
-    $progressForm.Size = New-Object System.Drawing.Size(400, 150)
-    $progressForm.StartPosition = "CenterScreen"
+    $totalApps = $SelectedApps.Count
+    $ProgressBar.Maximum = $totalApps
 
-    $progressLabel = New-Object System.Windows.Forms.Label
-    $progressLabel.AutoSize = $true
-    $progressLabel.Location = New-Object System.Drawing.Point(10, 10)
-    $progressLabel.Text = "Starting..."
-    $progressForm.Controls.Add($progressLabel)
-
-    $progressForm.Show()
-
-    # Update progress safely
-    function UpdateProgress {
-        param ([string]$Message)
-        $progressLabel.Invoke([Action]{
-            $progressLabel.Text = $Message
-            $progressLabel.Refresh()
-        })
-    }
-
-    # Helper function to check if an app is installed
-    function IsAppInstalled {
-        param ([string]$AppName, [string]$AppPath)
-
-        # Check using Chocolatey
-        $installedPackages = choco list --local-only | Select-String -Pattern "^\s*$AppName\s+"
-        if ($installedPackages) {
-            return $true
-        }
-
-        # Check file path as fallback
-        if ($AppPath -and (Test-Path $AppPath)) {
-            return $true
-        }
-
-        return $false
-    }
-
-    $isCancelled = $false  # Track if the user cancels the operation
-
-    # Process each application
     foreach ($app in $SelectedApps) {
-        $isInstalled = IsAppInstalled -AppName $app.Chocolatey -AppPath $app.Path
-
-        if ($isInstalled) {
-            # Application already installed, prompt for uninstallation
-            $uninstallPrompt = [System.Windows.Forms.MessageBox]::Show(
-                "$($app.Name) is already installed. Do you want to uninstall it?", 
-                "Uninstall $($app.Name)?", 
-                [System.Windows.Forms.MessageBoxButtons]::YesNo, 
-                [System.Windows.Forms.MessageBoxIcon]::Question
-            )
-
-            if ($uninstallPrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
-                try {
-                    UpdateProgress "Uninstalling $($app.Name)..."
-                    Start-Process -FilePath "choco" -ArgumentList "uninstall $($app.Chocolatey) -y --force" -NoNewWindow -Wait
-                    if (-not (IsAppInstalled -AppName $app.Chocolatey -AppPath $app.Path)) {
-                        [System.Windows.Forms.MessageBox]::Show(
-                            "$($app.Name) has been uninstalled successfully.", 
-                            "Uninstallation Complete", 
-                            [System.Windows.Forms.MessageBoxButtons]::OK, 
-                            [System.Windows.Forms.MessageBoxIcon]::Information
-                        )
-                    } else {
-                        throw "Uninstallation failed for $($app.Name)."
-                    }
-                } catch {
-                    [System.Windows.Forms.MessageBox]::Show(
-                        "Error uninstalling $($app.Name): $_", 
-                        "Error", 
-                        [System.Windows.Forms.MessageBoxButtons]::OK, 
-                        [System.Windows.Forms.MessageBoxIcon]::Error
-                    )
-                }
+        try {
+            # Install the app using WingetID
+            if ($app.WingetID) {
+                Start-Process -FilePath "winget" -ArgumentList "install --id $($app.WingetID) --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
             } else {
-                # User cancelled uninstallation
-                UpdateProgress "Exiting..."
-                $isCancelled = $true
-                break
+                [System.Windows.Forms.MessageBox]::Show(
+                    "$($app.Name) does not have a WingetID and must be installed manually.",
+                    "Manual Installation Required",
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Information
+                )
             }
-        } else {
-            # Prompt before installation
-            $installPrompt = [System.Windows.Forms.MessageBox]::Show(
-                "Do you want to install $($app.Name)?", 
-                "Install $($app.Name)?", 
-                [System.Windows.Forms.MessageBoxButtons]::YesNo, 
-                [System.Windows.Forms.MessageBoxIcon]::Question
+
+            # Update progress bar
+            $ProgressBar.Invoke([Action]{
+                $ProgressBar.PerformStep()
+            })
+        } catch {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Error installing $($app.Name): $_", 
+                "Error", 
+                [System.Windows.Forms.MessageBoxButtons]::OK, 
+                [System.Windows.Forms.MessageBoxIcon]::Error
             )
-
-            if ($installPrompt -eq [System.Windows.Forms.DialogResult]::Yes) {
-                try {
-                    UpdateProgress "Installing $($app.Name)..."
-
-                    # Start Chocolatey installation
-                    $chocoProcess = Start-Process -FilePath "choco" -ArgumentList "install $($app.Chocolatey) -y --force" -NoNewWindow -Wait -PassThru
-
-                    # Check Chocolatey process exit code
-                    if ($chocoProcess.ExitCode -eq 0 -and (IsAppInstalled -AppName $app.Chocolatey -AppPath $app.Path)) {
-                        [System.Windows.Forms.MessageBox]::Show(
-                            "$($app.Name) has been installed successfully.", 
-                            "Installation Complete", 
-                            [System.Windows.Forms.MessageBoxButtons]::OK, 
-                            [System.Windows.Forms.MessageBoxIcon]::Information
-                        )
-                    } else {
-                        throw "Installation failed for $($app.Name)."
-                    }
-                } catch {
-                    [System.Windows.Forms.MessageBox]::Show(
-                        "Error installing $($app.Name): $_", 
-                        "Error", 
-                        [System.Windows.Forms.MessageBoxButtons]::OK, 
-                        [System.Windows.Forms.MessageBoxIcon]::Error
-                    )
-                }
-            } else {
-                # User cancelled installation
-                UpdateProgress "Exiting..."
-                $isCancelled = $true
-                break
-            }
         }
     }
 
-    if (-not $isCancelled) {
-        UpdateProgress "All tasks completed."
-        Start-Sleep -Seconds 2
-    }
-
-    $progressForm.Invoke([Action]{ $progressForm.Close() })
-
-    # Return control to the application selection form
-    ShowAppSelectionForm
+    # Reset progress bar after completion
+    $ProgressBar.Invoke([Action]{
+        $ProgressBar.Value = 0
+    })
 }
 
 # Function to Add Panels
@@ -357,6 +274,7 @@ Function Add-Panel {
     $panel.Width = $Width
     $panel.Height = $Height
     $panel.Location = $Location
+    #$panel.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#ffffff")
     return $panel
 }
 
@@ -372,7 +290,7 @@ function Add-Control {
         [System.Drawing.Color]$BackColor = [System.Drawing.ColorTranslator]::FromHtml("#182C36"),
         [System.Drawing.Color]$ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#5095B5"),
         [System.Drawing.Color]$HoverColor = [System.Drawing.ColorTranslator]::FromHtml("#346075"),
-        [string]$ControlType = "Button" # Default to Button, can be "Label", "ComboBox"
+        [string]$ControlType = "Button" # Default to Button, can be "Label", "ComboBox", or "CheckBox"
     )
 
     switch ($ControlType) {
@@ -395,9 +313,10 @@ function Add-Control {
                 Width = $Width
                 Height = $Height
                 Location = New-Object System.Drawing.Point($X, $Y)
-                Font = New-Object System.Drawing.Font($Font, $FontSize, [System.Drawing.FontStyle]::Bold)
-                ForeColor = $ForeColor
+                Font = New-Object System.Drawing.Font($Font, $FontSize, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+                ForeColor = $BackColor
                 TextAlign = "MiddleCenter"
+                BackColor = $ForeColor # Optional: Makes the label's background visible
                 AutoSize = $false
             }
         }
@@ -407,10 +326,22 @@ function Add-Control {
                 Height = $Height
                 Location = New-Object System.Drawing.Point($X, $Y)
                 Font = New-Object System.Drawing.Font($Font, $FontSize)
-                BackColor = $BackColor
-                ForeColor = $ForeColor
+                BackColor = $ForeColor
+                ForeColor = $BackColor
             }
             $control.DropDownStyle = "DropDownList"
+        }
+        "CheckBox" {
+            $control = New-Object system.Windows.Forms.CheckBox -Property @{
+                Text = $Text
+                Width = $Width
+                Height = $Height
+                Location = New-Object System.Drawing.Point($X, $Y)
+                Font = New-Object System.Drawing.Font($Font, $FontSize)
+                BackColor = $ForeColor
+                ForeColor = $BackColor
+                AutoSize = $false
+            }
         }
         default {
             throw "Unsupported control type: $ControlType"
@@ -436,7 +367,6 @@ Function MakeForm {
      $Form.AutoSize = $True
      $Form.AutoScroll = $True
      $Form.FormBorderStyle = 0
- 
 
     # Add Form-Level Buttons
     $xButton = New-Object system.Windows.Forms.Button
@@ -509,183 +439,134 @@ Function MakeForm {
     $wintoollogo.ForeColor = $frontcolor 
 
     # Panels Definition
-    $Panel1 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(10, 100))
-    $Panel2 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(240, 100))
-    $Panel3 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(470, 100))
-    $Panel4 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(700, 100))
-    $Panel5 = Add-Panel -Width 220 -Height 600 -Location (New-Object System.Drawing.Point(930, 100))
-    $Panel6 = Add-Panel -Width 1145 -Height 200 -Location (New-Object System.Drawing.Point(10, 700))
+    # Uniform Height and Width for Panels
+    $defaultPanelWidth = 220
+    $defaultPanelHeight = 435
+    $Panel1 = Add-Panel -Width $defaultPanelWidth -Height $defaultPanelHeight -Location (New-Object System.Drawing.Point(10, 100))
+    $Panel2 = Add-Panel -Width $defaultPanelWidth -Height $defaultPanelHeight -Location (New-Object System.Drawing.Point(240, 100))
+    $Panel3 = Add-Panel -Width $defaultPanelWidth -Height $defaultPanelHeight -Location (New-Object System.Drawing.Point(470, 100))
+    $Panel4 = Add-Panel -Width $defaultPanelWidth -Height $defaultPanelHeight -Location (New-Object System.Drawing.Point(700, 100))
+    $Panel5 = Add-Panel -Width $defaultPanelWidth -Height $defaultPanelHeight -Location (New-Object System.Drawing.Point(930, 100))
+    $Panel6 = Add-Panel -Width 1145 -Height 200 -Location (New-Object System.Drawing.Point(10, 535))
 
     # Add Panels to Form
     $Form.Controls.AddRange(@($xButton, $createShortcutGit, $CreateShortcutTool, $wintoollogo, $supportWintool, $Panel1, $Panel2, $Panel3, $Panel4, $Panel5, $Panel6))
 
-    # Result Text Panel
+    # Main Panel that creates a perfect border hack of 2px
     $ResultTextWrapper = New-Object system.Windows.Forms.TextBox
     $ResultTextWrapper.Multiline = $true
     $ResultTextWrapper.ReadOnly = $true
     $ResultTextWrapper.Width = 1140
     $ResultTextWrapper.Height = 195
-    $ResultTextWrapper.BackColor = $backcolor
-    $ResultTextWrapper.ForeColor = $frontcolor
+    $ResultTextWrapper.BackColor = $frontcolor
+    $ResultTextWrapper.ForeColor = $backcolor
+    $ResultTextWrapper.BorderStyle = 0
     $Panel6.Controls.Add($ResultTextWrapper)
 
+    # This acts as a wrapper so we can set a padding without messing up the border in the next box
+    $ResultTextFinal = New-Object system.Windows.Forms.TextBox
+    $ResultTextFinal.Multiline = $true
+    $ResultTextFinal.ReadOnly = $true
+    $ResultTextFinal.AutoSize = $true
+    $ResultTextFinal.Width = 1136 # Adjust for border size 4px diffrence idk why
+    $ResultTextFinal.Height = 191 # Adjust for border size 4px diffrence idk why
+    $ResultTextFinal.Location = New-Object System.Drawing.Point(2, 2) # border size
+    $ResultTextFinal.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+    $ResultTextFinal.BorderStyle = 0
+    $ResultTextFinal.BackColor = $backcolor
+    $ResultTextFinal.ForeColor = $frontcolor
+    $ResultTextWrapper.Controls.Add($ResultTextFinal)
+
+    # This is where the actual text output is produced!
     $ResultText = New-Object system.Windows.Forms.TextBox
     $ResultText.Multiline = $true
     $ResultText.ReadOnly = $true
     $ResultText.AutoSize = $true
-    $ResultText.Width = 1110 # Adjust for padding
-    $ResultText.Height = 195 # Adjust for padding
-    $ResultText.Location = New-Object System.Drawing.Point(10, 10) # Padding
+    $ResultText.Width = 1136 # Adjust for padding
+    $ResultText.Height = 191 # Adjust for padding
+    $ResultText.Location = New-Object System.Drawing.Point(10, 10) # Adjust padding here
     $ResultText.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
     $ResultText.BorderStyle = 0
     $ResultText.BackColor = $backcolor
     $ResultText.ForeColor = $frontcolor
+    $ResultTextFinal.Controls.Add($ResultText)
 
-    # Nest ResultText in Wrapper
-    $ResultTextWrapper.Controls.Add($ResultText)
+    # Default start positions, they have to be reset for each new panel or it will be buggy..
+    $YPosition = 0
+    $XPosition = 0
 
-    $performancetweaks = New-Object system.Windows.Forms.Label
-    $performancetweaks.text = "Performance Tweaks"
-    $performancetweaks.AutoSize = $false
-    $performancetweaks.width = 220
-    $performancetweaks.height = 35
-    $performancetweaks.TextAlign = "MiddleCenter"
-    $performancetweaks.location = New-Object System.Drawing.Point(0, 10)
-    $performancetweaks.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $performancetweaks.ForeColor = $frontcolor 
+    #spacings
+    $largespacing = 70
+    $normalspacing = 35
+    $labelspacing = 40
+    $labelspacing2 = 35
 
-    $essentialtweaks = New-Object system.Windows.Forms.Button
-    $essentialtweaks.text = "Essential Tweaks"
-    $essentialtweaks.width = 220
-    $essentialtweaks.height = 65
-    $essentialtweaks.location = New-Object System.Drawing.Point(0, 45)
-    $essentialtweaks.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $essentialtweaks.BackColor = $frontcolor 
-    $essentialtweaks.ForeColor = $backcolor
-    $essentialtweaks.FlatStyle = "Flat"
-    $essentialtweaks.FlatAppearance.MouseOverBackColor = $hovercolor
+    #buttons
+    $largebuttonsize = 65
+    #$defaultbuttonsize = 30
 
-    $essentialundo = New-Object system.Windows.Forms.Button
-    $essentialundo.text = "Undo Essential Tweaks"
-    $essentialundo.width = 220
-    $essentialundo.height = 65
-    $essentialundo.location = New-Object System.Drawing.Point(0, 115)
-    $essentialundo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $essentialundo.BackColor = $frontcolor 
-    $essentialundo.ForeColor = $backcolor
-    $essentialundo.FlatStyle = "Flat"
-    $essentialundo.FlatAppearance.MouseOverBackColor = $hovercolor
+    #labels 
+    $labelfontsize = 10
+    $labelheight = 35
+    $firstlabelstartpos = 5
 
-    $gamingtweaks = New-Object system.Windows.Forms.Button
-    $gamingtweaks.text = "Gaming Tweaks"
-    $gamingtweaks.width = 220
-    $gamingtweaks.height = 65
-    $gamingtweaks.location = New-Object System.Drawing.Point(0, 185)
-    $gamingtweaks.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $gamingtweaks.BackColor = $frontcolor 
-    $gamingtweaks.ForeColor = $backcolor
-    $gamingtweaks.FlatStyle = "Flat"
-    $gamingtweaks.FlatAppearance.MouseOverBackColor = $hovercolor
+    #checkboxes
+    $checkboxspacing = 25
+    $checkboxheight = 26
+    $checkboxfontsize = 10
 
-    $securitypatches = New-Object system.Windows.Forms.Button
-    $securitypatches.text = "Patch Security (Caution!)"
-    $securitypatches.width = 220
-    $securitypatches.height = 65
-    $securitypatches.location = New-Object System.Drawing.Point(0, 255)
-    $securitypatches.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $securitypatches.BackColor = $frontcolor 
-    $securitypatches.ForeColor = $backcolor
-    $securitypatches.FlatStyle = "Flat"
-    $securitypatches.FlatAppearance.MouseOverBackColor = $hovercolor
+    #####################
+    ## Panel 1 begins! ##
+    #####################
 
-    if((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
-        $onedrive = New-Object system.Windows.Forms.Button
-        $onedrive.text = "Remove OneDrive"
-        $onedrive.width = 220
-        $onedrive.height = 30
-        $onedrive.location = New-Object System.Drawing.Point(0, 325)
-        $onedrive.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-        $onedrive.BackColor = $frontcolor 
-        $onedrive.ForeColor = $backcolor
-        $onedrive.FlatStyle = "Flat"
-        $onedrive.FlatAppearance.MouseOverBackColor = $hovercolor
+    $performancetweaks = Add-Control -Text "Performance Tweaks" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing
+
+    $essentialtweaks = Add-Control -Text "Essential Tweaks" -X $XPosition -Y $YPosition -Height $largebuttonsize
+    $YPosition += $largespacing
+
+    $essentialundo = Add-Control -Text "Undo Essential Tweaks" -X $XPosition -Y $YPosition -Height $largebuttonsize
+    $YPosition += $largespacing
+
+    $gamingtweaks = Add-Control -Text "Gaming Tweaks" -X $XPosition -Y $YPosition -Height $largebuttonsize
+    $YPosition += $largespacing
+
+    $securitypatches = Add-Control -Text "Patch Security (Caution!)" -X $XPosition -Y $YPosition -Height $largebuttonsize
+    $YPosition += $largespacing
+
+    if ((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
+        $onedrive = Add-Control -Text "Remove OneDrive" -X $XPosition -Y $YPosition
+    } else {
+        $onedrive = Add-Control -Text "Restore OneDrive" -X $XPosition -Y $YPosition
     }
-    else {
-        $onedrive = New-Object system.Windows.Forms.Button
-        $onedrive.text = "Restore OneDrive"
-        $onedrive.width = 220
-        $onedrive.height = 30
-        $onedrive.location = New-Object System.Drawing.Point(0, 325)
-        $onedrive.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-        $onedrive.BackColor = $frontcolor 
-        $onedrive.ForeColor = $backcolor
-        $onedrive.FlatStyle = "Flat"
-        $onedrive.FlatAppearance.MouseOverBackColor = $hovercolor 
-    }
+    $YPosition += $normalspacing
 
-    if(Test-Path "$env:programdata\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk") {
-        $killedge = New-Object system.Windows.Forms.Button
-        $killedge.text = "Remove Microsoft Edge"
-        $killedge.width = 220
-        $killedge.height = 30
-        $killedge.location = New-Object System.Drawing.Point(0, 360)
-        $killedge.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-        $killedge.BackColor = $frontcolor 
-        $killedge.ForeColor = $backcolor
-        $killedge.FlatStyle = "Flat"
-        $killedge.FlatAppearance.MouseOverBackColor = $hovercolor
+    if (Test-Path "$env:programdata\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk") {
+        $killedge = Add-Control -Text "Remove Microsoft Edge" -X $XPosition -Y $YPosition
+    } else {
+        $killedge = Add-Control -Text "Restore Microsoft Edge" -X $XPosition -Y $YPosition
     }
-    else {
-        $killedge = New-Object system.Windows.Forms.Button
-        $killedge.text = "Restore Microsoft Edge"
-        $killedge.width = 220
-        $killedge.height = 30
-        $killedge.location = New-Object System.Drawing.Point(0, 360)
-        $killedge.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-        $killedge.BackColor = $frontcolor 
-        $killedge.ForeColor = $backcolor
-        $killedge.FlatStyle = "Flat"
-        $killedge.FlatAppearance.MouseOverBackColor = $hovercolor
-    }
+    $YPosition += $normalspacing
 
-    if(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {    
-        $removehomegallery = New-Object system.Windows.Forms.Button
-        $removehomegallery.text = "Remove Home and Gallery"
-        $removehomegallery.width = 220
-        $removehomegallery.height = 30
-        $removehomegallery.location = New-Object System.Drawing.Point(0, 395)
-        $removehomegallery.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-        $removehomegallery.BackColor = $frontcolor 
-        $removehomegallery.ForeColor = $backcolor
-        $removehomegallery.FlatStyle = "Flat"
-        $removehomegallery.FlatAppearance.MouseOverBackColor = $hovercolor
-    }
-    else {    
-        $removehomegallery = New-Object system.Windows.Forms.Button
-        $removehomegallery.text = "Restore Home and Gallery"
-        $removehomegallery.width = 220
-        $removehomegallery.height = 30
-        $removehomegallery.location = New-Object System.Drawing.Point(0, 395)
-        $removehomegallery.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-        $removehomegallery.BackColor = $frontcolor 
-        $removehomegallery.ForeColor = $backcolor
-        $removehomegallery.FlatStyle = "Flat"
-        $removehomegallery.FlatAppearance.MouseOverBackColor = $hovercolor
+    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
+        $removehomegallery = Add-Control -Text "Remove Home and Gallery" -X $XPosition -Y $YPosition
+    } else {
+        $removehomegallery = Add-Control -Text "Restore Home and Gallery" -X $XPosition -Y $YPosition
     }
 
     #####################
     ## Panel 2 begins! ##
     #####################
-    $YPosition = 10
-    $XPosition = 0
-    $spacing = 35 # Control height plus consistent margin
 
-    # Add controls with consistent spacing
-    $fixes = Add-Control -Text "Fixes" -X $XPosition -Y $YPosition -Height 35 -FontSize 10 -ControlType "Label"
-    $YPosition += $spacing
+    #Reset position for next Panel
+    $YPosition = 0
+    $XPosition = 0
+
+    $fixes = Add-Control -Text "Fixes" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing
 
     $errorscanner = Add-Control -Text "Error Scanner" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $changedns = Add-Control -Text "" -X $XPosition -Y $YPosition -ControlType "ComboBox"
     @(
@@ -697,436 +578,170 @@ Function MakeForm {
         '         Restore Default DNS'
     ) | ForEach-Object { [void] $changedns.Items.Add($_) }
     $changedns.SelectedIndex = 0
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $resetnetwork = Add-Control -Text "Reset Network" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $forcenorkeyboard = Add-Control -Text "Force NO/NB Language" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $dualboottime = Add-Control -Text "Set Time to UTC" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
-    # Continue adding more controls, starting at $YPosition
+    $oldmenu = Add-Control -Text "Old Menus" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
+
     $ncpa = Add-Control -Text "Network Panel" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $oldcontrolpanel = Add-Control -Text "Control Panel" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $oldsoundpanel = Add-Control -Text "Sound Panel" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $oldsystempanel = Add-Control -Text "System Panel" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
+    $YPosition += $normalspacing
 
     $oldpower = Add-Control -Text "Power Panel" -X $XPosition -Y $YPosition
-    $YPosition += $spacing
-
-    $oldmenu = Add-Control -Text "Old Menu" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
+ 
     #####################
-    ## Panel 2 ends!   ##
+    ## Panel 3 begins! ##
     #####################
 
-    $windowsupdate = New-Object system.Windows.Forms.Label
-    $windowsupdate.text = "Windows Update"
-    $windowsupdate.AutoSize = $false
-    $windowsupdate.width = 220
-    $windowsupdate.height = 35
-    $windowsupdate.TextAlign = "MiddleCenter"
-    $windowsupdate.location = New-Object System.Drawing.Point(0, 10)
-    $windowsupdate.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $windowsupdate.ForeColor = $frontcolor 
+    # Reset position for Panel 3
+    $YPosition = 0
+    $XPosition = 0
 
-    $defaultwindowsupdate = New-Object system.Windows.Forms.Button
-    $defaultwindowsupdate.text = "Default Settings"
-    $defaultwindowsupdate.width = 220
-    $defaultwindowsupdate.height = 30
-    $defaultwindowsupdate.location = New-Object System.Drawing.Point(0, 45)
-    $defaultwindowsupdate.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $defaultwindowsupdate.BackColor = $frontcolor 
-    $defaultwindowsupdate.ForeColor = $backcolor
-    $defaultwindowsupdate.FlatStyle = "Flat"
-    $defaultwindowsupdate.FlatAppearance.MouseOverBackColor = $hovercolor
+    # Add controls with consistent spacing
+    $windowsupdate = Add-Control -Text "Windows Update" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing
 
-    $securitywindowsupdate = New-Object system.Windows.Forms.Button
-    $securitywindowsupdate.text = "Security Updates Only"
-    $securitywindowsupdate.width = 220
-    $securitywindowsupdate.height = 30
-    $securitywindowsupdate.location = New-Object System.Drawing.Point(0, 80)
-    $securitywindowsupdate.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $securitywindowsupdate.BackColor = $frontcolor 
-    $securitywindowsupdate.ForeColor = $backcolor
-    $securitywindowsupdate.FlatStyle = "Flat"
-    $securitywindowsupdate.FlatAppearance.MouseOverBackColor = $hovercolor
+    $defaultwindowsupdate = Add-Control -Text "Default Settings" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $windowsupdatefix = New-Object system.Windows.Forms.Button
-    $windowsupdatefix.text = "Windows Update Reset"
-    $windowsupdatefix.width = 220
-    $windowsupdatefix.height = 30
-    $windowsupdatefix.location = New-Object System.Drawing.Point(0, 115)
-    $windowsupdatefix.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $windowsupdatefix.BackColor = $frontcolor 
-    $windowsupdatefix.ForeColor = $backcolor
-    $windowsupdatefix.FlatStyle = "Flat"
-    $windowsupdatefix.FlatAppearance.MouseOverBackColor = $hovercolor
+    $securitywindowsupdate = Add-Control -Text "Security Updates Only" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $microsoftstore = New-Object system.Windows.Forms.Label
-    $microsoftstore.text = "Microsoft Store"
-    $microsoftstore.AutoSize = $false
-    $microsoftstore.width = 220
-    $microsoftstore.height = 35
-    $microsoftstore.TextAlign = "MiddleCenter"
-    $microsoftstore.ForeColor = $frontcolor 
-    $microsoftstore.location = New-Object System.Drawing.Point(0, 150)
-    $microsoftstore.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+    $windowsupdatefix = Add-Control -Text "Windows Update Reset" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $removebloat = New-Object system.Windows.Forms.Button
-    $removebloat.text = "Remove MS Store Apps"
-    $removebloat.width = 220
-    $removebloat.height = 30
-    $removebloat.location = New-Object System.Drawing.Point(0, 185)
-    $removebloat.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $removebloat.BackColor = $frontcolor 
-    $removebloat.ForeColor = $backcolor
-    $removebloat.FlatStyle = "Flat"
-    $removebloat.FlatAppearance.MouseOverBackColor = $hovercolor
+    $microsoftstore = Add-Control -Text "Microsoft Store" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
 
-    $reinstallbloat = New-Object system.Windows.Forms.Button
-    $reinstallbloat.text = "Reinstall MS Store Apps"
-    $reinstallbloat.width = 220
-    $reinstallbloat.height = 30
-    $reinstallbloat.location = New-Object System.Drawing.Point(0, 220)
-    $reinstallbloat.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $reinstallbloat.BackColor = $frontcolor 
-    $reinstallbloat.ForeColor = $backcolor
-    $reinstallbloat.FlatStyle = "Flat"
-    $reinstallbloat.FlatAppearance.MouseOverBackColor = $hovercolor
+    $removebloat = Add-Control -Text "Remove MS Store Apps" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $cleaning = New-Object system.Windows.Forms.Label
-    $cleaning.text = "Cleaning"
-    $cleaning.AutoSize = $false
-    $cleaning.width = 220
-    $cleaning.height = 35
-    $cleaning.TextAlign = "MiddleCenter"
-    $cleaning.ForeColor = $frontcolor 
-    $cleaning.location = New-Object System.Drawing.Point(0, 255)
-    $cleaning.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+    $reinstallbloat = Add-Control -Text "Reinstall MS Store Apps" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $ultimateclean = New-Object system.Windows.Forms.Button
-    $ultimateclean.text = "Ultimate Cleaning"
-    $ultimateclean.width = 220
-    $ultimateclean.height = 30
-    $ultimateclean.location = New-Object System.Drawing.Point(0, 290)
-    $ultimateclean.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $ultimateclean.BackColor = $frontcolor 
-    $ultimateclean.ForeColor = $backcolor
-    $ultimateclean.FlatStyle = "Flat"
-    $ultimateclean.FlatAppearance.MouseOverBackColor = $hovercolor
+    $cleaning = Add-Control -Text "Cleaning" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
 
-    $visualtweaks = New-Object system.Windows.Forms.Label
-    $visualtweaks.text = "Visual Tweaks"
-    $visualtweaks.AutoSize = $false
-    $visualtweaks.width = 220
-    $visualtweaks.height = 35
-    $visualtweaks.TextAlign = "MiddleCenter"
-    $visualtweaks.ForeColor = $frontcolor 
-    $visualtweaks.location = New-Object System.Drawing.Point(0, 325)
-    $visualtweaks.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
+    $ultimateclean = Add-Control -Text "Ultimate Cleaning" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $darkmode = New-Object system.Windows.Forms.Button
-    $darkmode.text = "Dark Mode"
-    $darkmode.width = 220
-    $darkmode.height = 30
-    $darkmode.location = New-Object System.Drawing.Point(0, 360)
-    $darkmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $darkmode.BackColor = $frontcolor 
-    $darkmode.ForeColor = $backcolor
-    $darkmode.FlatStyle = "Flat"
-    $darkmode.FlatAppearance.MouseOverBackColor = $hovercolor
+    $visualtweaks = Add-Control -Text "Visual Tweaks" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
 
-    $lightmode = New-Object system.Windows.Forms.Button
-    $lightmode.text = "Light Mode"
-    $lightmode.width = 220
-    $lightmode.height = 30
-    $lightmode.location = New-Object System.Drawing.Point(0, 395)
-    $lightmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $lightmode.BackColor = $frontcolor 
-    $lightmode.ForeColor = $backcolor
-    $lightmode.FlatStyle = "Flat"
-    $lightmode.FlatAppearance.MouseOverBackColor = $hovercolor
+    $darkmode = Add-Control -Text "Dark Mode" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $extras = New-Object system.Windows.Forms.Label
-    $extras.text = "Install Apps"
-    $extras.AutoSize = $false
-    $extras.width = 220
-    $extras.height = 35
-    $extras.TextAlign = "MiddleCenter"
-    $extras.location = New-Object System.Drawing.Point(0, 10)
-    $extras.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $extras.ForeColor = $frontcolor 
+    $lightmode = Add-Control -Text "Light Mode" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $bravebrowser = New-Object system.Windows.Forms.CheckBox
-    $bravebrowser.text = "Brave Browser"
-    $bravebrowser.width = 220
-    $bravebrowser.location = New-Object System.Drawing.Point(0, 40)
-    $bravebrowser.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    #####################
+    ## Panel 4 begins! ##
+    #####################
 
-    $dropbox = New-Object system.Windows.Forms.CheckBox
-    $dropbox.text = "Dropbox"
-    $dropbox.width = 220
-    $dropbox.location = New-Object System.Drawing.Point(0, 60)
-    $dropbox.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    # Reset position for Panel 4
+    $YPosition = 0
+    $XPosition = 0
 
-    $7zip = New-Object system.Windows.Forms.CheckBox
-    $7zip.text = "7-Zip"
-    $7zip.width = 220
-    $7zip.location = New-Object System.Drawing.Point(0, 80)
-    $7zip.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    # Add Label Header
+    $placedholderlabel = Add-Control -Text "Placeholder Label" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing
 
-    $malwarebytes = New-Object system.Windows.Forms.CheckBox
-    $malwarebytes.text = "Malwarebytes"
-    $malwarebytes.width = 220
-    $malwarebytes.location = New-Object System.Drawing.Point(0, 100)
-    $malwarebytes.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    # Add CheckBoxes for Apps
+    $placeholderbutton1 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $steam = New-Object system.Windows.Forms.CheckBox
-    $steam.text = "Steam Client"
-    $steam.width = 220
-    $steam.location = New-Object System.Drawing.Point(0, 120)
-    $steam.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $placeholderbutton2 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $discord = New-Object system.Windows.Forms.CheckBox
-    $discord.text = "Discord"
-    $discord.width = 220
-    $discord.location = New-Object System.Drawing.Point(0, 140)
-    $discord.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $placeholderbutton3 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $teamviewer = New-Object system.Windows.Forms.CheckBox
-    $teamviewer.text = "Teamviewer"
-    $teamviewer.width = 220
-    $teamviewer.location = New-Object System.Drawing.Point(0, 160)
-    $teamviewer.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $placeholderbutton4 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $epicgames = New-Object system.Windows.Forms.CheckBox
-    $epicgames.text = "Epic Games Launcher"
-    $epicgames.width = 220
-    $epicgames.location = New-Object System.Drawing.Point(0, 180)
-    $epicgames.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $placeholderbutton5 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $githubdesktop = New-Object system.Windows.Forms.CheckBox
-    $githubdesktop.text = "Github Desktop"
-    $githubdesktop.width = 220
-    $githubdesktop.location = New-Object System.Drawing.Point(0, 200)
-    $githubdesktop.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $placeholderbutton6 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $visualstudiocode = New-Object system.Windows.Forms.CheckBox
-    $visualstudiocode.text = "Visual Studio Code"
-    $visualstudiocode.width = 220
-    $visualstudiocode.location = New-Object System.Drawing.Point(0, 220)
-    $visualstudiocode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $placeholderbutton7 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $qbittorrent = New-Object System.Windows.Forms.CheckBox
-    $qbittorrent.text = "qBittorrent"
-    $qbittorrent.width = 220
-    $qbittorrent.location = New-Object System.Drawing.Point(0, 240)
-    $qbittorrent.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $hibernationmenu = Add-Control -Text "Hibernation Tweaks" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
 
-    $notepad = New-Object System.Windows.Forms.CheckBox
-    $notepad.text = "Notepad++"
-    $notepad.width = 220
-    $notepad.location = New-Object System.Drawing.Point(0, 260)
-    $notepad.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $remhibernation = Add-Control -Text "Disable (No Fast Boot)" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $foxit = New-Object System.Windows.Forms.CheckBox
-    $foxit.text = "Foxit PDF Reader"
-    $foxit.width = 220
-    $foxit.location = New-Object System.Drawing.Point(0, 280)
-    $foxit.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $remhibernationbutfastboot = Add-Control -Text "Reduce (Fast Boot Intact)" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $spotify = New-Object System.Windows.Forms.CheckBox
-    $spotify.text = "Spotify"
-    $spotify.width = 220
-    $spotify.location = New-Object System.Drawing.Point(0, 300)
-    $spotify.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    $restorehibernation = Add-Control -Text "Restore (Default Config)" -X $XPosition -Y $YPosition 
+    $YPosition += $normalspacing
 
-    $ds4windows = New-Object System.Windows.Forms.CheckBox
-    $ds4windows.text = "DS4Windows"
-    $ds4windows.width = 220
-    $ds4windows.location = New-Object System.Drawing.Point(0, 320)
-    $ds4windows.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    #####################
+    ## Panel 5 begins! ##
+    #####################
 
-    $bakkes = New-Object System.Windows.Forms.CheckBox
-    $bakkes.text = "Bakkesmod"
-    $bakkes.width = 220
-    $bakkes.location = New-Object System.Drawing.Point(0, 340)
-    $bakkes.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
+    # Reset position for Panel 5
+    $YPosition = 0
+    $XPosition = 0
 
-    $updatebutton = New-Object system.Windows.Forms.Button
-    $updatebutton.text = "Update Apps"
-    $updatebutton.width = 220
-    $updatebutton.height = 30
-    $updatebutton.location = New-Object System.Drawing.Point(0, 360)
-    $updatebutton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $updatebutton.BackColor = $frontcolor 
-    $updatebutton.ForeColor = $backcolor
-    $updatebutton.FlatStyle = "Flat"
-    $updatebutton.FlatAppearance.MouseOverBackColor = $hovercolor
+    # Add controls with consistent spacing
+    $Mischeader = Add-Control -Text "System Information" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing
 
-    $okbutton = New-Object system.Windows.Forms.Button
-    $okbutton.text = "Install"
-    $okbutton.width = 105
-    $okbutton.height = 30
-    $okbutton.location = New-Object System.Drawing.Point(0, 395)
-    $okbutton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $okbutton.BackColor = $frontcolor 
-    $okbutton.ForeColor = $backcolor
-    $okbutton.FlatStyle = "Flat"
-    $okbutton.FlatAppearance.MouseOverBackColor = $hovercolor
+    $ClearRAMcache = Add-Control -Text "RAM Cache Shortcut" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $resetbutton = New-Object system.Windows.Forms.Button
-    $resetbutton.text = "Reset"
-    $resetbutton.width = 105
-    $resetbutton.height = 30
-    $resetbutton.location = New-Object System.Drawing.Point(115, 395)
-    $resetbutton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $resetbutton.BackColor = $frontcolor 
-    $resetbutton.ForeColor = $backcolor
-    $resetbutton.FlatStyle = "Flat"
-    $resetbutton.FlatAppearance.MouseOverBackColor = $hovercolor
+    $godmode = Add-Control -Text "Godmode Shortcut" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $Mischeader = New-Object system.Windows.Forms.Label
-    $Mischeader.text = "System Information"
-    $Mischeader.AutoSize = $false
-    $Mischeader.width = 220
-    $Mischeader.height = 35
-    $Mischeader.TextAlign = "MiddleCenter"
-    $Mischeader.location = New-Object System.Drawing.Point(0, 10)
-    $Mischeader.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $Mischeader.ForeColor = $frontcolor 
+    $HardwareInfo = Add-Control -Text "Hardware Info" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $ClearRAMcache = New-Object system.Windows.Forms.Button
-    $ClearRAMcache.text = "RAM Cache Shortcut"
-    $ClearRAMcache.width = 220
-    $ClearRAMcache.height = 30
-    $ClearRAMcache.location = New-Object System.Drawing.Point(0, 45)
-    $ClearRAMcache.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $ClearRAMcache.BackColor = $frontcolor 
-    $ClearRAMcache.ForeColor = $backcolor
-    $ClearRAMcache.FlatStyle = "Flat"
-    $ClearRAMcache.FlatAppearance.MouseOverBackColor = $hovercolor
+    $antivirusInfo = Add-Control -Text "Anti-Virus Status" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $godmode = New-Object system.Windows.Forms.Button
-    $godmode.text = "Godmode Shortcut"
-    $godmode.width = 220
-    $godmode.height = 30
-    $godmode.location = New-Object System.Drawing.Point(0, 80)
-    $godmode.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $godmode.BackColor = $frontcolor 
-    $godmode.ForeColor = $backcolor
-    $godmode.FlatStyle = "Flat"
-    $godmode.FlatAppearance.MouseOverBackColor = $hovercolor
+    $SystemInfo = Add-Control -Text "System Info" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $HardwareInfo = New-Object system.Windows.Forms.Button
-    $HardwareInfo.text = "Hardware Info"
-    $HardwareInfo.width = 220
-    $HardwareInfo.height = 30
-    $HardwareInfo.location = New-Object System.Drawing.Point(0, 115)
-    $HardwareInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $HardwareInfo.BackColor = $frontcolor 
-    $HardwareInfo.ForeColor = $backcolor
-    $HardwareInfo.FlatStyle = "Flat"
-    $HardwareInfo.FlatAppearance.MouseOverBackColor = $hovercolor
+    $placeholder7 = Add-Control -Text "Additional Tools" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
 
-    $antivirusInfo = New-Object system.Windows.Forms.Button
-    $antivirusInfo.text = "Anti-Virus Status"
-    $antivirusInfo.width = 220
-    $antivirusInfo.height = 30
-    $antivirusInfo.location = New-Object System.Drawing.Point(0, 150)
-    $antivirusInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $antivirusInfo.BackColor = $frontcolor 
-    $antivirusInfo.ForeColor = $backcolor
-    $antivirusInfo.FlatStyle = "Flat"
-    $antivirusInfo.FlatAppearance.MouseOverBackColor = $hovercolor
+    $placeholder8 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
+    $placeholder9 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $SystemInfo = New-Object system.Windows.Forms.Button
-    $SystemInfo.text = "System Info"
-    $SystemInfo.width = 220
-    $SystemInfo.height = 30
-    $SystemInfo.location = New-Object System.Drawing.Point(0, 185)
-    $SystemInfo.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $SystemInfo.BackColor = $frontcolor 
-    $SystemInfo.ForeColor = $backcolor
-    $SystemInfo.FlatStyle = "Flat"
-    $SystemInfo.FlatAppearance.MouseOverBackColor = $hovercolor
+    $placeholder10 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $placeholder7 = New-Object system.Windows.Forms.Label
-    $placeholder7.text = "Placeholder Header"
-    $placeholder7.AutoSize = $false
-    $placeholder7.width = 220
-    $placeholder7.height = 35
-    $placeholder7.TextAlign = "MiddleCenter"
-    $placeholder7.location = New-Object System.Drawing.Point(0, 220)
-    $placeholder7.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10, [System.Drawing.FontStyle]([System.Drawing.FontStyle]::Bold))
-    $placeholder7.ForeColor = $frontcolor 
+    $selectAppsButton = Add-Control -Text "Application Installer" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
-    $placeholder8 = New-Object system.Windows.Forms.Button
-    $placeholder8.text = "Placeholder"
-    $placeholder8.width = 220
-    $placeholder8.height = 30
-    $placeholder8.location = New-Object System.Drawing.Point(0, 255)
-    $placeholder8.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder8.BackColor = $frontcolor 
-    $placeholder8.ForeColor = $backcolor
-    $placeholder8.FlatStyle = "Flat"
-    $placeholder8.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $placeholder9 = New-Object system.Windows.Forms.Button
-    $placeholder9.text = "Placeholder"
-    $placeholder9.width = 220
-    $placeholder9.height = 30
-    $placeholder9.location = New-Object System.Drawing.Point(0, 290)
-    $placeholder9.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder9.BackColor = $frontcolor 
-    $placeholder9.ForeColor = $backcolor
-    $placeholder9.FlatStyle = "Flat"
-    $placeholder9.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $placeholder10 = New-Object system.Windows.Forms.Button
-    $placeholder10.text = "Placeholder"
-    $placeholder10.width = 220
-    $placeholder10.height = 30
-    $placeholder10.location = New-Object System.Drawing.Point(0, 325)
-    $placeholder10.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $placeholder10.BackColor = $frontcolor 
-    $placeholder10.ForeColor = $backcolor
-    $placeholder10.FlatStyle = "Flat"
-    $placeholder10.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    $selectAppsButton  = New-Object system.Windows.Forms.Button
-    $selectAppsButton.text = "Install Applications"
-    $selectAppsButton.width = 220
-    $selectAppsButton.height = 30
-    $selectAppsButton.location = New-Object System.Drawing.Point(0, 360)
-    $selectAppsButton.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $selectAppsButton.BackColor = $frontcolor 
-    $selectAppsButton.ForeColor = $backcolor
-    $selectAppsButton.FlatStyle = "Flat"
-    $selectAppsButton.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    # Button to Open Customization Form
-    $btnOpenCustomization = New-Object system.Windows.Forms.Button
-    $btnOpenCustomization.text = "Customize About Info"
-    $btnOpenCustomization.width = 220
-    $btnOpenCustomization.height = 30
-    $btnOpenCustomization.location = New-Object System.Drawing.Point(0, 395)
-    $btnOpenCustomization.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 12)
-    $btnOpenCustomization.BackColor = $frontcolor 
-    $btnOpenCustomization.ForeColor = $backcolor
-    $btnOpenCustomization.FlatStyle = "Flat"
-    $btnOpenCustomization.FlatAppearance.MouseOverBackColor = $hovercolor
+    $btnOpenCustomization = Add-Control -Text "Customize About-PC" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
 
     $Panel1.controls.AddRange(@(
             $performancetweaks, #header for the section below
@@ -1164,32 +779,24 @@ Function MakeForm {
             $microsoftstore,
             $cleaning,
             $ultimateclean,
-            $visualtweaks, #header for the section below
+            $visualtweaks,
             $darkmode,
             $lightmode
         ))
 
     $Panel4.controls.AddRange(@(
-            $extras, #header for the section below
-            $bravebrowser,
-            $dropbox,
-            $7zip,
-            $malwarebytes,
-            $teamviewer,
-            $steam,
-            $discord,
-            $epicgames, 
-            $githubdesktop,
-            $visualstudiocode,
-            $qbittorrent,
-            $updatebutton,
-            $okbutton,
-            $resetbutton,
-            $notepad,
-            $foxit,
-            $spotify,
-            $ds4windows,
-            $bakkes
+            $placedholderlabel,
+            $placeholderbutton1,
+            $placeholderbutton2,
+            $placeholderbutton3,
+            $placeholderbutton4,
+            $placeholderbutton5,
+            $placeholderbutton6,
+            $placeholderbutton7,
+            $hibernationmenu,
+            $remhibernation,
+            $remhibernationbutfastboot,
+            $restorehibernation
         ))
 
     $Panel5.controls.AddRange(@(
@@ -1232,8 +839,7 @@ Function MakeForm {
     }  
 
     $selectAppsButton.Add_Click({
-    # Call the function to show the app selection form
-    ShowAppSelectionForm
+        ShowAppSelectionForm
     })
 
 ## Customize About this computer, new form that allows the users to customize default Windows properties within the About this computer section.
@@ -2103,6 +1709,8 @@ public class Wallpaper {
             If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh")) {
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" | Out-Null
             }
+
+            # Disables weather and news widgets
             New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Type DWord -Value 0 -Force
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableFeeds" -Type DWord -Value 0
 
@@ -2132,6 +1740,8 @@ public class Wallpaper {
             $ResultText.text += "Showing all hidden system files and folders... `r`n"
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Type DWord -Value 1
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSuperHidden" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Type DWord -Value 1
 
             # Restart Explorer
             $ResultText.text += "Restarting Explorer for changes to take effect... `r`n"
@@ -4141,365 +3751,28 @@ public class Wallpaper {
             $Form.text = "WinTool by Alerion - Windows Update repaired. Reboot required."
         })
 
-    $resetbutton.Add_Click({
-            $bravebrowser.Checked = $false
-            $dropbox.Checked = $false
-            $7zip.Checked = $false
-            $malwarebytes.Checked = $false
-            $steam.Checked = $false
-            $discord.Checked = $false
-            $teamviewer.Checked = $false
-            $epicgames.Checked = $false
-            $githubdesktop.Checked = $false
-            $visualstudiocode.Checked = $false
-            $qbittorrent.Checked = $false
-            $notepad.Checked = $false
-            $foxit.Checked = $false
-            $spotify.Checked = $false
-            $ds4windows.Checked = $false
-            $bakkes.Checked = $false
-
-            [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-
-            $forcereinstallchoco = [System.Windows.Forms.MessageBox]::Show('Do you also want to force a re-install of Chocolatey?' , "Ready to re-install Chocolatey?" , 4)
-            if ($forcereinstallchoco -eq 'Yes') {
-                # Resets/Removed chocolatey in case of failure.
-                Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-                Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-
-                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-                
-                if (choco list --lo -r -e chocolatey-core.extension) {
-                    $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
-                }
-                else {
-                    choco install chocolatey-core.extension -y -force
-                    $ResultText.text = " Chocolatey Core Extension was installed. `r`n Ready for next task!"
-                }    
-                
-                $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
-            }
+        $remhibernation.Add_Click({
+            $ResultText.text = "Disabling Hibernation file completely..."
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "HibernateEnabledDefault" -Value 0
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "HibernateEnabled" -Value 0
+            cmd.exe /c 'powercfg -h off'
+            $ResultText.text = "Hibernation file removed! `r`n Ready for Next Task!"
         })
 
-    $updatebutton.Add_Click({
-           [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-
-            $chocoupdate = [System.Windows.Forms.MessageBox]::Show('This may take a while, are you sure?' , "Ready to update apps with Chocolatey?" , 4)
-            if ($chocoupdate -eq 'Yes') {
-                $chocoupdate = {
-                    $name = 'Chocolatey is updating all your apps that require an update - Please wait...'
-                    $host.ui.RawUI.WindowTitle = $name
-                    
-                    choco update all -y --force
-                }
-
-                Start-Process cmd.exe -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy ByPass $chocoupdate"
-                $ResultText.text = " Updating all installed applications `r`n Stay tuned until UI is responsive again!"
-            }
+        $remhibernationbutfastboot.Add_Click({
+            $ResultText.text = "Reducing Hibernation file but keeping fastboot..."
+            cmd.exe /c 'powercfg hibernate size 0'
+            $ResultText.text = "Resized hiberfil.sys to allow for fastboot..."
+            cmd.exe /c 'powercfg /h /type reduced'
+            $ResultText.text = "Hibernation file reduced! `r`n Ready for Next Task!"
         })
 
-    $bravepath = Test-Path "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
-    $dropboxpath = Test-Path "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe"
-    $7zippath = Test-Path "C:\Program Files\7-Zip\7z.exe"
-
-   $okbutton.Add_Click({
-
-    if(!(Test-Path "C:\ProgramData\chocolatey")) {
-        $ResultText.text = " Chocolatey is installing! `r`n Stay tuned until UI is responsive again!"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        
-        if (choco list --lo -r -e chocolatey-core.extension) {
-            $ResultText.text = " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
-            Write-Host " Chocolatey Core Extension is already installed. `r`n Ready for next task!"
-        }
-        else {
-            choco install chocolatey-core.extension -y -force
-            Write-Host " Chocolatey Core Extension was installed. `r`n Ready for next task!"
-            $ResultText.text = " Chocolatey Core Extension was installed. `r`n Ready for next task!"
-        }
-
-        $ResultText.text = " Chocolatey was installed! `r`n Ready for next task!"
-    }
-    elseif(Test-Path "C:\ProgramData\chocolatey\choco.exe") {
-        $ResultText.text = " Making sure Chocolatey is up to date! `r`n Stay tuned until UI is responsive again!"
-        choco upgrade chocolatey
-        $ResultText.text = " Chocolatey updated sucessfully! `r`n Ready for next task!"
-    }
-    elseif((Test-Path "C:\ProgramData\chocolatey\lib") -and (!(Test-Path "C:\ProgramData\chocolatey\choco.exe"))) {
-        $ResultText.text = " Files missing, re-installing Chocolatey! `r`n Stay tuned until UI is responsive again!"
-
-         # Resets/Removed chocolatey in case of failure.
-         Remove-Item -Path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-         Remove-Item -Path "C:\ProgramData\ChocolateyHttpCache" -Recurse -Force -ErrorAction SilentlyContinue -Verbose
-
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        choco install chocolatey-core.extension -y -force
-        $ResultText.text = " Chocolatey Re-install completed! `r`n Ready for next task!"
-    }
-
-        if ($bravebrowser.Checked) {
-            if ($bravepath) {
-                $ResultText.text = " Brave Browser was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install brave -y --force
-                
-                if (choco list --lo -r -e brave) {
-                    $ResultText.text = " Brave Browser has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Brave Browser failed to install. `r`n Ready for next task!"
-                }    
-            }
-        }
-
-        if ($dropbox.Checked) {
-            if ($dropboxpath) {
-                $ResultText.text = " Dropbox was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install dropbox -y --force
-
-                if (choco list --lo -r -e dropbox) {
-                    $ResultText.text = " Dropbox has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Dropbox failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($7zip.Checked) {
-            if ($7zippath) {
-                $ResultText.text = " 7-Zip was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install 7zip -y --force
-
-                if (choco list --lo -r -e 7zip) {
-                    $ResultText.text = " 7zip has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " 7zip failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($malwarebytes.Checked) {  
-            if (Test-Path "C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe") {
-                $ResultText.text = " Malwarebytes was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install Malwarebytes -y --force
-
-                if (choco list --lo -r -e Malwarebytes) {
-                    $ResultText.text = " Malwarebytes has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Malwarebytes failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($steam.Checked) {
-            if (Test-Path "C:\Program Files (x86)\Steam\steam.exe") {
-                $ResultText.text = " Steam Client was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install steam -y --force
-
-                if (choco list --lo -r -e steam) {
-                    $ResultText.text = " Steam has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Steam failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($discord.Checked) {
-            if (Test-Path ~\AppData\Local\Discord\update.exe) {
-                $ResultText.text = " Discord was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install discord -y --force
-
-                if (choco list --lo -r -e discord) {
-                    $ResultText.text = " Discord has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Discord failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($teamviewer.Checked) {
-            if (Test-Path "C:\Program Files\TeamViewer\TeamViewer.exe") {
-                $ResultText.text = " Teamviewer was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install teamviewer -y --force
-
-                if (choco list --lo -r -e teamviewer) {
-                        $ResultText.text = " Teamviewer has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Teamviewer failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($epicgames.Checked) {
-            if (Test-Path "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe") {
-                $ResultText.text = " Epic Games Launcher was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install epicgameslauncher -y --force
-                
-                if (choco list --lo -r -e epicgameslauncher) {
-                    $ResultText.text = " Epic Games Launcher has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Epic Games Launcher failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($githubdesktop.Checked) {
-            if (Test-Path ~\AppData\Local\GitHubDesktop\GitHubDesktop.exe) {
-                $ResultText.text = " Github Desktop was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install github-desktop -y --force
-                
-                if (choco list --lo -r -e github-desktop) {
-                    $ResultText.text = " Github Desktop has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Github Desktop failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($visualstudiocode.Checked) {
-            if (Test-Path "~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code\") {
-                $ResultText.text = " Visual Studio Code was already Installed.  `r`n Ready for next task!"
-            }  
-            else {
-                choco install vscode -y --force
-                
-                if (choco list --lo -r -e vscode) {
-                    $ResultText.text = " Visual Studio Code has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Visual Studio Code failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($qbittorrent.Checked) {
-            if (Test-Path "C:\Program Files\qBittorrent\qbittorrent.exe") {
-                $ResultText.text = " qBittorrent was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install qbittorrent -y --force
-                
-                if (choco list --lo -r -e qbittorrent) {
-                    $ResultText.text = " qBittorrent has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " qBittorrent failed to install. `r`n Ready for next task!"
-                } 
-            }
-        }
-
-        if ($notepad.Checked) {
-            if (Test-Path "C:\Program Files\Notepad++\notepad++.exe") {
-                $ResultText.text = " Notepad++ is was already Installed. `r`n Ready for next task!"
-                
-            }
-            else {
-                choco install notepadplusplus -y --force
-
-                if (choco list --lo -r -e notepadplusplus) {
-                    $ResultText.text = " Notepad++ has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Notepad++ failed to install. `r`n Ready for next task!"
-                }    
-            }
-        }
-
-        if ($foxit.Checked) {
-            if (Test-Path "C:\Program Files (x86)\Foxit Software\Foxit PDF Reader\FoxitPDFReader.exe") {
-                $ResultText.text = " Foxit PDF Reader was already Installed. `r`n Ready for next task!"
-            }  
-            else {
-                choco install foxitreader -y --force
-                
-                if (choco list --lo -r -e foxitreader) {
-                    $ResultText.text = " Foxit PDF Reader has been installed. `r`n Ready for next task!"
-                }
-                else {
-                    $ResultText.text = " Foxit PDF Reader failed to install. `r`n Ready for next task!"
-                }
-            }
-        }
-
-            if ($spotify.Checked) {
-                if (Test-Path "~\AppData\Roaming\Spotify\Spotify.exe") {
-                    $ResultText.text = " Spotify was already Installed. `r`n Ready for next task!"
-                }  
-                else {
-                    choco install spotify -y --force
-
-                    if (choco list --lo -r -e spotify) {
-                        $ResultText.text = " Spotify has been installed. `r`n Ready for next task!"
-                    }
-                    else {
-                        $ResultText.text = " Spotify failed to install. `r`n Ready for next task!"
-                    }
-                }
-            }
-
-            if ($ds4windows.Checked) {
-                if (Test-Path "C:\ProgramData\chocolatey\bin\DS4Windows.exe") {
-                    $ResultText.text = " DS4 Windows was already Installed. `r`n Ready for next task!"
-                }  
-                else {
-                    choco install ds4windows -y --force
-                    
-                    if (choco list --lo -r -e ds4windows) {
-                        $ResultText.text = " DS4 Windows has been installed. `r`n Ready for next task!"
-                    }
-                    else {
-                        $ResultText.text = " DS4 Windows failed to install. `r`n Ready for next task!"
-                    }
-                }
-            }
-
-            if ($bakkes.Checked) {
-
-                if (Test-Path "$pathDocuments\Bakkesmod.zip") {
-                    $ResultText.text = " Bakkesmod Already Downloaded. `r`n Ready for next task!"
-                }  
-                else {
-                    # Download bakkesmod from source destination
-                    Invoke-WebRequest "https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip" -OutFile "$pathDocuments\Bakkesmod.zip"
-                    
-                    # Install 7zip module
-                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-                    Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
-                    Install-Module -Name 7Zip4PowerShell -Force
-
-                    # Extract file
-                    $sourcefile = "$pathDocuments\Bakkesmod.zip"
-                    Expand-7Zip -ArchiveFileName $sourcefile -TargetPath "~\AppData\Roaming\"
-
-                    $ResultText.text = " Bakkesmod has been downloaded and extracted, files can be found in your $pathDocuments. `r`n Stay tuned until UI is responsive again!"
-                }
-            }
+        $restorehibernation.Add_Click({
+            $ResultText.text = "Restoring Hibernation feature..."
+            cmd.exe /c 'powercfg /h /type full'
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "HibernateEnabledDefault" -Value 1
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "HibernateEnabled" -Value 1
+            $ResultText.text = "Hibernation file restored, please reboot! `r`n Ready for Next Task!"
         })
 
         $ClearRAMcache.Add_Click({
