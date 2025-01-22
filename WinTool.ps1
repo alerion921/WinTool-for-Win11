@@ -83,15 +83,27 @@ function ShowAppSelectionForm {
     $appSelectionForm = New-Object System.Windows.Forms.Form
     $appSelectionForm.Text = "Select Applications to Install"
     $appSelectionForm.StartPosition = "CenterScreen"
-    $appSelectionForm.Size = New-Object System.Drawing.Size(1000, 1000)
 
-    # Helper function to create bordered panels for categories
-    function CreateCategoryPanel($category, $startX, $startY, $width) {
+    # Dynamically adjust size based on screen resolution
+    $screenWidth = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width
+    $screenHeight = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height
+    $appSelectionForm.Size = New-Object System.Drawing.Size([math]::Min($screenWidth * 0.8, 805), [math]::Min($screenHeight * 0.8, 600))
+
+    # Create a flow layout panel for dynamic arrangement
+    $flowLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+    $flowLayoutPanel.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $flowLayoutPanel.AutoScroll = $true
+    $flowLayoutPanel.WrapContents = $true
+    $flowLayoutPanel.FlowDirection = [System.Windows.Forms.FlowDirection]::LeftToRight
+    $appSelectionForm.Controls.Add($flowLayoutPanel)
+
+    # Helper function to create a scrollable panel for each category
+    function CreateCategoryPanel($category) {
         $panel = New-Object System.Windows.Forms.Panel
         $panel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
-        $panel.Size = New-Object System.Drawing.Size($width, 260)
-        $panel.Location = New-Object System.Drawing.Point($startX, $startY)
+        $panel.Size = New-Object System.Drawing.Size(250, 300) # Fixed panel width, adjustable height
 
+        # Add category label
         $label = New-Object System.Windows.Forms.Label
         $label.Text = $category.Name
         $label.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
@@ -99,10 +111,11 @@ function ShowAppSelectionForm {
         $label.Location = New-Object System.Drawing.Point(5, 5)
         $panel.Controls.Add($label)
 
-        $currentX = 10
-        $currentY = 30
-        $maxRow = 3
-        $colWidth = 200
+        # Create a sub-panel for checkboxes with scrolling
+        $checkboxPanel = New-Object System.Windows.Forms.Panel
+        $checkboxPanel.AutoScroll = $true
+        $checkboxPanel.Size = New-Object System.Drawing.Size(240, 260)
+        $checkboxPanel.Location = New-Object System.Drawing.Point(5, 25)
 
         foreach ($app in $category.Applications) {
             $isInstalled = IsAppInstalled -AppName $app.AppName -AdditionalPaths $app.AdditionalPaths
@@ -110,19 +123,15 @@ function ShowAppSelectionForm {
             $checkbox = New-Object System.Windows.Forms.CheckBox
             $checkbox.Text = $app.Name
             $checkbox.Enabled = -not $isInstalled
-            $checkbox.Size = New-Object System.Drawing.Size(180, 20)
-            $checkbox.Location = New-Object System.Drawing.Point($currentX, $currentY)
-            $panel.Controls.Add($checkbox)
-
-            $currentX += $colWidth
-            if ($currentX + $colWidth -ge $width) {
-                $currentX = 10
-                $currentY += 25
-            }
+            $checkbox.AutoSize = $true
+            $checkbox.Dock = [System.Windows.Forms.DockStyle]::Top
+            $checkboxPanel.Controls.Add($checkbox)
         }
 
+        $panel.Controls.Add($checkboxPanel)
         return $panel
     }
+
             $categories = @(
                 @{ Name = "Browsers"; Applications = @(
                     @{ Name = "Brave Browser"; AppName = "BraveSoftware"; WingetID = "Brave.Brave"; AdditionalPaths = @("Brave-Browser\Application") },
@@ -220,56 +229,45 @@ function ShowAppSelectionForm {
                 )}
             )
 
-            $startX = 20
-            $startY = 20
-            $panelWidth = 300
-            $panelHeight = 260
-            $gapX = 20
-            $gapY = 20
-            $currentRow = 0
-            $maxRow = 3
-    
-            foreach ($category in $categories) {
-                $panel = CreateCategoryPanel $category ($startX + ($currentRow * ($panelWidth + $gapX))) $startY $panelWidth
-                $appSelectionForm.Controls.Add($panel)
-        
-                $currentRow += 1
-                if ($currentRow -ge $maxRow) {
-                    $currentRow = 0
-                    $startY += ($panelHeight + $gapY) # Adjust based on new panel height and desired spacing
-                }
-            }
-    
-        # Add progress bar and buttons
-        $progressBar = New-Object System.Windows.Forms.ProgressBar
-        $progressBar.Size = New-Object System.Drawing.Size(940, 20)
-        $progressBar.Location = New-Object System.Drawing.Point(20, ($startY + 10))
-        $progressBar.Minimum = 0
-        $progressBar.Maximum = $categories.Applications.Count
-        $appSelectionForm.Controls.Add($progressBar)
-    
-        $okButton = New-Object System.Windows.Forms.Button
-        $okButton.Text = "Install Selected"
-        $okButton.Size = New-Object System.Drawing.Size(200, 30)
-        $okButton.Location = New-Object System.Drawing.Point(20, ($startY + 50))
-        $okButton.Add_Click({
-            $selectedApps = $checkboxes | Where-Object { $_.Checked }
-            InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
-        })
-        $appSelectionForm.Controls.Add($okButton)
-    
-        $cancelButton = New-Object System.Windows.Forms.Button
-        $cancelButton.Text = "Cancel / Exit"
-        $cancelButton.Size = New-Object System.Drawing.Size(200, 30)
-        $cancelButton.Location = New-Object System.Drawing.Point(240, ($startY + 50))
-        $cancelButton.Add_Click({
-            $appSelectionForm.Close()
-        })
-        $appSelectionForm.Controls.Add($cancelButton)
-    
-        [void]$appSelectionForm.ShowDialog()
+     # Populate categories
+    foreach ($category in $categories) {
+        $categoryPanel = CreateCategoryPanel $category
+        $flowLayoutPanel.Controls.Add($categoryPanel)
     }
-        
+
+    # Add buttons and progress bar
+    $progressBar = New-Object System.Windows.Forms.ProgressBar
+    $progressBar.Size = New-Object System.Drawing.Size(700, 20)
+    $progressBar.Dock = [System.Windows.Forms.DockStyle]::Bottom
+    $appSelectionForm.Controls.Add($progressBar)
+
+    $buttonPanel = New-Object System.Windows.Forms.Panel
+    $buttonPanel.Dock = [System.Windows.Forms.DockStyle]::Bottom
+    $buttonPanel.Height = 40
+
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Text = "Install Selected"
+    $okButton.Size = New-Object System.Drawing.Size(120, 30)
+    $okButton.Location = New-Object System.Drawing.Point(10, 5)
+    $okButton.Add_Click({
+        $selectedApps = $checkboxes | Where-Object { $_.Checked }
+        InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
+    })
+    $buttonPanel.Controls.Add($okButton)
+
+    $cancelButton = New-Object System.Windows.Forms.Button
+    $cancelButton.Text = "Cancel / Exit"
+    $cancelButton.Size = New-Object System.Drawing.Size(120, 30)
+    $cancelButton.Location = New-Object System.Drawing.Point(140, 5)
+    $cancelButton.Add_Click({
+        $appSelectionForm.Close()
+    })
+    $buttonPanel.Controls.Add($cancelButton)
+
+    $appSelectionForm.Controls.Add($buttonPanel)
+
+    [void]$appSelectionForm.ShowDialog()
+}
 
 function InstallApplications {
     param (
