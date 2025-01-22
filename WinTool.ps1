@@ -1028,13 +1028,29 @@ Function MakeForm {
     $additionalthingslabel = Add-Control -Text "Additional Things" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
     $YPosition += $labelspacing2
 
-    $removelinuxicon = Add-Control -Text "Remove WSL Linux Icon" -X $XPosition -Y $YPosition
+    $linuxRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+    $linuxIconKey = "{B2B4A4D1-2754-4140-A2EB-9A76D9D7CDC6}"
+    $linuxIconValue = (Get-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue).$linuxIconKey
+
+    if ($linuxIconValue -eq $null) {
+        $removelinuxicon = Add-Control -Text "Hide WSL Linux Icon" -X $XPosition -Y $YPosition
+    } else {
+        $removelinuxicon = Add-Control -Text "Show WSL Linux Icon" -X $XPosition -Y $YPosition
+    }
     $YPosition += $normalspacing
 
     $eventlog = Add-Control -Text "BSOD Event Log" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $windowsnapping = Add-Control -Text "Disable Window Snapping" -X $XPosition -Y $YPosition
+    $registryPath = "HKCU:\Control Panel\Desktop"
+    $snapValue = (Get-ItemProperty -Path $registryPath -Name "WindowArrangementActive" -ErrorAction SilentlyContinue).WindowArrangementActive
+    $uglyTopMenuValue = (Get-ItemProperty -Path $registryPath -Name "EnableSnapAssistFlyout" -ErrorAction SilentlyContinue).EnableSnapAssistFlyout
+
+    if (($snapValue -eq "0") -or ($uglyTopMenuValue -eq "0")) {
+        $windowsnapping = Add-Control -Text "Enable Window Snapping" -X $XPosition -Y $YPosition
+    } else {
+        $windowsnapping = Add-Control -Text "Disable Window Snapping" -X $XPosition -Y $YPosition
+    }
     $YPosition += $normalspacing
 
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
@@ -1354,13 +1370,25 @@ public class Wallpaper {
     $customForm.ShowDialog()
 })
 
-    $removelinuxicon.add_click({
-        $ResultText.text = "Removing Linux WSL Desktop Icon... `r`n"
-        New-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" -Name "{B2B4A4D1-2754-4140-A2EB-9A76D9D7CDC6}" -Type DWord -Value 1 -Force
-        $ResultText.text = "Linux WSL Desktop Icon removed... `r`n"
-        $ResultText.text += "To re-enable the icon delete this key in the registry: `r`n"
-        $ResultText.text += "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel\{B2B4A4D1-2754-4140-A2EB-9A76D9D7CDC6} `r`n"
-    })
+$removelinuxicon.Add_Click({
+    $ResultText.text = "Toggling Linux WSL Desktop Icon... `r`n"
+    try {
+        # Check if the key exists
+        $linuxIconValue = (Get-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue).$linuxIconKey
+
+        if ($linuxIconValue -eq $null) {
+            # Create the key if it does not exist
+            New-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -Type DWord -Value 1 -Force | Out-Null
+            $ResultText.text += "Linux WSL Desktop Icon hidden. `r`n"
+        } else {
+            # Remove the key if it exists
+            Remove-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue
+            $ResultText.text += "Linux WSL Desktop Icon restored. `r`n"
+        }
+    } catch {
+        $ResultText.text += "An error occurred: $_`r`n"
+    }
+})
 
     $eventlog.add_click({
         # Ensure ResultText exists
@@ -1403,26 +1431,42 @@ $query = @"
 
     $windowsnapping.Add_Click({
         $registryPath = "HKCU:\Control Panel\Desktop"
-        $snapValue = "WindowArrangementActive"
-        $uglyTopMenuValue = "EnableSnapAssistFlyout"
+        $snapKey = "WindowArrangementActive"
+        $flyoutKey = "EnableSnapAssistFlyout"
+    
+        $snapValue = (Get-ItemProperty -Path $registryPath -Name $snapKey -ErrorAction SilentlyContinue).$snapKey
+        $flyoutValue = (Get-ItemProperty -Path $registryPath -Name $flyoutKey -ErrorAction SilentlyContinue).$flyoutKey
+    
+        $newValue = if (($snapValue -eq "0") -or ($flyoutValue -eq "0")) { "1" } else { "0" }
     
         try {
-            # Check if the registry key exists
+            # Check if the registry path exists
             if (Test-Path $registryPath) {
-                # Set the value to disable window snapping
-                Set-ItemProperty -Path $registryPath -Name $snapValue -Value "0"
-                $ResultText.text += "Window snapping has been disabled. Log out and out to apply!`r`n"
+                # Update or create WindowArrangementActive key
+                Set-ItemProperty -Path $registryPath -Name $snapKey -Value $newValue -Force
     
-                # Set the value to disable the top menu for window positions
-                New-ItemProperty -Path $registryPath -Name $uglyTopMenuValue -Value "0" -PropertyType DWORD -Force | Out-Null
-                $ResultText.text += "The top menu for window positions has been disabled. Log out and out to apply!`r`n"
+                # Handle EnableSnapAssistFlyout key
+                if ($newValue -eq "0") {
+                    if ($flyoutValue -ne $null) {
+                        Remove-ItemProperty -Path $registryPath -Name $flyoutKey -ErrorAction SilentlyContinue
+                    }
+                } else {
+                    if ($flyoutValue -eq $null) {
+                        New-ItemProperty -Path $registryPath -Name $flyoutKey -Value $newValue -PropertyType String -Force | Out-Null
+                    } else {
+                        Set-ItemProperty -Path $registryPath -Name $flyoutKey -Value $newValue -Force
+                    }
+                }
+    
+                $state = if ($newValue -eq "0") { "disabled" } else { "enabled" }
+                $ResultText.text = "Window snapping and the top menu for window positions have been $state. Log out and log in to apply!`r`n"
             } else {
                 $ResultText.text += "Registry path not found: $registryPath`r`n"
             }
         } catch {
-             $ResultText.text += "An error occurred: $_`r`n"
+            $ResultText.text += "An error occurred: $_`r`n"
         }
-    })
+    })    
 
 # Event handler for DNS selection
 $changedns.add_SelectedIndexChanged({
