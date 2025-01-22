@@ -2555,121 +2555,105 @@ function Show-BatteryOptimizationForm {
     # Create a new form for Battery Optimization
     $batteryForm = New-Object System.Windows.Forms.Form
     $batteryForm.Text = "Battery Optimization"
-    $batteryForm.Size = New-Object System.Drawing.Size(400, 550)
+    $batteryForm.Size = New-Object System.Drawing.Size(400, 400)
     $batteryForm.StartPosition = "CenterScreen"
-
-    # Current Settings Label
-    $currentSettingsLabel = New-Object System.Windows.Forms.Label
-    $currentSettingsLabel.Text = "Current Settings:"
-    $currentSettingsLabel.Location = New-Object System.Drawing.Point(10, 10)
-    $currentSettingsLabel.Size = New-Object System.Drawing.Size(360, 20)
-    $batteryForm.Controls.Add($currentSettingsLabel)
-
-    # Textbox for Current Settings
-    $currentSettingsBox = New-Object System.Windows.Forms.TextBox
-    $currentSettingsBox.Multiline = $true
-    $currentSettingsBox.ReadOnly = $true
-    $currentSettingsBox.ScrollBars = "Vertical"
-    $currentSettingsBox.Location = New-Object System.Drawing.Point(10, 40)
-    $currentSettingsBox.Size = New-Object System.Drawing.Size(360, 90)
-    $batteryForm.Controls.Add($currentSettingsBox)
-
-    # Populate Current Settings
-    try {
-        # Get active power plan
-        $activePlan = powercfg -getactivescheme | ForEach-Object { ($_ -split '\s{2,}')[1] }
-        $currentSettingsBox.Text += "Active Power Plan: $activePlan`r`n"
-
-        # Get service statuses
-        $diagTrackStatus = (Get-Service -Name "DiagTrack" -ErrorAction SilentlyContinue).Status
-        $sysMainStatus = (Get-Service -Name "SysMain" -ErrorAction SilentlyContinue).Status
-        $currentSettingsBox.Text += "DiagTrack Service: $diagTrackStatus`r`n"
-        $currentSettingsBox.Text += "SysMain Service: $sysMainStatus`r`n"
-
-        # Get display timeout
-        try {
-            $powercfgOutput = powercfg -query SCHEME_CURRENT SUB_VIDEO VIDEOIDLE
-            $timeoutLine = $powercfgOutput | Where-Object { $_ -match "Current AC Power Setting Index" }
-            $displayTimeout = $timeoutLine -replace ".*Current AC Power Setting Index:\s*", "" -as [int]
-            $displayTimeoutMinutes = $displayTimeout / 60
-            $currentSettingsBox.Text += "Display Timeout: $displayTimeoutMinutes minutes`r`n"
-        } catch {
-            $currentSettingsBox.Text += "Failed to retrieve display timeout: $($_.Exception.Message)`r`n"
-        }
-    } catch {
-        $currentSettingsBox.Text += "Failed to retrieve some settings: $($_.Exception.Message)`r`n"
-    }
 
     # Dropdown for Power Plan
     $powerPlanLabel = New-Object System.Windows.Forms.Label
     $powerPlanLabel.Text = "Select Power Plan:"
-    $powerPlanLabel.Location = New-Object System.Drawing.Point(10, 140)
+    $powerPlanLabel.Location = New-Object System.Drawing.Point(10, 10)
     $batteryForm.Controls.Add($powerPlanLabel)
 
+    # Dropdown for Power Plan
     $powerPlanDropdown = New-Object System.Windows.Forms.ComboBox
-    $powerPlanDropdown.Location = New-Object System.Drawing.Point(10, 170)
+    $powerPlanDropdown.Location = New-Object System.Drawing.Point(10, 40)
     $powerPlanDropdown.Size = New-Object System.Drawing.Size(360, 20)
     $powerPlanDropdown.Items.Add("Power Saver")
     $powerPlanDropdown.Items.Add("Balanced")
     $powerPlanDropdown.Items.Add("High Performance")
     $powerPlanDropdown.Items.Add("Highest Performance (Custom)")
-    $powerPlanDropdown.SelectedIndex = 0  # Default to Power Saver
     $batteryForm.Controls.Add($powerPlanDropdown)
 
-    # Checkbox for disabling unnecessary services
-    $servicesLabel = New-Object System.Windows.Forms.Label
-    $servicesLabel.Text = "Select Services to Disable:"
-    $servicesLabel.Location = New-Object System.Drawing.Point(10, 210)
-    $servicesLabel.Size = New-Object System.Drawing.Size(200, 20)
-    $batteryForm.Controls.Add($servicesLabel)
+    # Set the current power plan directly
+    $activePlanOutput = powercfg -getactivescheme
+    $activePlan = ($activePlanOutput -replace ".*GUID: ", "").Trim()  # Extract GUID and trim whitespace
 
+    switch ($activePlan) {
+        "a1841308-3541-4fab-bc81-f71556f20b4a" { $powerPlanDropdown.SelectedIndex = 0 }  # Power Saver
+        "381b4222-f694-41f0-9685-ff5bb260df2e" { $powerPlanDropdown.SelectedIndex = 1 }  # Balanced
+        "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" { $powerPlanDropdown.SelectedIndex = 2 }  # High Performance
+        "e6a66b66-d6df-666d-aa66-66f66666eb66" { $powerPlanDropdown.SelectedIndex = 3 }  # Highest Performance (Custom)
+        default { $powerPlanDropdown.SelectedIndex = -1 }  # Unknown plan
+    }
+
+   # Checkbox for disabling unnecessary services
     $diagTrackCheckbox = New-Object System.Windows.Forms.CheckBox
     $diagTrackCheckbox.Text = "Disable Diagnostics Tracking (DiagTrack)"
-    $diagTrackCheckbox.Location = New-Object System.Drawing.Point(10, 240)
+    $diagTrackCheckbox.Location = New-Object System.Drawing.Point(10, 80)
     $diagTrackCheckbox.Size = New-Object System.Drawing.Size(300, 20)
-    $diagTrackCheckbox.Checked = $true
     $batteryForm.Controls.Add($diagTrackCheckbox)
 
     $sysMainCheckbox = New-Object System.Windows.Forms.CheckBox
     $sysMainCheckbox.Text = "Disable Superfetch (SysMain)"
-    $sysMainCheckbox.Location = New-Object System.Drawing.Point(10, 270)
+    $sysMainCheckbox.Location = New-Object System.Drawing.Point(10, 110)
     $sysMainCheckbox.Size = New-Object System.Drawing.Size(300, 20)
-    $sysMainCheckbox.Checked = $true
     $batteryForm.Controls.Add($sysMainCheckbox)
 
-    # Input for Display Timeout
+    # Update the DiagTrack checkbox
+    try {
+        $diagTrackStatus = (Get-Service -Name "DiagTrack" -ErrorAction SilentlyContinue).Status
+        if ($diagTrackStatus -eq "Running") {
+            $diagTrackCheckbox.Checked = $true
+        } else {
+            $diagTrackCheckbox.Checked = $false
+        }
+    } catch {
+        $diagTrackCheckbox.Checked = $false  # Default to unchecked if the service does not exist
+    }
+
+    # Update the SysMain checkbox
+    try {
+        $sysMainStatus = (Get-Service -Name "SysMain" -ErrorAction SilentlyContinue).Status
+        if ($sysMainStatus -eq "Running") {
+            $sysMainCheckbox.Checked = $true
+        } else {
+            $sysMainCheckbox.Checked = $false
+        }
+    } catch {
+        $sysMainCheckbox.Checked = $false  # Default to unchecked if the service does not exist
+    }
+
+    # Numeric input for display timeout
     $displayTimeoutLabel = New-Object System.Windows.Forms.Label
     $displayTimeoutLabel.Text = "Set Display Timeout (minutes):"
-    $displayTimeoutLabel.Location = New-Object System.Drawing.Point(10, 310)
-    $displayTimeoutLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $displayTimeoutLabel.Location = New-Object System.Drawing.Point(10, 150)
     $batteryForm.Controls.Add($displayTimeoutLabel)
 
+   # Numeric input for display timeout
     $displayTimeoutInput = New-Object System.Windows.Forms.NumericUpDown
-    $displayTimeoutInput.Location = New-Object System.Drawing.Point(10, 340)
+    $displayTimeoutInput.Location = New-Object System.Drawing.Point(10, 180)
     $displayTimeoutInput.Size = New-Object System.Drawing.Size(100, 20)
     $displayTimeoutInput.Minimum = 0
     $displayTimeoutInput.Maximum = 60
-    $displayTimeoutInput.Value = 5  # Default to 5 minutes
     $batteryForm.Controls.Add($displayTimeoutInput)
 
-    # Textbox for displaying results
-    $resultTextBox = New-Object System.Windows.Forms.TextBox
-    $resultTextBox.Multiline = $true
-    $resultTextBox.ReadOnly = $true
-    $resultTextBox.ScrollBars = "Vertical"
-    $resultTextBox.Location = New-Object System.Drawing.Point(10, 370)
-    $resultTextBox.Size = New-Object System.Drawing.Size(360, 80)
-    $batteryForm.Controls.Add($resultTextBox)
+    # Set the display timeout directly
+    $powercfgOutput = powercfg -query SCHEME_CURRENT SUB_VIDEO VIDEOIDLE
+    $timeoutLine = $powercfgOutput | Where-Object { $_ -match "Current AC Power Setting Index" }
+    if ($timeoutLine) {
+        $displayTimeout = $timeoutLine -replace ".*Current AC Power Setting Index:\s*", "" -as [int]
+        $displayTimeoutInput.Value = $displayTimeout / 60
+    } else {
+        $displayTimeoutInput.Value = 5  # Default to 5 minutes if not retrievable
+    }
 
     # Optimize Button
     $optimizeButton = New-Object System.Windows.Forms.Button
     $optimizeButton.Text = "Optimize Battery"
-    $optimizeButton.Location = New-Object System.Drawing.Point(10, 460)
+    $optimizeButton.Location = New-Object System.Drawing.Point(10, 220)
     $optimizeButton.Size = New-Object System.Drawing.Size(150, 30)
     $optimizeButton.Add_Click({
         try {
-            $resultTextBox.Text = ""
-
             # Apply selected power plan
             $selectedPlan = $powerPlanDropdown.SelectedItem
             $powerPlanGUID = switch ($selectedPlan) {
@@ -2677,47 +2661,39 @@ function Show-BatteryOptimizationForm {
                 "Balanced" { "381b4222-f694-41f0-9685-ff5bb260df2e" }
                 "High Performance" { "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" }
                 "Highest Performance (Custom)" {
-                    # Download and enable custom power plan
-                    $resultTextBox.Text += "Enabling Highest Performance Power Plan...`r`n"
-                    $powerPlanUrl = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow"
-                    $powerPlanPath = "$Env:windir\system32\Bitsum-Highest-Performance.pow"
-                    Invoke-WebRequest -Uri $powerPlanUrl -OutFile $powerPlanPath -ErrorAction SilentlyContinue
-                    powercfg -import $powerPlanPath e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-                    powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-                    "e6a66b66-d6df-666d-aa66-66f66666eb66"
+                    # Check if the custom power plan already exists
+                    $existingPlan = powercfg -list | Select-String "e6a66b66-d6df-666d-aa66-66f66666eb66"
+                    if ($existingPlan) {
+                        "e6a66b66-d6df-666d-aa66-66f66666eb66"  # Skip downloading
+                    } else {
+                        # Download and apply the custom power plan
+                        $powerPlanUrl = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow"
+                        $powerPlanPath = "$Env:windir\system32\Bitsum-Highest-Performance.pow"
+                        Invoke-WebRequest -Uri $powerPlanUrl -OutFile $powerPlanPath -ErrorAction SilentlyContinue
+                        powercfg -import $powerPlanPath e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
+                        "e6a66b66-d6df-666d-aa66-66f66666eb66"
+                    }
                 }
             }
-            if ($selectedPlan -ne "Highest Performance (Custom)") {
-                $resultTextBox.Text += "Setting power plan to $selectedPlan...`r`n"
-                Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/setactive $powerPlanGUID"
-            }
+            Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/setactive $powerPlanGUID"
 
-            # Disable selected services
+            # Apply service changes
             if ($diagTrackCheckbox.Checked) {
-                $resultTextBox.Text += "Disabling DiagTrack service...`r`n"
-                Set-Service -Name "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue
                 Stop-Service -Name "DiagTrack" -Force -ErrorAction SilentlyContinue
+                Set-Service -Name "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue
             }
             if ($sysMainCheckbox.Checked) {
-                $resultTextBox.Text += "Disabling SysMain service...`r`n"
-                Set-Service -Name "SysMain" -StartupType Disabled -ErrorAction SilentlyContinue
                 Stop-Service -Name "SysMain" -Force -ErrorAction SilentlyContinue
+                Set-Service -Name "SysMain" -StartupType Disabled -ErrorAction SilentlyContinue
             }
 
             # Apply display timeout
-            $displayTimeout = $displayTimeoutInput.Value
-            if ($displayTimeout -eq 0) {
-                $resultTextBox.Text += "Disabling display timeout...`r`n"
-                Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/change monitor-timeout-dc 0"
-            } else {
-                $resultTextBox.Text += "Setting display timeout to $displayTimeout minutes...`r`n"
-                Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/change monitor-timeout-dc $displayTimeout"
-            }
+            $timeoutValue = $displayTimeoutInput.Value
+            powercfg -change monitor-timeout-dc $timeoutValue
 
-            # Success message
-            $resultTextBox.Text += "Battery optimization applied successfully!`r`n"
+            [System.Windows.Forms.MessageBox]::Show("Battery optimization applied successfully!", "Success")
         } catch {
-            $resultTextBox.Text += "An error occurred during optimization: $($_.Exception.Message)`r`n"
+            [System.Windows.Forms.MessageBox]::Show("Failed to apply optimization: $($_.Exception.Message)", "Error")
         }
     })
     $batteryForm.Controls.Add($optimizeButton)
@@ -2725,7 +2701,7 @@ function Show-BatteryOptimizationForm {
     # Cancel Button
     $cancelButton = New-Object System.Windows.Forms.Button
     $cancelButton.Text = "Cancel"
-    $cancelButton.Location = New-Object System.Drawing.Point(180, 460)
+    $cancelButton.Location = New-Object System.Drawing.Point(180, 220)
     $cancelButton.Size = New-Object System.Drawing.Size(150, 30)
     $cancelButton.Add_Click({
         $batteryForm.Close()
@@ -2739,6 +2715,7 @@ function Show-BatteryOptimizationForm {
 $batteryButton.Add_Click({
     Show-BatteryOptimizationForm
 })
+
 
 $forcenorkeyboard.Add_Click({
     $ResultText.text = "Removing secondary keyboard settings and forcing nb-NO to default..."
