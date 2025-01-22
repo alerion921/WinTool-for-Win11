@@ -835,6 +835,9 @@ Function MakeForm {
     $securitypatches = Add-Control -Text "Patch Security (Caution!)" -X $XPosition -Y $YPosition -Height $largebuttonsize
     $YPosition += $largespacing
 
+    $selectAppsButton = Add-Control -Text "Application Installer" -X $XPosition -Y $YPosition
+    $YPosition += $normalspacing
+    
     if ($oneDrivePackages) { 
         $onedrive = Add-Control -Text "Remove OneDrive" -X $XPosition -Y $YPosition
     } else {
@@ -849,11 +852,7 @@ Function MakeForm {
     }
     $YPosition += $normalspacing
 
-    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
-        $removehomegallery = Add-Control -Text "Remove Home and Gallery" -X $XPosition -Y $YPosition
-    } else {
-        $removehomegallery = Add-Control -Text "Restore Home and Gallery" -X $XPosition -Y $YPosition
-    }
+
 
     #####################
     ## Panel 2 begins! ##
@@ -1038,7 +1037,11 @@ Function MakeForm {
     $windowsnapping = Add-Control -Text "Disable Window Snapping" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $selectAppsButton = Add-Control -Text "Application Installer" -X $XPosition -Y $YPosition
+    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
+        $removehomegallery = Add-Control -Text "Remove Home and Gallery" -X $XPosition -Y $YPosition
+    } else {
+        $removehomegallery = Add-Control -Text "Restore Home and Gallery" -X $XPosition -Y $YPosition
+    }
     $YPosition += $normalspacing
 
     $btnOpenCustomization = Add-Control -Text "Customize About-PC" -X $XPosition -Y $YPosition
@@ -1051,7 +1054,7 @@ Function MakeForm {
             $gamingtweaks,
             $securitypatches, 
             $onedrive,
-            $removehomegallery,
+            $selectAppsButton,
             $killedge
         ))
 
@@ -1111,7 +1114,7 @@ Function MakeForm {
             $removelinuxicon,
             $eventlog,
             $windowsnapping,
-            $selectAppsButton,
+            $removehomegallery,
             $btnOpenCustomization
         ))
 
@@ -1399,10 +1402,6 @@ $query = @"
     })
 
     $windowsnapping.Add_Click({
-        $ResultText.text = "Restarting Explorer to apply changes...`r`n"
-        Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
-        taskkill /F /IM explorer.exe
-    
         $registryPath = "HKCU:\Control Panel\Desktop"
         $snapValue = "WindowArrangementActive"
         $uglyTopMenuValue = "EnableSnapAssistFlyout"
@@ -1412,19 +1411,17 @@ $query = @"
             if (Test-Path $registryPath) {
                 # Set the value to disable window snapping
                 Set-ItemProperty -Path $registryPath -Name $snapValue -Value "0"
-                $ResultText.text += "Window snapping has been disabled.`r`n"
+                $ResultText.text += "Window snapping has been disabled. Log out and out to apply!`r`n"
     
                 # Set the value to disable the top menu for window positions
                 New-ItemProperty -Path $registryPath -Name $uglyTopMenuValue -Value "0" -PropertyType DWORD -Force | Out-Null
-                $ResultText.text += "The top menu for window positions has been disabled.`r`n"
+                $ResultText.text += "The top menu for window positions has been disabled. Log out and out to apply!`r`n"
             } else {
                 $ResultText.text += "Registry path not found: $registryPath`r`n"
             }
         } catch {
              $ResultText.text += "An error occurred: $_`r`n"
         }
-    
-        Start-Process explorer.exe
     })
 
 # Event handler for DNS selection
@@ -4094,7 +4091,7 @@ $forcenorkeyboard.Add_Click({
             $OSname = (Get-WmiObject Win32_OperatingSystem).caption
             $OSbit = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
             $OSver = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
-            $localIP = (Get-NetIPAddress | Where-Object{ $_.AddressFamily -eq "IPv4" -and !($_.IPAddress -match "169") -and !($_.IPAddress -match "127") }).IPAddress -join ', '
+            $localIP = (Get-NetIPAddress | Where-Object{ $_.AddressFamily -eq "IPv4" -and !($_.IPAddress -match "169") -and !($_.IPAddress -match "127") }).IPAddress -join ' Alt: '
             $externalIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
             $winLicence = (Get-WmiObject -query "select * from SoftwareLicensingService").OA3xOriginalProductKey
             $accountUsername = (Get-ChildItem Env:USERNAME).Value
@@ -4104,14 +4101,14 @@ $forcenorkeyboard.Add_Click({
 
         
             $ResultText.text =
-                "Username: "        + $accountUsername + "`r`n `r`n" + 
-                "Computer Name: "   + $computerName + "`r`n `r`n" + 
-                "Domain: "          + $domainName + "`r`n `r`n" + 
-                "Local IP: "        + $localIP + "`r`n `r`n" + 
-                "External IP: "     + $externalIP + "`r`n `r`n" + 
-                "Windows Licence: " + $winLicence + "`r`n `r`n" + 
-                "OS: "              + $OSname + "`r`n `r`n" + 
-                "OS Build: "        + $OSver + "`r`n `r`n" +   
+                "Username: "        + $accountUsername + "`r`n" + 
+                "Computer Name: "   + $computerName + "`r`n" + 
+                "Domain: "          + $domainName + "`r`n" + 
+                "Local IP: "        + $localIP + "`r`n" + 
+                "External IP: "     + $externalIP + "`r`n" + 
+                "Windows Licence: " + $winLicence + "`r`n" + 
+                "OS: "              + $OSname + "`r`n" + 
+                "OS Build: "        + $OSver + "`r`n" +   
                 "CPU Architecture: "+ $OSbit + "`r`n"
         })
 
@@ -4137,21 +4134,17 @@ $forcenorkeyboard.Add_Click({
              
 
             $ResultText.text =
-                "Manufacturer: "            + $computerBrand + "`r`n" + 
+                "Manufacturer: "            + $computerBrand + " - " + "Bios: "                    + $biosName + " - " + "Bios Description: "        + $biosDesc + "`r`n" +
                 "Model: "                   + $model + "`r`n" + 
-                "Serial Number: "           + $biosSerial + "`r`n `r`n" + 
+                "Serial Number: "           + $biosSerial + "`r`n" + 
                 "CPU: "                     + $cpuName + "`r`n" + 
-                "CPU Cores: "               + $cores + "`r`n `r`n" +
+                "CPU Cores: "               + $cores + "`r`n" +
                 "GPU Name: "                + $GPUname + "`r`n" + 
-                "GPU Description: "         + $GPUdescription + "`r`n `r`n" + 
+                "GPU Description: "         + $GPUdescription + "`r`n" + 
 
-                "Total RAM: "               + $TotMem + "`r`n `r`n" + 
+                "Total RAM: "               + $TotMem + "`r`n" + 
                 "OS Disk Size: "            + [Math]::Round($Disk.Size / 1GB) + " GB `r`n" +  
-                "OS Disk Free Space: "      + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n `r`n" +
-                "Bios: "                    + $biosName + "`r`n" +
-                "Bios Description: "        + $biosDesc + "`r`n"
-                
-    
+                "OS Disk Free Space: "      + [Math]::Round($Disk.Freespace / 1GB) + " GB `r`n"
         })
     
         $antivirusInfo.Add_Click({
