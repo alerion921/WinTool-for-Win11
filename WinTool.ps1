@@ -1,12 +1,12 @@
 # Import the ShowWindow function from user32.dll to manipulate the PowerShell window state.
 # This allows us to hide the PowerShell console window.
-$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+#$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
 
 # Add the ShowWindow method to the PowerShell runtime as a .NET class.
-add-type -name win -member $HidePowershellWindow -namespace native
+#add-type -name win -member $HidePowershellWindow -namespace native
 
 # Retrieve the current process's main window handle and hide it (state = 0).
-[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
+#[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
 # Enable the use of Windows Forms for potential GUI elements (not used in this script, but prepares for it).
 Add-Type -AssemblyName System.Windows.Forms
@@ -55,6 +55,7 @@ function IsAppInstalled {
         [string]$AppName,
         [array]$AdditionalPaths = @()
     )
+
     # Base paths to check
     $basePaths = @(
         "C:\Program Files\$AppName",
@@ -66,12 +67,27 @@ function IsAppInstalled {
     # Include additional paths specific to certain applications
     $allPaths = $basePaths + $AdditionalPaths
 
-    # Check each path
+    # Check each path for traditional apps
     foreach ($path in $allPaths) {
         if (Test-Path $path) {
             return $true
         }
     }
+
+    # Check for UWP apps using Get-AppxPackage with stricter matching
+    try {
+        $installedPackages = Get-AppxPackage
+        foreach ($package in $installedPackages) {
+            # Match AppName against the Name property (case-insensitive exact match)
+            if ($package.Name -ieq $AppName -or $package.PackageFullName -like "*$AppName*") {
+                return $true
+            }
+        }
+    } catch {
+        Write-Warning "Failed to query UWP apps: $_"
+    }
+
+    # If no match is found
     return $false
 }
 
@@ -79,6 +95,9 @@ function ShowAppSelectionForm {
     $frontcolor = [System.Drawing.ColorTranslator]::FromHtml("#182C36")
     $backcolor  = [System.Drawing.ColorTranslator]::FromHtml("#5095B5")
     $hovercolor = [System.Drawing.ColorTranslator]::FromHtml("#346075")
+
+    # Array to store checkbox references
+    $checkboxes = @()
 
     $appSelectionForm = New-Object System.Windows.Forms.Form
     $appSelectionForm.Text = "Select Applications to Install"
@@ -100,11 +119,10 @@ function ShowAppSelectionForm {
     $flowLayoutPanel.FlowDirection = [System.Windows.Forms.FlowDirection]::LeftToRight
     $appSelectionForm.Controls.Add($flowLayoutPanel)
 
-    # Helper function to create a scrollable panel for each category
     function CreateCategoryPanel($category) {
         $panel = New-Object System.Windows.Forms.Panel
         $panel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
-        $panel.Size = New-Object System.Drawing.Size(250, 300) # Fixed panel width, adjustable height
+        $panel.Size = New-Object System.Drawing.Size(250, 300)
 
         # Add category label
         $label = New-Object System.Windows.Forms.Label
@@ -114,7 +132,7 @@ function ShowAppSelectionForm {
         $label.Location = New-Object System.Drawing.Point(5, 5)
         $panel.Controls.Add($label)
 
-        # Create a sub-panel for checkboxes with scrolling
+        # Create a sub-panel for checkboxes
         $checkboxPanel = New-Object System.Windows.Forms.Panel
         $checkboxPanel.AutoScroll = $true
         $checkboxPanel.Size = New-Object System.Drawing.Size(240, 260)
@@ -127,14 +145,20 @@ function ShowAppSelectionForm {
             $checkbox.Text = $app.Name
             $checkbox.Enabled = -not $isInstalled
             $checkbox.AutoSize = $true
+            $checkbox.Tag = $app # Store app details in the Tag property
             $checkbox.Dock = [System.Windows.Forms.DockStyle]::Top
             $checkboxPanel.Controls.Add($checkbox)
+
+            # Add checkbox to global array
+            $script:checkboxes += $checkbox
+
+            # Debugging output
+            Write-Host "Added checkbox for: $($app.Name) (Enabled: $($checkbox.Enabled))"
         }
 
         $panel.Controls.Add($checkboxPanel)
         return $panel
     }
-
             $categories = @(
                 @{ Name = "Browsers"; Applications = @(
                     @{ Name = "Brave Browser"; AppName = "BraveSoftware"; WingetID = "Brave.Brave"; AdditionalPaths = @("Brave-Browser\Application") },
@@ -232,7 +256,7 @@ function ShowAppSelectionForm {
                 )}
             )
 
-     # Populate categories
+    # Populate categories
     foreach ($category in $categories) {
         $categoryPanel = CreateCategoryPanel $category
         $flowLayoutPanel.Controls.Add($categoryPanel)
@@ -253,7 +277,43 @@ function ShowAppSelectionForm {
     $okButton.Size = New-Object System.Drawing.Size(120, 30)
     $okButton.Location = New-Object System.Drawing.Point(10, 5)
     $okButton.Add_Click({
-        $selectedApps = $checkboxes | Where-Object { $_.Checked }
+        # Ensure Winget is available before proceeding
+        if (-not (EnsureWinget)) {
+            return
+        }
+    
+        # Dynamically collect selected applications from the flow layout panel
+        $selectedApps = @()
+    
+        foreach ($control in $flowLayoutPanel.Controls) {
+            if ($control -is [System.Windows.Forms.Panel]) {
+                foreach ($subControl in $control.Controls) {
+                    if ($subControl -is [System.Windows.Forms.Panel]) {
+                        foreach ($checkbox in $subControl.Controls) {
+                            if ($checkbox -is [System.Windows.Forms.CheckBox] -and $checkbox.Checked) {
+                                $selectedApps += $checkbox.Tag
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+        if ($selectedApps.Count -eq 0) {
+            [System.Windows.Forms.MessageBox]::Show(
+                "No applications selected for installation.",
+                "No Selection",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+    
+        # Debugging output
+        Write-Host "Selected apps for installation:"
+        $selectedApps | ForEach-Object { Write-Host " - $($_.Name)" }
+    
+        # Install selected applications
         InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
     })
     $buttonPanel.Controls.Add($okButton)
