@@ -883,28 +883,48 @@ Function MakeForm {
     $resetnetwork = Add-Control -Text "Reset Network" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
+    $additionalthingslabel = Add-Control -Text "Additional Things" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $YPosition += $labelspacing2
+
     $forcenorkeyboard = Add-Control -Text "Force NO/NB Language" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
     $dualboottime = Add-Control -Text "Set Time to UTC" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $oldmenu = Add-Control -Text "Old Menus" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
-    $YPosition += $labelspacing2
+    $linuxRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+    $linuxIconKey = "{B2B4A4D1-2754-4140-A2EB-9A76D9D7CDC6}"
+    $linuxIconValue = (Get-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue).$linuxIconKey
 
-    $ncpa = Add-Control -Text "Network Panel" -X $XPosition -Y $YPosition
+    if ($linuxIconValue -eq $null) {
+        $removelinuxicon = Add-Control -Text "Hide WSL Linux Icon" -X $XPosition -Y $YPosition
+    } else {
+        $removelinuxicon = Add-Control -Text "Show WSL Linux Icon" -X $XPosition -Y $YPosition
+    }
     $YPosition += $normalspacing
 
-    $oldcontrolpanel = Add-Control -Text "Control Panel" -X $XPosition -Y $YPosition
+    $eventlog = Add-Control -Text "BSOD Event Log" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $oldsoundpanel = Add-Control -Text "Sound Panel" -X $XPosition -Y $YPosition
+    $registryPath = "HKCU:\Control Panel\Desktop"
+    $snapValue = (Get-ItemProperty -Path $registryPath -Name "WindowArrangementActive" -ErrorAction SilentlyContinue).WindowArrangementActive
+    $uglyTopMenuValue = (Get-ItemProperty -Path $registryPath -Name "EnableSnapAssistFlyout" -ErrorAction SilentlyContinue).EnableSnapAssistFlyout
+
+    if (($snapValue -eq "0") -or ($uglyTopMenuValue -eq "0")) {
+        $windowsnapping = Add-Control -Text "Enable Window Snapping" -X $XPosition -Y $YPosition
+    } else {
+        $windowsnapping = Add-Control -Text "Disable Window Snapping" -X $XPosition -Y $YPosition
+    }
     $YPosition += $normalspacing
 
-    $oldsystempanel = Add-Control -Text "System Panel" -X $XPosition -Y $YPosition
+    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
+        $removehomegallery = Add-Control -Text "Disable Home and Gallery" -X $XPosition -Y $YPosition
+    } else {
+        $removehomegallery = Add-Control -Text "Restore Home and Gallery" -X $XPosition -Y $YPosition
+    }
     $YPosition += $normalspacing
 
-    $oldpower = Add-Control -Text "Power Panel" -X $XPosition -Y $YPosition
+    $btnOpenCustomization = Add-Control -Text "Customize About-PC" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
  
     #####################
@@ -961,29 +981,29 @@ Function MakeForm {
     $XPosition = 0
 
     # Add Label Header
-    $placedholderlabel = Add-Control -Text "Placeholder Label" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $placedholderlabel = Add-Control -Text "Diverse" -X $XPosition -Y $firstlabelstartpos -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
     $YPosition += $labelspacing
 
     # Add CheckBoxes for Apps
-    $placeholderbutton1 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $batteryButton = Add-Control -Text "Battery Manager" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $placeholderbutton2 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $startupmanager = Add-Control -Text "Startup Manager" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $placeholderbutton3 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition
+    $privacysettings = Add-Control -Text "Privacy Settings" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $placeholderbutton4 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $displaysettings = Add-Control -Text "Display Settings" -X $XPosition -Y $YPosition 
     $YPosition += $normalspacing
 
-    $placeholderbutton5 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $windowsfeaturemanager = Add-Control -Text "Feature Manager" -X $XPosition -Y $YPosition 
     $YPosition += $normalspacing
 
-    $placeholderbutton6 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $backupandrestore = Add-Control -Text "Backup/Restore Manager" -X $XPosition -Y $YPosition 
     $YPosition += $normalspacing
 
-    $placeholderbutton7 = Add-Control -Text "Placeholder" -X $XPosition -Y $YPosition 
+    $kbmtweaks = Add-Control -Text "Keyboard & Mouse Tweaks" -X $XPosition -Y $YPosition 
     $YPosition += $normalspacing
 
     $hibernationmenu = Add-Control -Text "Hibernation Tweaks" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
@@ -1025,43 +1045,24 @@ Function MakeForm {
     $SystemInfo = Add-Control -Text "System Info" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $additionalthingslabel = Add-Control -Text "Additional Things" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
+    $oldmenu = Add-Control -Text "Old Menus" -X $XPosition -Y $YPosition -Height $labelheight -FontSize $labelfontsize -ControlType "Label"
     $YPosition += $labelspacing2
 
-    $linuxRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
-    $linuxIconKey = "{B2B4A4D1-2754-4140-A2EB-9A76D9D7CDC6}"
-    $linuxIconValue = (Get-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue).$linuxIconKey
-
-    if ($linuxIconValue -eq $null) {
-        $removelinuxicon = Add-Control -Text "Hide WSL Linux Icon" -X $XPosition -Y $YPosition
-    } else {
-        $removelinuxicon = Add-Control -Text "Show WSL Linux Icon" -X $XPosition -Y $YPosition
-    }
+    $ncpa = Add-Control -Text "Network Panel" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $eventlog = Add-Control -Text "BSOD Event Log" -X $XPosition -Y $YPosition
+    $oldcontrolpanel = Add-Control -Text "Control Panel" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $registryPath = "HKCU:\Control Panel\Desktop"
-    $snapValue = (Get-ItemProperty -Path $registryPath -Name "WindowArrangementActive" -ErrorAction SilentlyContinue).WindowArrangementActive
-    $uglyTopMenuValue = (Get-ItemProperty -Path $registryPath -Name "EnableSnapAssistFlyout" -ErrorAction SilentlyContinue).EnableSnapAssistFlyout
-
-    if (($snapValue -eq "0") -or ($uglyTopMenuValue -eq "0")) {
-        $windowsnapping = Add-Control -Text "Enable Window Snapping" -X $XPosition -Y $YPosition
-    } else {
-        $windowsnapping = Add-Control -Text "Disable Window Snapping" -X $XPosition -Y $YPosition
-    }
+    $oldsoundpanel = Add-Control -Text "Sound Panel" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}") {
-        $removehomegallery = Add-Control -Text "Remove Home and Gallery" -X $XPosition -Y $YPosition
-    } else {
-        $removehomegallery = Add-Control -Text "Restore Home and Gallery" -X $XPosition -Y $YPosition
-    }
+    $oldsystempanel = Add-Control -Text "System Panel" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
 
-    $btnOpenCustomization = Add-Control -Text "Customize About-PC" -X $XPosition -Y $YPosition
+    $oldpower = Add-Control -Text "Power Panel" -X $XPosition -Y $YPosition
     $YPosition += $normalspacing
+   
 
     $Panel1.controls.AddRange(@(
             $performancetweaks, #header for the section below
@@ -1076,14 +1077,14 @@ Function MakeForm {
 
     $Panel2.controls.AddRange(@(
             $fixes,
-            $ncpa,
-            $oldcontrolpanel,
-            $oldsoundpanel,
-            $oldsystempanel,
-            $oldpower,
+            $additionalthingslabel,
+            $removelinuxicon,
+            $eventlog,
+            $windowsnapping,
+            $removehomegallery,
+            $btnOpenCustomization,
             $errorscanner,
             $changedns,
-            $oldmenu,
             $resetnetwork,
             $forcenorkeyboard,
             $dualboottime
@@ -1106,13 +1107,13 @@ Function MakeForm {
 
     $Panel4.controls.AddRange(@(
             $placedholderlabel,
-            $placeholderbutton1,
-            $placeholderbutton2,
-            $placeholderbutton3,
-            $placeholderbutton4,
-            $placeholderbutton5,
-            $placeholderbutton6,
-            $placeholderbutton7,
+            $batteryButton,
+            $startupmanager,
+            $privacysettings,
+            $displaysettings,
+            $windowsfeaturemanager,
+            $backupandrestore,
+            $kbmtweaks,
             $hibernationmenu,
             $remhibernation,
             $remhibernationbutfastboot,
@@ -1126,12 +1127,12 @@ Function MakeForm {
             $HardwareInfo,
             $antivirusInfo,
             $godmode,
-            $additionalthingslabel,
-            $removelinuxicon,
-            $eventlog,
-            $windowsnapping,
-            $removehomegallery,
-            $btnOpenCustomization
+            $ncpa,
+            $oldcontrolpanel,
+            $oldsoundpanel,
+            $oldsystempanel,
+            $oldpower,
+            $oldmenu
         ))
 
     # Check if Winget is installed
@@ -1188,6 +1189,504 @@ Enjoy this free tool and make the most of it!
         # Refresh the desktop to apply changes
         RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters
     }
+
+    function Show-PrivacySettingsForm {
+        # Create a new form for Privacy Settings
+        $privacyForm = New-Object System.Windows.Forms.Form
+        $privacyForm.Text = "Privacy Settings Tweaks"
+        $privacyForm.Size = New-Object System.Drawing.Size(500, 350)
+        $privacyForm.StartPosition = "CenterScreen"
+    
+        # Label for instructions
+        $label = New-Object System.Windows.Forms.Label
+        $label.Text = "Adjust Windows privacy settings below:"
+        $label.Location = New-Object System.Drawing.Point(10, 10)
+        $label.Size = New-Object System.Drawing.Size(400, 20)
+        $privacyForm.Controls.Add($label)
+    
+        # Checkbox for telemetry
+        $telemetryCheckBox = New-Object System.Windows.Forms.CheckBox
+        $telemetryCheckBox.Text = "Disable Telemetry"
+        $telemetryCheckBox.Location = New-Object System.Drawing.Point(10, 40)
+        $telemetryCheckBox.Size = New-Object System.Drawing.Size(200, 20)
+        $telemetryCheckBox.Checked = $true  # Default value
+        $privacyForm.Controls.Add($telemetryCheckBox)
+    
+        # Checkbox for ad tracking
+        $adTrackingCheckBox = New-Object System.Windows.Forms.CheckBox
+        $adTrackingCheckBox.Text = "Disable Ad Tracking"
+        $adTrackingCheckBox.Location = New-Object System.Drawing.Point(10, 70)
+        $adTrackingCheckBox.Size = New-Object System.Drawing.Size(200, 20)
+        $adTrackingCheckBox.Checked = $true  # Default value
+        $privacyForm.Controls.Add($adTrackingCheckBox)
+    
+        # Checkbox for diagnostics
+        $diagnosticsCheckBox = New-Object System.Windows.Forms.CheckBox
+        $diagnosticsCheckBox.Text = "Set Diagnostics to Basic"
+        $diagnosticsCheckBox.Location = New-Object System.Drawing.Point(10, 100)
+        $diagnosticsCheckBox.Size = New-Object System.Drawing.Size(200, 20)
+        $diagnosticsCheckBox.Checked = $true  # Default value
+        $privacyForm.Controls.Add($diagnosticsCheckBox)
+    
+        # Save Button
+        $saveButton = New-Object System.Windows.Forms.Button
+        $saveButton.Text = "Apply Changes"
+        $saveButton.Location = New-Object System.Drawing.Point(10, 150)
+        $saveButton.Size = New-Object System.Drawing.Size(120, 30)
+        $saveButton.Add_Click({
+            # Apply changes based on checkboxes
+            if ($telemetryCheckBox.Checked) {
+                Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Value 0 -ErrorAction SilentlyContinue
+                $ResultText.text += "Telemetry disabled.`r`n"
+            }
+    
+            if ($adTrackingCheckBox.Checked) {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -ErrorAction SilentlyContinue
+                $ResultText.text += "Ad tracking disabled.`r`n"
+            }
+    
+            if ($diagnosticsCheckBox.Checked) {
+                Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Value 1 -ErrorAction SilentlyContinue
+                $ResultText.text += "Diagnostics set to Basic.`r`n"
+            }
+    
+            [System.Windows.Forms.MessageBox]::Show("Privacy settings applied successfully.", "Success")
+        })
+        $privacyForm.Controls.Add($saveButton)
+    
+        # Show the form
+        $privacyForm.ShowDialog()
+    }
+
+    # Link the function to the Privacy Settings button click
+$privacysettings.Add_Click({
+    Show-PrivacySettingsForm
+})
+
+function Show-DisplayOptimizationForm {
+
+    $ResultText.text = ""
+    # Create a new form for Display Optimization
+    $displayForm = New-Object System.Windows.Forms.Form
+    $displayForm.Text = "Display Optimization"
+    $displayForm.Size = New-Object System.Drawing.Size(600, 400)
+    $displayForm.StartPosition = "CenterScreen"
+
+    # Label for instructions
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Optimize your display settings below:"
+    $label.Location = New-Object System.Drawing.Point(10, 10)
+    $label.Size = New-Object System.Drawing.Size(400, 20)
+    $displayForm.Controls.Add($label)
+
+    # Checkbox for HDR
+    $hdrCheckBox = New-Object System.Windows.Forms.CheckBox
+    $hdrCheckBox.Text = "Enable HDR"
+    $hdrCheckBox.Location = New-Object System.Drawing.Point(10, 40)
+    $hdrCheckBox.Size = New-Object System.Drawing.Size(200, 20)
+    $hdrCheckBox.Checked = $false  # Default value
+    $displayForm.Controls.Add($hdrCheckBox)
+
+    # Resolution dropdown
+    $resolutionLabel = New-Object System.Windows.Forms.Label
+    $resolutionLabel.Text = "Select Resolution:"
+    $resolutionLabel.Location = New-Object System.Drawing.Point(10, 80)
+    $resolutionLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $displayForm.Controls.Add($resolutionLabel)
+
+    $resolutionDropdown = New-Object System.Windows.Forms.ComboBox
+    $resolutionDropdown.Location = New-Object System.Drawing.Point(10, 110)
+    $resolutionDropdown.Size = New-Object System.Drawing.Size(250, 20)
+    $displayForm.Controls.Add($resolutionDropdown)
+
+    # Refresh rate dropdown
+    $refreshRateLabel = New-Object System.Windows.Forms.Label
+    $refreshRateLabel.Text = "Select Refresh Rate (Hz):"
+    $refreshRateLabel.Location = New-Object System.Drawing.Point(10, 150)
+    $refreshRateLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $displayForm.Controls.Add($refreshRateLabel)
+
+    $refreshRateDropdown = New-Object System.Windows.Forms.ComboBox
+    $refreshRateDropdown.Location = New-Object System.Drawing.Point(10, 180)
+    $refreshRateDropdown.Size = New-Object System.Drawing.Size(250, 20)
+    $displayForm.Controls.Add($refreshRateDropdown)
+
+    # Populate Resolutions and Refresh Rates
+    $ResultText.text += "Fetching display configurations...`r`n"
+
+    # Query supported resolutions
+    $resolutions = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes |
+                   ForEach-Object {
+                       $_.VideoModeDescription
+                   }
+
+    if ($resolutions.Count -gt 0) {
+        $resolutions | Sort-Object | ForEach-Object {
+            $resolutionDropdown.Items.Add($_)
+        }
+        $ResultText.text += "Resolutions fetched successfully.`r`n"
+    } else {
+        $ResultText.text += "Failed to fetch resolutions.`r`n"
+    }
+
+    # Query refresh rates
+    $refreshRates = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes |
+                    ForEach-Object {
+                        $_.RefreshRate
+                    } | Select-Object -Unique | Sort-Object
+
+    if ($refreshRates.Count -gt 0) {
+        $refreshRates | ForEach-Object {
+            $refreshRateDropdown.Items.Add($_)
+        }
+        $ResultText.text += "Refresh rates fetched successfully.`r`n"
+    } else {
+        $ResultText.text += "Failed to fetch refresh rates.`r`n"
+    }
+
+    # Reset Button
+    $resetButton = New-Object System.Windows.Forms.Button
+    $resetButton.Text = "Reset Display Settings"
+    $resetButton.Location = New-Object System.Drawing.Point(10, 220)
+    $resetButton.Size = New-Object System.Drawing.Size(150, 30)
+    $resetButton.Add_Click({
+        Write-Host "Resetting display settings to default..."
+        Start-Process -NoNewWindow -FilePath "powershell" -ArgumentList "-Command DisplayReset-Defaults"
+        $ResultText.text += "Display settings reset to default.`r`n"
+        [System.Windows.Forms.MessageBox]::Show("Display settings reset successfully.", "Success")
+    })
+    $displayForm.Controls.Add($resetButton)
+
+    # Apply Button
+    $applyButton = New-Object System.Windows.Forms.Button
+    $applyButton.Text = "Apply Changes"
+    $applyButton.Location = New-Object System.Drawing.Point(10, 270)
+    $applyButton.Size = New-Object System.Drawing.Size(150, 30)
+    $applyButton.Add_Click({
+        # Apply HDR setting
+        if ($hdrCheckBox.Checked) {
+            Write-Host "Enabling HDR..."
+            Start-Process -NoNewWindow -FilePath "powershell" -ArgumentList "-Command Set-DisplayHDR -Enable"
+            $ResultText.text += "HDR enabled.`r`n"
+        } else {
+            Write-Host "Disabling HDR..."
+            Start-Process -NoNewWindow -FilePath "powershell" -ArgumentList "-Command Set-DisplayHDR -Disable"
+            $ResultText.text += "HDR disabled.`r`n"
+        }
+
+        # Apply resolution setting
+        $selectedResolution = $resolutionDropdown.SelectedItem
+        Write-Host "Setting resolution to $selectedResolution..."
+        Start-Process -NoNewWindow -FilePath "powershell" -ArgumentList "-Command Set-DisplayResolution -Resolution '$selectedResolution'"
+        $ResultText.text += "Resolution set to $selectedResolution.`r`n"
+
+        # Apply refresh rate setting
+        $selectedRefreshRate = $refreshRateDropdown.SelectedItem
+        Write-Host "Setting refresh rate to $selectedRefreshRate Hz..."
+        Start-Process -NoNewWindow -FilePath "powershell" -ArgumentList "-Command Set-DisplayRefreshRate -Rate $selectedRefreshRate"
+        $ResultText.text += "Refresh rate set to $selectedRefreshRate Hz.`r`n"
+
+        [System.Windows.Forms.MessageBox]::Show("Display settings applied successfully.", "Success")
+    })
+    $displayForm.Controls.Add($applyButton)
+
+    # Show the form
+    $displayForm.ShowDialog()
+}
+# Link the function to the Display Optimization button click
+$displaysettings.Add_Click({
+    Show-DisplayOptimizationForm
+})
+
+function Show-WindowsFeatureManagerForm {
+    # Create a new form for Windows Feature Management
+    $featureForm = New-Object System.Windows.Forms.Form
+    $featureForm.Text = "Windows Feature Manager"
+    $featureForm.Size = New-Object System.Drawing.Size(600, 400)
+    $featureForm.StartPosition = "CenterScreen"
+
+    # Label for instructions
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Enable or disable Windows features below:"
+    $label.Location = New-Object System.Drawing.Point(10, 10)
+    $label.Size = New-Object System.Drawing.Size(400, 20)
+    $featureForm.Controls.Add($label)
+
+    # Checkbox List for Windows Features
+    $checkedListBox = New-Object System.Windows.Forms.CheckedListBox
+    $checkedListBox.Location = New-Object System.Drawing.Point(10, 40)
+    $checkedListBox.Size = New-Object System.Drawing.Size(560, 250)
+    $checkedListBox.CheckOnClick = $true
+    $featureForm.Controls.Add($checkedListBox)
+
+    # Populate the list with available features
+    $features = Get-WindowsOptionalFeature -Online
+    foreach ($feature in $features) {
+        $isChecked = $feature.State -eq "Enabled"
+        $checkedListBox.Items.Add($feature.FeatureName, $isChecked)
+    }
+
+    # Apply Button
+    $applyButton = New-Object System.Windows.Forms.Button
+    $applyButton.Text = "Apply Changes"
+    $applyButton.Location = New-Object System.Drawing.Point(10, 310)
+    $applyButton.Size = New-Object System.Drawing.Size(150, 30)
+    $applyButton.Add_Click({
+        # Loop through the checked items and apply changes
+        foreach ($item in $checkedListBox.Items) {
+            $isChecked = $checkedListBox.GetItemChecked($checkedListBox.Items.IndexOf($item))
+            if ($isChecked -and ($features | Where-Object { $_.FeatureName -eq $item }).State -ne "Enabled") {
+                Write-Host "Enabling $item..."
+                Enable-WindowsOptionalFeature -FeatureName $item -Online -NoRestart
+                $ResultText.text += "$item has been enabled.`r`n"
+            } elseif (-not $isChecked -and ($features | Where-Object { $_.FeatureName -eq $item }).State -ne "Disabled") {
+                Write-Host "Disabling $item..."
+                Disable-WindowsOptionalFeature -FeatureName $item -Online -NoRestart
+                $ResultText.text += "$item has been disabled.`r`n"
+            }
+        }
+        [System.Windows.Forms.MessageBox]::Show("Windows features updated successfully. Restart may be required.", "Success")
+    })
+    $featureForm.Controls.Add($applyButton)
+
+    # Cancel Button
+    $cancelButton = New-Object System.Windows.Forms.Button
+    $cancelButton.Text = "Cancel"
+    $cancelButton.Location = New-Object System.Drawing.Point(180, 310)
+    $cancelButton.Size = New-Object System.Drawing.Size(150, 30)
+    $cancelButton.Add_Click({
+        $featureForm.Close()
+    })
+    $featureForm.Controls.Add($cancelButton)
+
+    # Show the form
+    $featureForm.ShowDialog()
+}
+
+$windowsfeaturemanager.Add_Click({
+    Show-WindowsFeatureManagerForm
+})
+
+function Show-BackupRestoreManagerForm {
+    # Create a new form for Backup and Restore Manager
+    $backupForm = New-Object System.Windows.Forms.Form
+    $backupForm.Text = "Backup and Restore Manager"
+    $backupForm.Size = New-Object System.Drawing.Size(500, 300)
+    $backupForm.StartPosition = "CenterScreen"
+
+    # Label for instructions
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Manage your system backups and restore points:"
+    $label.Location = New-Object System.Drawing.Point(10, 10)
+    $label.Size = New-Object System.Drawing.Size(400, 20)
+    $backupForm.Controls.Add($label)
+
+    # Button to Create Restore Point
+    $createButton = New-Object System.Windows.Forms.Button
+    $createButton.Text = "Create Restore Point"
+    $createButton.Location = New-Object System.Drawing.Point(10, 50)
+    $createButton.Size = New-Object System.Drawing.Size(200, 30)
+    $createButton.Add_Click({
+        try {
+            Write-Host "Creating system restore point..."
+            $ResultText.text += "Creating system restore point...`r`n"
+
+            # Use WMI to create a system restore point
+            $restorePointDescription = "Manual Restore Point"
+            $result = (Get-WmiObject -List Win32_ShadowCopy).Create("$restorePointDescription")
+
+            if ($result.ReturnValue -eq 0) {
+                $ResultText.text += "System restore point created successfully.`r`n"
+                [System.Windows.Forms.MessageBox]::Show("Restore point created successfully.", "Success")
+            } else {
+                $ResultText.text += "Failed to create restore point. Error code: $($result.ReturnValue)`r`n"
+                [System.Windows.Forms.MessageBox]::Show("Failed to create restore point. Error code: $($result.ReturnValue)", "Error")
+            }
+        } catch {
+            $ResultText.text += "Error creating restore point: $($_.Exception.Message)`r`n"
+            [System.Windows.Forms.MessageBox]::Show("Error creating restore point: $($_.Exception.Message)", "Error")
+        }
+    })
+    $backupForm.Controls.Add($createButton)
+
+    # Button to Restore from a Restore Point
+    $restoreButton = New-Object System.Windows.Forms.Button
+    $restoreButton.Text = "Restore from Restore Point"
+    $restoreButton.Location = New-Object System.Drawing.Point(10, 100)
+    $restoreButton.Size = New-Object System.Drawing.Size(200, 30)
+    $restoreButton.Add_Click({
+        try {
+            Write-Host "Fetching restore points..."
+            $ResultText.text += "Fetching restore points...`r`n"
+
+            # Fetch restore points using WMI
+            $restorePoints = Get-CimInstance -Namespace "root/default" -ClassName "SystemRestore"
+            if ($restorePoints.Count -eq 0) {
+                $ResultText.text += "No restore points available.`r`n"
+                [System.Windows.Forms.MessageBox]::Show("No restore points available.", "Info")
+                return
+            }
+
+            # Create a dropdown to show restore points
+            $restoreSelectionForm = New-Object System.Windows.Forms.Form
+            $restoreSelectionForm.Text = "Select Restore Point"
+            $restoreSelectionForm.Size = New-Object System.Drawing.Size(400, 300)
+
+            $restoreDropdown = New-Object System.Windows.Forms.ComboBox
+            $restoreDropdown.Location = New-Object System.Drawing.Point(10, 10)
+            $restoreDropdown.Size = New-Object System.Drawing.Size(360, 20)
+            foreach ($point in $restorePoints) {
+                $restoreDropdown.Items.Add("$($point.SequenceNumber) - $($point.Description)")
+            }
+            $restoreDropdown.SelectedIndex = 0
+            $restoreSelectionForm.Controls.Add($restoreDropdown)
+
+            $restoreApplyButton = New-Object System.Windows.Forms.Button
+            $restoreApplyButton.Text = "Restore"
+            $restoreApplyButton.Location = New-Object System.Drawing.Point(10, 50)
+            $restoreApplyButton.Size = New-Object System.Drawing.Size(120, 30)
+            $restoreApplyButton.Add_Click({
+                $selectedPoint = $restorePoints[$restoreDropdown.SelectedIndex]
+                Write-Host "Restoring to point: $($selectedPoint.Description)"
+                $ResultText.text += "Restoring to point: $($selectedPoint.Description)`r`n"
+
+                # Trigger the restore
+                $restoreResult = Invoke-CimMethod -Namespace "root/default" -ClassName "SystemRestore" -MethodName "Restore" -Arguments @{ SequenceNumber = $selectedPoint.SequenceNumber }
+                if ($restoreResult.ReturnValue -eq 0) {
+                    $ResultText.text += "System restored successfully to $($selectedPoint.Description).`r`n"
+                    [System.Windows.Forms.MessageBox]::Show("System restored successfully to $($selectedPoint.Description).", "Success")
+                } else {
+                    $ResultText.text += "Failed to restore system. Error code: $($restoreResult.ReturnValue)`r`n"
+                    [System.Windows.Forms.MessageBox]::Show("Failed to restore system. Error code: $($restoreResult.ReturnValue)", "Error")
+                }
+                $restoreSelectionForm.Close()
+            })
+            $restoreSelectionForm.Controls.Add($restoreApplyButton)
+
+            $restoreSelectionForm.ShowDialog()
+        } catch {
+            $ResultText.text += "Error fetching restore points: $($_.Exception.Message)`r`n"
+            [System.Windows.Forms.MessageBox]::Show("Error fetching restore points: $($_.Exception.Message)", "Error")
+        }
+    })
+    $backupForm.Controls.Add($restoreButton)
+
+    # Show the form
+    $backupForm.ShowDialog()
+}
+
+$backupandrestore.Add_Click({
+    Show-BackupRestoreManagerForm
+})
+
+function Show-KeyboardMouseTweaksForm {
+    # Create a new form for Keyboard and Mouse Tweaks
+    $tweaksForm = New-Object System.Windows.Forms.Form
+    $tweaksForm.Text = "Keyboard and Mouse Tweaks"
+    $tweaksForm.Size = New-Object System.Drawing.Size(500, 400)
+    $tweaksForm.StartPosition = "CenterScreen"
+
+    # Label for instructions
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Adjust your keyboard and mouse settings:"
+    $label.Location = New-Object System.Drawing.Point(10, 10)
+    $label.Size = New-Object System.Drawing.Size(400, 20)
+    $tweaksForm.Controls.Add($label)
+
+    # Keyboard Repeat Rate
+    $repeatRateLabel = New-Object System.Windows.Forms.Label
+    $repeatRateLabel.Text = "Keyboard Repeat Rate:"
+    $repeatRateLabel.Location = New-Object System.Drawing.Point(10, 40)
+    $repeatRateLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $tweaksForm.Controls.Add($repeatRateLabel)
+
+    $repeatRateDropdown = New-Object System.Windows.Forms.ComboBox
+    $repeatRateDropdown.Location = New-Object System.Drawing.Point(10, 70)
+    $repeatRateDropdown.Size = New-Object System.Drawing.Size(150, 20)
+    $repeatRateDropdown.Items.AddRange("Slow", "Medium", "Fast")
+    $repeatRateDropdown.SelectedIndex = 1  # Default to Medium
+    $tweaksForm.Controls.Add($repeatRateDropdown)
+
+    # Disable Caps Lock
+    $capsLockCheckbox = New-Object System.Windows.Forms.CheckBox
+    $capsLockCheckbox.Text = "Disable Caps Lock"
+    $capsLockCheckbox.Location = New-Object System.Drawing.Point(10, 110)
+    $capsLockCheckbox.Size = New-Object System.Drawing.Size(200, 20)
+    $capsLockCheckbox.Checked = $false
+    $tweaksForm.Controls.Add($capsLockCheckbox)
+
+    # Mouse Scroll Speed
+    $scrollSpeedLabel = New-Object System.Windows.Forms.Label
+    $scrollSpeedLabel.Text = "Mouse Scroll Speed:"
+    $scrollSpeedLabel.Location = New-Object System.Drawing.Point(10, 150)
+    $scrollSpeedLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $tweaksForm.Controls.Add($scrollSpeedLabel)
+
+    $scrollSpeedDropdown = New-Object System.Windows.Forms.ComboBox
+    $scrollSpeedDropdown.Location = New-Object System.Drawing.Point(10, 180)
+    $scrollSpeedDropdown.Size = New-Object System.Drawing.Size(150, 20)
+    $scrollSpeedDropdown.Items.AddRange("Slow", "Normal", "Fast", "Very Fast")
+    $scrollSpeedDropdown.SelectedIndex = 1  # Default to Normal
+    $tweaksForm.Controls.Add($scrollSpeedDropdown)
+
+    # Toggle Mouse Acceleration
+    $mouseAccelCheckbox = New-Object System.Windows.Forms.CheckBox
+    $mouseAccelCheckbox.Text = "Disable Mouse Acceleration"
+    $mouseAccelCheckbox.Location = New-Object System.Drawing.Point(10, 220)
+    $mouseAccelCheckbox.Size = New-Object System.Drawing.Size(250, 20)
+    $mouseAccelCheckbox.Checked = $false
+    $tweaksForm.Controls.Add($mouseAccelCheckbox)
+
+    # Apply Button
+    $applyButton = New-Object System.Windows.Forms.Button
+    $applyButton.Text = "Apply Changes"
+    $applyButton.Location = New-Object System.Drawing.Point(10, 270)
+    $applyButton.Size = New-Object System.Drawing.Size(120, 30)
+    $applyButton.Add_Click({
+        # Apply Keyboard Repeat Rate
+        $repeatRate = $repeatRateDropdown.SelectedItem
+        switch ($repeatRate) {
+            "Slow" { Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Value 3 }
+            "Medium" { Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Value 2 }
+            "Fast" { Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Value 1 }
+        }
+        $ResultText.text += "Keyboard repeat rate set to $repeatRate.`r`n"
+
+        # Apply Disable Caps Lock
+        if ($capsLockCheckbox.Checked) {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layout" -Name "Scancode Map" -Value ([byte[]](0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x3A,0x00,0x00,0x00,0x00,0x00,0x00,0x00))
+            $ResultText.text += "Caps Lock disabled.`r`n"
+        }
+
+        # Apply Mouse Scroll Speed
+        $scrollSpeed = $scrollSpeedDropdown.SelectedItem
+        switch ($scrollSpeed) {
+            "Slow" { Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WheelScrollLines" -Value 1 }
+            "Normal" { Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WheelScrollLines" -Value 3 }
+            "Fast" { Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WheelScrollLines" -Value 5 }
+            "Very Fast" { Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WheelScrollLines" -Value 10 }
+        }
+        $ResultText.text += "Mouse scroll speed set to $scrollSpeed.`r`n"
+
+        # Apply Mouse Acceleration
+        if ($mouseAccelCheckbox.Checked) {
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Value 0
+            $ResultText.text += "Mouse acceleration disabled.`r`n"
+        }
+
+        [System.Windows.Forms.MessageBox]::Show("Keyboard and Mouse settings applied successfully.", "Success")
+    })
+    $tweaksForm.Controls.Add($applyButton)
+
+    # Show the form
+    $tweaksForm.ShowDialog()
+}
+
+$kbmtweaks.Add_Click({
+    Show-KeyboardMouseTweaksForm
+})
 
 # Event handler for opening the customization form
 $btnOpenCustomization.Add_Click({
@@ -1427,6 +1926,146 @@ $query = @"
                 $ResultText.text += "----------------------------------------`r`n"
             }
         }
+    })
+
+    function Show-StartupManagerForm {
+    # Create a new form for the Startup Manager
+    $startupForm = New-Object System.Windows.Forms.Form
+    $startupForm.Text = "Startup Program Manager"
+    $startupForm.Size = New-Object System.Drawing.Size(800, 500)
+    $startupForm.StartPosition = "CenterScreen"
+
+    # Label for the list
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Manage your startup programs:"
+    $label.Location = New-Object System.Drawing.Point(10, 10)
+    $label.Size = New-Object System.Drawing.Size(400, 20)
+    $startupForm.Controls.Add($label)
+
+    # Checkbox list for startup programs
+    $checkedListBox = New-Object System.Windows.Forms.CheckedListBox
+    $checkedListBox.Location = New-Object System.Drawing.Point(10, 40)
+    $checkedListBox.Size = New-Object System.Drawing.Size(760, 300)
+    $checkedListBox.CheckOnClick = $true
+    $startupForm.Controls.Add($checkedListBox)
+
+    # Function to fetch startup programs from all relevant sources
+    function Get-StartupPrograms {
+        $programs = @()
+
+        # Registry locations
+        $registryPaths = @(
+            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run",
+            "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run",
+            "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run"
+        )
+
+        foreach ($path in $registryPaths) {
+            $programs += Get-ItemProperty -Path $path -ErrorAction SilentlyContinue |
+                ForEach-Object {
+                    $_.PSObject.Properties |
+                    Where-Object { $_.Name -notin "PSPath", "PSParentPath", "PSChildName", "PSDrive", "PSProvider" } |
+                    ForEach-Object {
+                        [PSCustomObject]@{
+                            Name   = $_.Name
+                            Path   = $_.Value
+                            Status = "Enabled (Registry)"
+                        }
+                    }
+                }
+        }
+
+        # Startup folder locations
+        $startupFolders = @(
+            "$Env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup",
+            "$Env:ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
+        )
+
+        foreach ($folder in $startupFolders) {
+            Get-ChildItem -Path $folder -File -ErrorAction SilentlyContinue |
+                ForEach-Object {
+                    $programs += [PSCustomObject]@{
+                        Name   = $_.BaseName
+                        Path   = $_.FullName
+                        Status = "Enabled (Folder)"
+                    }
+                }
+        }
+
+        return $programs
+    }
+
+    # Populate CheckedListBox with all startup programs
+    $startupPrograms = Get-StartupPrograms
+    foreach ($program in $startupPrograms) {
+        $checkedListBox.Items.Add("$($program.Name) - $($program.Status)", $false)
+    }
+
+    # Add Button
+    $addButton = New-Object System.Windows.Forms.Button
+    $addButton.Text = "Add Program"
+    $addButton.Location = New-Object System.Drawing.Point(10, 360)
+    $addButton.Size = New-Object System.Drawing.Size(120, 30)
+    $addButton.Add_Click({
+        $fileDialog = New-Object System.Windows.Forms.OpenFileDialog
+        $fileDialog.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
+        if ($fileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+            $programPath = $fileDialog.FileName
+            $programName = [System.IO.Path]::GetFileNameWithoutExtension($programPath)
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name $programName -Value $programPath
+            $checkedListBox.Items.Add("$programName - Enabled (Registry)", $true)
+            [System.Windows.Forms.MessageBox]::Show("Program added successfully.", "Success")
+        }
+    })
+    $startupForm.Controls.Add($addButton)
+
+    # Remove Button
+    $removeButton = New-Object System.Windows.Forms.Button
+    $removeButton.Text = "Remove Selected"
+    $removeButton.Location = New-Object System.Drawing.Point(150, 360)
+    $removeButton.Size = New-Object System.Drawing.Size(120, 30)
+    $removeButton.Add_Click({
+        foreach ($selectedItem in $checkedListBox.CheckedItems) {
+            $programName = $selectedItem.ToString().Split(" - ")[0]
+            Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name $programName -ErrorAction SilentlyContinue
+            $checkedListBox.Items.Remove($selectedItem)
+        }
+        [System.Windows.Forms.MessageBox]::Show("Selected programs removed from startup.", "Success")
+    })
+    $startupForm.Controls.Add($removeButton)
+
+    # Enable/Disable Toggle Button
+    $toggleButton = New-Object System.Windows.Forms.Button
+    $toggleButton.Text = "Enable/Disable Selected"
+    $toggleButton.Location = New-Object System.Drawing.Point(290, 360)
+    $toggleButton.Size = New-Object System.Drawing.Size(160, 30)
+    $toggleButton.Add_Click({
+        foreach ($selectedItem in $checkedListBox.CheckedItems) {
+            $programName = $selectedItem.ToString().Split(" - ")[0]
+            if ($selectedItem.ToString().Contains("Enabled")) {
+                # Disable the program
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name $programName -Value $null -ErrorAction SilentlyContinue
+                $checkedListBox.Items.Remove($selectedItem)
+                $checkedListBox.Items.Add("$programName - Disabled", $false)
+            } else {
+                # Enable the program
+                # (Logic to re-enable the program can vary depending on where it's stored)
+                $checkedListBox.Items.Remove($selectedItem)
+                $checkedListBox.Items.Add("$programName - Enabled (Registry)", $true)
+            }
+        }
+        [System.Windows.Forms.MessageBox]::Show("Selected programs toggled.", "Success")
+    })
+    $startupForm.Controls.Add($toggleButton)
+
+    # Show the form
+    $startupForm.ShowDialog()
+}
+
+
+    # Link the function to the Startup Manager button click
+    $startupmanager.Add_Click({
+        Show-StartupManagerForm
     })
 
     $windowsnapping.Add_Click({
@@ -1910,6 +2549,195 @@ $ultimateclean.Add_Click({
 
      # Restart explorer.exe
      Start-Process explorer.exe
+})
+
+function Show-BatteryOptimizationForm {
+    # Create a new form for Battery Optimization
+    $batteryForm = New-Object System.Windows.Forms.Form
+    $batteryForm.Text = "Battery Optimization"
+    $batteryForm.Size = New-Object System.Drawing.Size(400, 550)
+    $batteryForm.StartPosition = "CenterScreen"
+
+    # Current Settings Label
+    $currentSettingsLabel = New-Object System.Windows.Forms.Label
+    $currentSettingsLabel.Text = "Current Settings:"
+    $currentSettingsLabel.Location = New-Object System.Drawing.Point(10, 10)
+    $currentSettingsLabel.Size = New-Object System.Drawing.Size(360, 20)
+    $batteryForm.Controls.Add($currentSettingsLabel)
+
+    # Textbox for Current Settings
+    $currentSettingsBox = New-Object System.Windows.Forms.TextBox
+    $currentSettingsBox.Multiline = $true
+    $currentSettingsBox.ReadOnly = $true
+    $currentSettingsBox.ScrollBars = "Vertical"
+    $currentSettingsBox.Location = New-Object System.Drawing.Point(10, 40)
+    $currentSettingsBox.Size = New-Object System.Drawing.Size(360, 90)
+    $batteryForm.Controls.Add($currentSettingsBox)
+
+    # Populate Current Settings
+    try {
+        # Get active power plan
+        $activePlan = powercfg -getactivescheme | ForEach-Object { ($_ -split '\s{2,}')[1] }
+        $currentSettingsBox.Text += "Active Power Plan: $activePlan`r`n"
+
+        # Get service statuses
+        $diagTrackStatus = (Get-Service -Name "DiagTrack" -ErrorAction SilentlyContinue).Status
+        $sysMainStatus = (Get-Service -Name "SysMain" -ErrorAction SilentlyContinue).Status
+        $currentSettingsBox.Text += "DiagTrack Service: $diagTrackStatus`r`n"
+        $currentSettingsBox.Text += "SysMain Service: $sysMainStatus`r`n"
+
+        # Get display timeout
+        try {
+            $powercfgOutput = powercfg -query SCHEME_CURRENT SUB_VIDEO VIDEOIDLE
+            $timeoutLine = $powercfgOutput | Where-Object { $_ -match "Current AC Power Setting Index" }
+            $displayTimeout = $timeoutLine -replace ".*Current AC Power Setting Index:\s*", "" -as [int]
+            $displayTimeoutMinutes = $displayTimeout / 60
+            $currentSettingsBox.Text += "Display Timeout: $displayTimeoutMinutes minutes`r`n"
+        } catch {
+            $currentSettingsBox.Text += "Failed to retrieve display timeout: $($_.Exception.Message)`r`n"
+        }
+    } catch {
+        $currentSettingsBox.Text += "Failed to retrieve some settings: $($_.Exception.Message)`r`n"
+    }
+
+    # Dropdown for Power Plan
+    $powerPlanLabel = New-Object System.Windows.Forms.Label
+    $powerPlanLabel.Text = "Select Power Plan:"
+    $powerPlanLabel.Location = New-Object System.Drawing.Point(10, 140)
+    $batteryForm.Controls.Add($powerPlanLabel)
+
+    $powerPlanDropdown = New-Object System.Windows.Forms.ComboBox
+    $powerPlanDropdown.Location = New-Object System.Drawing.Point(10, 170)
+    $powerPlanDropdown.Size = New-Object System.Drawing.Size(360, 20)
+    $powerPlanDropdown.Items.Add("Power Saver")
+    $powerPlanDropdown.Items.Add("Balanced")
+    $powerPlanDropdown.Items.Add("High Performance")
+    $powerPlanDropdown.Items.Add("Highest Performance (Custom)")
+    $powerPlanDropdown.SelectedIndex = 0  # Default to Power Saver
+    $batteryForm.Controls.Add($powerPlanDropdown)
+
+    # Checkbox for disabling unnecessary services
+    $servicesLabel = New-Object System.Windows.Forms.Label
+    $servicesLabel.Text = "Select Services to Disable:"
+    $servicesLabel.Location = New-Object System.Drawing.Point(10, 210)
+    $servicesLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $batteryForm.Controls.Add($servicesLabel)
+
+    $diagTrackCheckbox = New-Object System.Windows.Forms.CheckBox
+    $diagTrackCheckbox.Text = "Disable Diagnostics Tracking (DiagTrack)"
+    $diagTrackCheckbox.Location = New-Object System.Drawing.Point(10, 240)
+    $diagTrackCheckbox.Size = New-Object System.Drawing.Size(300, 20)
+    $diagTrackCheckbox.Checked = $true
+    $batteryForm.Controls.Add($diagTrackCheckbox)
+
+    $sysMainCheckbox = New-Object System.Windows.Forms.CheckBox
+    $sysMainCheckbox.Text = "Disable Superfetch (SysMain)"
+    $sysMainCheckbox.Location = New-Object System.Drawing.Point(10, 270)
+    $sysMainCheckbox.Size = New-Object System.Drawing.Size(300, 20)
+    $sysMainCheckbox.Checked = $true
+    $batteryForm.Controls.Add($sysMainCheckbox)
+
+    # Input for Display Timeout
+    $displayTimeoutLabel = New-Object System.Windows.Forms.Label
+    $displayTimeoutLabel.Text = "Set Display Timeout (minutes):"
+    $displayTimeoutLabel.Location = New-Object System.Drawing.Point(10, 310)
+    $displayTimeoutLabel.Size = New-Object System.Drawing.Size(200, 20)
+    $batteryForm.Controls.Add($displayTimeoutLabel)
+
+    $displayTimeoutInput = New-Object System.Windows.Forms.NumericUpDown
+    $displayTimeoutInput.Location = New-Object System.Drawing.Point(10, 340)
+    $displayTimeoutInput.Size = New-Object System.Drawing.Size(100, 20)
+    $displayTimeoutInput.Minimum = 0
+    $displayTimeoutInput.Maximum = 60
+    $displayTimeoutInput.Value = 5  # Default to 5 minutes
+    $batteryForm.Controls.Add($displayTimeoutInput)
+
+    # Textbox for displaying results
+    $resultTextBox = New-Object System.Windows.Forms.TextBox
+    $resultTextBox.Multiline = $true
+    $resultTextBox.ReadOnly = $true
+    $resultTextBox.ScrollBars = "Vertical"
+    $resultTextBox.Location = New-Object System.Drawing.Point(10, 370)
+    $resultTextBox.Size = New-Object System.Drawing.Size(360, 80)
+    $batteryForm.Controls.Add($resultTextBox)
+
+    # Optimize Button
+    $optimizeButton = New-Object System.Windows.Forms.Button
+    $optimizeButton.Text = "Optimize Battery"
+    $optimizeButton.Location = New-Object System.Drawing.Point(10, 460)
+    $optimizeButton.Size = New-Object System.Drawing.Size(150, 30)
+    $optimizeButton.Add_Click({
+        try {
+            $resultTextBox.Text = ""
+
+            # Apply selected power plan
+            $selectedPlan = $powerPlanDropdown.SelectedItem
+            $powerPlanGUID = switch ($selectedPlan) {
+                "Power Saver" { "a1841308-3541-4fab-bc81-f71556f20b4a" }
+                "Balanced" { "381b4222-f694-41f0-9685-ff5bb260df2e" }
+                "High Performance" { "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" }
+                "Highest Performance (Custom)" {
+                    # Download and enable custom power plan
+                    $resultTextBox.Text += "Enabling Highest Performance Power Plan...`r`n"
+                    $powerPlanUrl = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow"
+                    $powerPlanPath = "$Env:windir\system32\Bitsum-Highest-Performance.pow"
+                    Invoke-WebRequest -Uri $powerPlanUrl -OutFile $powerPlanPath -ErrorAction SilentlyContinue
+                    powercfg -import $powerPlanPath e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
+                    powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
+                    "e6a66b66-d6df-666d-aa66-66f66666eb66"
+                }
+            }
+            if ($selectedPlan -ne "Highest Performance (Custom)") {
+                $resultTextBox.Text += "Setting power plan to $selectedPlan...`r`n"
+                Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/setactive $powerPlanGUID"
+            }
+
+            # Disable selected services
+            if ($diagTrackCheckbox.Checked) {
+                $resultTextBox.Text += "Disabling DiagTrack service...`r`n"
+                Set-Service -Name "DiagTrack" -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name "DiagTrack" -Force -ErrorAction SilentlyContinue
+            }
+            if ($sysMainCheckbox.Checked) {
+                $resultTextBox.Text += "Disabling SysMain service...`r`n"
+                Set-Service -Name "SysMain" -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name "SysMain" -Force -ErrorAction SilentlyContinue
+            }
+
+            # Apply display timeout
+            $displayTimeout = $displayTimeoutInput.Value
+            if ($displayTimeout -eq 0) {
+                $resultTextBox.Text += "Disabling display timeout...`r`n"
+                Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/change monitor-timeout-dc 0"
+            } else {
+                $resultTextBox.Text += "Setting display timeout to $displayTimeout minutes...`r`n"
+                Start-Process -NoNewWindow -FilePath "powercfg.exe" -ArgumentList "/change monitor-timeout-dc $displayTimeout"
+            }
+
+            # Success message
+            $resultTextBox.Text += "Battery optimization applied successfully!`r`n"
+        } catch {
+            $resultTextBox.Text += "An error occurred during optimization: $($_.Exception.Message)`r`n"
+        }
+    })
+    $batteryForm.Controls.Add($optimizeButton)
+
+    # Cancel Button
+    $cancelButton = New-Object System.Windows.Forms.Button
+    $cancelButton.Text = "Cancel"
+    $cancelButton.Location = New-Object System.Drawing.Point(180, 460)
+    $cancelButton.Size = New-Object System.Drawing.Size(150, 30)
+    $cancelButton.Add_Click({
+        $batteryForm.Close()
+    })
+    $batteryForm.Controls.Add($cancelButton)
+
+    # Show the form
+    $batteryForm.ShowDialog()
+}
+
+$batteryButton.Add_Click({
+    Show-BatteryOptimizationForm
 })
 
 $forcenorkeyboard.Add_Click({
