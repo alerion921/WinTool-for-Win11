@@ -3471,6 +3471,15 @@ $forcenorkeyboard.Add_Click({
         })
 
         $onedrive.Add_Click({
+            Stop-Process -ProcessName sharepoint -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM sharepoint.exe
+
+            Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM Explorer.exe
+
+            Stop-Process -ProcessName OneDrive -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM OneDrive.exe
+
             # Define potential OneDrive installation paths
             $oneDrivePaths = @(
                 "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
@@ -3540,10 +3549,24 @@ $forcenorkeyboard.Add_Click({
                         $ResultText.text = "No OneDrive folder detected. Skipping file backup."
                     }
 
-                    # Attempt to uninstall OneDrive
-                    $oneDriveExe = $oneDriveInstalled | Select-Object -First 1
-                    if ($oneDriveExe) {
-                        Start-Process -FilePath $oneDriveExe -ArgumentList "/uninstall /silent" -NoNewWindow -Wait
+                    # Uninstall all variants of OneDrive using winget
+                    $ResultText.text = "Detecting all installed variants of OneDrive using winget..."
+
+                    # Get all installed packages matching 'OneDrive'
+                    $oneDrivePackages = winget list | Where-Object { $_ -match "OneDrive" }
+
+                    if ($oneDrivePackages) {
+                        foreach ($package in $oneDrivePackages) {
+                            $packageId = $package | ForEach-Object { ($_ -split '\s+')[0] }  # Extract the first column (ID)
+                            $ResultText.text = "Uninstalling $packageId..."
+                            
+                            # Uninstall the package
+                            Start-Process -FilePath "winget" -ArgumentList "uninstall --id $packageId --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
+                        }
+
+                        $ResultText.text = "All detected OneDrive variants have been uninstalled."
+                    } else {
+                        $ResultText.text = "No OneDrive variants detected for uninstallation."
                     }
         
                     # Cleanup leftover files and registry entries
@@ -3606,7 +3629,7 @@ $forcenorkeyboard.Add_Click({
                     $ResultText.text = "OneDrive removal was cancelled. Ready for the next task!"
                 }
             } else {
-                # Offer to reinstall OneDrive if not detected
+                # Reinstall prompt
                 $confirmReinstall = [System.Windows.Forms.MessageBox]::Show(
                     "OneDrive is not currently installed. Would you like to reinstall it?",
                     "Reinstall OneDrive?",
@@ -3617,14 +3640,8 @@ $forcenorkeyboard.Add_Click({
                 if ($confirmReinstall -eq [System.Windows.Forms.DialogResult]::Yes) {
                     $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
                     $ResultText.text = "Reinstalling OneDrive using winget. Please wait..."
-
-                    Start-Process 'https://www.microsoft.com/en-us/microsoft-365/onedrive/'
-        
-                    # Reinstall OneDrive using winget
                     Start-Process -FilePath "winget" -ArgumentList "install --id Microsoft.OneDrive -e --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
-        
-                    $Form.text = "WinTool by Alerion - OneDrive Link given"
-                    $ResultText.text = "OneDrive has been successfully reinstalled using winget. Ready for the next task!"
+                    $ResultText.text = "OneDrive has been successfully reinstalled."
                 } else {
                     $Form.text = "WinTool by Alerion - Reinstallation Cancelled"
                     $ResultText.text = "OneDrive reinstallation was cancelled. Ready for the next task!"
