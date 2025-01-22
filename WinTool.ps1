@@ -75,17 +75,24 @@ function IsAppInstalled {
     }
 
     # Check for UWP apps using Get-AppxPackage with stricter matching
-    try {
-        $installedPackages = Get-AppxPackage
-        foreach ($package in $installedPackages) {
-            # Match AppName against the Name property (case-insensitive exact match)
-            if ($package.Name -ieq $AppName -or $package.PackageFullName -like "*$AppName*") {
-                return $true
-            }
-        }
-    } catch {
-        Write-Warning "Failed to query UWP apps: $_"
+try {
+    if ($AppName -ieq "Steam") {
+        # Steam is not a UWP app; skip Get-AppxPackage checks
+        Write-Host "Skipping UWP check for Steam."
+        return $false
     }
+
+    $installedPackages = Get-AppxPackage
+    foreach ($package in $installedPackages) {
+        # Match AppName against relevant properties (case-insensitive exact match)
+        if ($package.Name -ieq $AppName -or $package.PackageFullName -like "*$AppName*") {
+            Write-Host "Matched UWP Package: $($package.Name)"
+            return $true
+        }
+    }
+} catch {
+    Write-Warning "Failed to query UWP apps: $_"
+}
 
     # If no match is found
     return $false
@@ -151,9 +158,6 @@ function ShowAppSelectionForm {
 
             # Add checkbox to global array
             $script:checkboxes += $checkbox
-
-            # Debugging output
-            Write-Host "Added checkbox for: $($app.Name) (Enabled: $($checkbox.Enabled))"
         }
 
         $panel.Controls.Add($checkboxPanel)
@@ -309,10 +313,6 @@ function ShowAppSelectionForm {
             return
         }
     
-        # Debugging output
-        Write-Host "Selected apps for installation:"
-        $selectedApps | ForEach-Object { Write-Host " - $($_.Name)" }
-    
         # Install selected applications
         InstallApplications -SelectedApps $selectedApps -ProgressBar $progressBar
     })
@@ -327,10 +327,77 @@ function ShowAppSelectionForm {
     })
     $buttonPanel.Controls.Add($cancelButton)
 
+    $updateButton = New-Object System.Windows.Forms.Button
+    $updateButton.Text = "Update Apps"
+    $updateButton.Size = New-Object System.Drawing.Size(120, 30)
+    $updateButton.Location = New-Object System.Drawing.Point(270, 5)
+    $updateButton.Add_Click({
+        Start-Process -FilePath "winget" -ArgumentList "upgrade --all" -NoNewWindow -Wait
+    })
+    $buttonPanel.Controls.Add($updateButton)
+
     $appSelectionForm.Controls.Add($buttonPanel)
 
     [void]$appSelectionForm.ShowDialog()
 }
+
+function OneDriveInstalled {
+    param (
+        [switch]$VerboseOutput
+    )
+
+    $oneDrivePackages = winget list | Where-Object { $_ -match "OneDrive" }
+
+    if ($oneDrivePackages) {
+        if ($VerboseOutput) {
+            Write-Output "Detected the following OneDrive packages:"
+            $oneDrivePackages | ForEach-Object { Write-Output $_ }
+        }
+        return $oneDrivePackages
+    } else {
+        return $null
+    }
+}
+
+function Uninstall-OneDrive {
+    $ResultText.text = "Starting removal of OneDrive-related packages..."
+
+    # Step 1: Remove AppxPackages for all users
+    $ResultText.text = "Removing OneDrive AppxPackages for all users..."
+    $appxPackages = Get-AppxPackage -AllUsers | Where-Object { $_.Name -like "*OneDrive*" }
+    if ($appxPackages) {
+        foreach ($package in $appxPackages) {
+            $ResultText.text = "Removing AppxPackage: $($package.Name)..."
+            Remove-AppxPackage -Package $package.PackageFullName -AllUsers -ErrorAction SilentlyContinue
+        }
+    } else {
+        $ResultText.text = "No OneDrive AppxPackages found for removal."
+    }
+
+    # Step 2: Remove Provisioned AppxPackages
+    $ResultText.text = "Removing provisioned OneDrive packages..."
+    $provisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*OneDrive*" }
+    if ($provisionedPackages) {
+        foreach ($package in $provisionedPackages) {
+            $ResultText.text = "Removing Provisioned AppxPackage: $($package.DisplayName)..."
+            Remove-AppxProvisionedPackage -Online -PackageName $package.PackageName -ErrorAction SilentlyContinue
+        }
+    } else {
+        $ResultText.text = "No provisioned OneDrive packages found for removal."
+    }
+
+    # Step 3: Remove OneDrive packages via winget
+    $ResultText.text = "Detecting all installed OneDrive packages using winget..."
+
+    # Attempt to uninstall it again
+    $ResultText.text = "Confirming winget has uninstalled the package..."
+    Start-Process -FilePath "winget" -ArgumentList "uninstall --id Microsoft.OneDrive" -NoNewWindow -Wait
+
+    # Final confirmation
+    $ResultText.text = "All detected OneDrive-related packages have been removed."
+}
+
+$oneDrivePackages = OneDriveInstalled -VerboseOutput
 
 function InstallApplications {
     param (
@@ -347,22 +414,44 @@ function InstallApplications {
 
     foreach ($app in $SelectedApps) {
         try {
-            # Install the app using WingetID
-            if ($app.WingetID) {
-                Start-Process -FilePath "winget" -ArgumentList "install --id $($app.WingetID) --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
-            } else {
-                [System.Windows.Forms.MessageBox]::Show(
-                    "$($app.Name) does not have a WingetID and must be installed manually.",
-                    "Manual Installation Required",
-                    [System.Windows.Forms.MessageBoxButtons]::OK,
-                    [System.Windows.Forms.MessageBoxIcon]::Information
-                )
+            # Check if the app is already installed as a UWP app
+            $isInstalled = Get-AppxPackage | Where-Object { $_.Name -eq $app.AppName }
+            if ($isInstalled) {
+                Write-Host "$($app.Name) is already installed."
+                continue
             }
+
+            # Install the app using Microsoft Store if a StoreID is provided
+            if ($app.StoreID) {
+                try {
+                    Write-Host "Attempting to install $($app.Name) using Microsoft Store."
+                    Start-Process -FilePath "ms-windows-store:" -ArgumentList "pdp?productid=$($app.StoreID)" -NoNewWindow -Wait
+                    continue
+                } catch {
+                    Write-Warning "Failed to install $($app.Name) using Microsoft Store: $_"
+                }
+            }
+
+            # Fallback to Winget installation if a WingetID is provided
+            if ($app.WingetID) {
+                Write-Host "Attempting to install $($app.Name) using Winget."
+                Start-Process -FilePath "winget" -ArgumentList "install --id $($app.WingetID) --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
+                continue
+            }
+
+            # Notify the user if the app cannot be installed automatically
+            [System.Windows.Forms.MessageBox]::Show(
+                "$($app.Name) cannot be installed automatically. Please install it manually.",
+                "Manual Installation Required",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Information
+            )
 
             # Update progress bar
             $ProgressBar.Invoke([Action]{
                 $ProgressBar.PerformStep()
             })
+
         } catch {
             [System.Windows.Forms.MessageBox]::Show(
                 "Error installing $($app.Name): $_", 
@@ -750,7 +839,7 @@ Function MakeForm {
     $securitypatches = Add-Control -Text "Patch Security (Caution!)" -X $XPosition -Y $YPosition -Height $largebuttonsize
     $YPosition += $largespacing
 
-    if ((Test-Path "$env:programdata\Microsoft OneDrive") -or (Test-Path "C:\Program Files (x86)\Microsoft OneDrive") -or (Test-Path "C:\Program Files\Microsoft OneDrive")) {
+    if ($oneDrivePackages) { 
         $onedrive = Add-Control -Text "Remove OneDrive" -X $XPosition -Y $YPosition
     } else {
         $onedrive = Add-Control -Text "Restore OneDrive" -X $XPosition -Y $YPosition
@@ -3470,184 +3559,7 @@ $forcenorkeyboard.Add_Click({
             $Form.text = "WinTool by Alerion"
         })
 
-        $onedrive.Add_Click({
-            Stop-Process -ProcessName sharepoint -Force -ErrorAction SilentlyContinue
-            taskkill /F /IM sharepoint.exe
-
-            Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
-            taskkill /F /IM Explorer.exe
-
-            Stop-Process -ProcessName OneDrive -Force -ErrorAction SilentlyContinue
-            taskkill /F /IM OneDrive.exe
-
-            # Define potential OneDrive installation paths
-            $oneDrivePaths = @(
-                "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
-                "C:\Program Files\Microsoft OneDrive\OneDrive.exe",
-                "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe"
-            )
-        
-            # Check if OneDrive is installed
-            $oneDriveInstalled = $oneDrivePaths | Where-Object { Test-Path $_ }
-        
-            if ($oneDriveInstalled) {
-                $confirmOneDrive = [System.Windows.Forms.MessageBox]::Show(
-                    "This may take a while. Are you sure you want to proceed? (THIS HAS NOT BEEN TESTED PROPERLY. THE WORST THAT CAN HAPPEN IS THAT YOU WONT BE ABLE TO REINSTALL ONEDRIVE, WHO CARES)",
-                    "Remove OneDrive?",
-                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
-                    [System.Windows.Forms.MessageBoxIcon]::Question
-                )
-        
-                if ($confirmOneDrive -eq [System.Windows.Forms.DialogResult]::Yes) {
-                    $Form.text = "WinTool by Alerion - Removing OneDrive..."
-                    $ResultText.text = "Uninstalling OneDrive..."
-        
-                    # Detect the OneDrive folder dynamically
-                    $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
-                    Where-Object { $_.Name -like "OneDrive*" } |
-                    Select-Object -ExpandProperty FullName -First 1
-                    
-                    if ($oneDriveFolder) {
-                        # Inform the user that files will be backed up from the detected folder
-                        $ResultText.text = "Detected OneDrive folder: $oneDriveFolder. Backing up files..."
-                    
-                        # Standard folders and their destinations
-                        $backupMappings = @(
-                            @{ Source = "Desktop"; Destination = "$env:USERPROFILE\Desktop" },
-                            @{ Source = "Documents"; Destination = "$env:USERPROFILE\Documents" },
-                            @{ Source = "Pictures"; Destination = "$env:USERPROFILE\Pictures" },
-                            @{ Source = "Downloads"; Destination = "$env:USERPROFILE\Downloads" },
-                            @{ Source = "Music"; Destination = "$env:USERPROFILE\Music" },
-                            @{ Source = "Videos"; Destination = "$env:USERPROFILE\Videos" },
-                            @{ Source = "Favorites"; Destination = "$env:USERPROFILE\Favorites" }
-                        )
-                    
-                        # Backup standard folders
-                        foreach ($mapping in $backupMappings) {
-                            $source = Join-Path -Path $oneDriveFolder -ChildPath $mapping.Source
-                            $destination = $mapping.Destination
-                            if (Test-Path $source) {
-                                $ResultText.text = "Copying $source to $destination..."
-                                Copy-Item -Path $source\* -Destination $destination -Recurse -Force -ErrorAction SilentlyContinue
-                            }
-                        }
-                    
-                        # Copy any additional folders in OneDrive to the user's profile
-                        $allSubFolders = Get-ChildItem -Path $oneDriveFolder -Directory |
-                            Where-Object { $backupMappings.Source -notcontains $_.Name } # Exclude standard folders already handled
-                        foreach ($subFolder in $allSubFolders) {
-                            $source = $subFolder.FullName
-                            $destination = Join-Path -Path $env:USERPROFILE -ChildPath $subFolder.Name
-                    
-                            # Inform the user and copy the folder
-                            $ResultText.text = "Copying additional folder $source to $destination..."
-                            Copy-Item -Path $source -Destination $destination -Recurse -Force -ErrorAction SilentlyContinue
-                        }
-                    
-                        $ResultText.text = "Backup completed. Standard folders and additional files from OneDrive have been successfully copied."
-                    } else {
-                        $ResultText.text = "No OneDrive folder detected. Skipping file backup."
-                    }
-
-                    # Uninstall all variants of OneDrive using winget
-                    $ResultText.text = "Detecting all installed variants of OneDrive using winget..."
-
-                    # Get all installed packages matching 'OneDrive'
-                    $oneDrivePackages = winget list | Where-Object { $_ -match "OneDrive" }
-
-                    if ($oneDrivePackages) {
-                        foreach ($package in $oneDrivePackages) {
-                            $packageId = $package | ForEach-Object { ($_ -split '\s+')[0] }  # Extract the first column (ID)
-                            $ResultText.text = "Uninstalling $packageId..."
-                            
-                            # Uninstall the package
-                            Start-Process -FilePath "winget" -ArgumentList "uninstall --id $packageId --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
-                        }
-
-                        $ResultText.text = "All detected OneDrive variants have been uninstalled."
-                    } else {
-                        $ResultText.text = "No OneDrive variants detected for uninstallation."
-                    }
-        
-                    # Cleanup leftover files and registry entries
-                    $ResultText.text = "Cleaning up leftover files and registry entries..."
-                    $cleanupPaths = @(
-                        "$env:LOCALAPPDATA\Microsoft\OneDrive",
-                        "$env:LOCALAPPDATA\OneDrive",
-                        "$env:PROGRAMDATA\Microsoft OneDrive",
-                        "$env:SystemDrive\OneDriveTemp",
-                        "C:\Program Files\Microsoft OneDrive",
-                        "C:\Program Files (x86)\Microsoft OneDrive",
-                        "C:\Users\Default\OneDrive",
-                        "$env:USERPROFILE\OneDrive"
-                    )
-        
-                    foreach ($path in $cleanupPaths) {
-                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $path
-                    }
-        
-                    # Delete registry entries
-                    Remove-Item -Path "HKCU:\Software\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
- 
-                    Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
-                    Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
-        
-                    # Remove scheduled tasks
-                    Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ErrorAction SilentlyContinue |
-                        Unregister-ScheduledTask -Confirm:$false
-        
-                    # Restore User Shell Folders
-                    $ResultText.text = "Restoring user shell folders to default locations..."
-                    $defaultPaths = @{
-                        "{0DDD015D-B06C-45D5-8C4C-F59713854639}" = "%USERPROFILE%\Pictures"      # Pictures
-                        "{374DE290-123F-4565-9164-39C4925E467B}" = "%USERPROFILE%\Downloads"    # Downloads
-                        "{F42EE2D3-909F-4907-8871-4C22FC0BF756}" = "%USERPROFILE%\Documents"    # Documents
-                        "Pictures" = "%USERPROFILE%\Pictures"      # Pictures
-                        "My Pictures" = "%USERPROFILE%\Pictures"      # Pictures
-                        "Downloads" = "%USERPROFILE%\Downloads"    # Downloads
-                        "Documents" = "%USERPROFILE%\Documents"    # Documents
-                        "Music" = "%USERPROFILE%\Music"        # Music
-                        "Videos" = "%USERPROFILE%\Videos"       # Videos
-                        "My Music" = "%USERPROFILE%\Music"        # Music
-                        "My Videos" = "%USERPROFILE%\Videos"       # Videos
-                        "Desktop" = "%USERPROFILE%\Desktop"      # Desktop
-                        "Favorites" = "%USERPROFILE%\Favorites"    # Favorites
-                        "Personal" = "%USERPROFILE%\Personal"    # Favorites
-                    }
-        
-                    foreach ($guid in $defaultPaths.Keys) {
-                        $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-                        $valuePath = $defaultPaths[$guid]
-                        Set-ItemProperty -Path $regPath -Name $guid -Value $valuePath
-                        Write-Output "Restored $guid to $valuePath"
-                    }
-        
-                    $Form.text = "WinTool by Alerion - OneDrive Removed"
-                    $ResultText.text = "OneDrive has been completely removed. User shell folders restored. Ready for the next task!"
-                } else {
-                    $Form.text = "WinTool by Alerion - Operation Cancelled"
-                    $ResultText.text = "OneDrive removal was cancelled. Ready for the next task!"
-                }
-            } else {
-                # Reinstall prompt
-                $confirmReinstall = [System.Windows.Forms.MessageBox]::Show(
-                    "OneDrive is not currently installed. Would you like to reinstall it?",
-                    "Reinstall OneDrive?",
-                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
-                    [System.Windows.Forms.MessageBoxIcon]::Question
-                )
-        
-                if ($confirmReinstall -eq [System.Windows.Forms.DialogResult]::Yes) {
-                    $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
-                    $ResultText.text = "Reinstalling OneDrive using winget. Please wait..."
-                    Start-Process -FilePath "winget" -ArgumentList "install --id Microsoft.OneDrive -e --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
-                    $ResultText.text = "OneDrive has been successfully reinstalled."
-                } else {
-                    $Form.text = "WinTool by Alerion - Reinstallation Cancelled"
-                    $ResultText.text = "OneDrive reinstallation was cancelled. Ready for the next task!"
-                }
-            }
-        })
+  
 
     $darkmode.Add_Click({
             $ResultText.text = " System dark mode set to active!"
@@ -4263,6 +4175,177 @@ $forcenorkeyboard.Add_Click({
             $form.Close()
         })
 
+        $onedrive.Add_Click({
+            Stop-Process -ProcessName sharepoint -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM sharepoint.exe
+
+            Stop-Process -ProcessName explorer -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM Explorer.exe
+
+            Stop-Process -ProcessName OneDrive -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM OneDrive.exe
+
+            Stop-Process -ProcessName FileSyncHelper -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM FileSyncHelper.exe
+
+            Stop-Process -ProcessName Microsoft.SharePoint -Force -ErrorAction SilentlyContinue
+            taskkill /F /IM Microsoft.SharePoint.exe
+        
+            if ($oneDrivePackages) {
+                $confirmOneDrive = [System.Windows.Forms.MessageBox]::Show(
+                    "This may take a while. Are you sure you want to proceed? (THIS HAS NOT BEEN TESTED PROPERLY. THE WORST THAT CAN HAPPEN IS THAT YOU WONT BE ABLE TO REINSTALL ONEDRIVE, WHO CARES)",
+                    "Remove OneDrive?",
+                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                    [System.Windows.Forms.MessageBoxIcon]::Question
+                )
+        
+                if ($confirmOneDrive -eq [System.Windows.Forms.DialogResult]::Yes) {
+                    $Form.text = "WinTool by Alerion - Removing OneDrive..."
+                    $ResultText.text = "Uninstalling OneDrive..."
+        
+                    # Detect the OneDrive folder dynamically
+                    $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
+                    Where-Object { $_.Name -like "OneDrive*" } |
+                    Select-Object -ExpandProperty FullName -First 1
+                    
+                    if ($oneDriveFolder) {
+                        # Inform the user that files will be backed up from the detected folder
+                        $ResultText.text = "Detected OneDrive folder: $oneDriveFolder. Backing up files..."
+                    
+                        # Standard folders and their destinations
+                        $backupMappings = @(
+                            @{ Source = "Desktop"; Destination = "$env:USERPROFILE\Desktop" },
+                            @{ Source = "Documents"; Destination = "$env:USERPROFILE\Documents" },
+                            @{ Source = "Pictures"; Destination = "$env:USERPROFILE\Pictures" },
+                            @{ Source = "Downloads"; Destination = "$env:USERPROFILE\Downloads" },
+                            @{ Source = "Music"; Destination = "$env:USERPROFILE\Music" },
+                            @{ Source = "Videos"; Destination = "$env:USERPROFILE\Videos" },
+                            @{ Source = "Favorites"; Destination = "$env:USERPROFILE\Favorites" }
+                        )
+                    
+                        # Backup standard folders
+                        foreach ($mapping in $backupMappings) {
+                            $source = Join-Path -Path $oneDriveFolder -ChildPath $mapping.Source
+                            $destination = $mapping.Destination
+                            if (Test-Path $source) {
+                                $ResultText.text = "Copying $source to $destination..."
+                                Copy-Item -Path $source\* -Destination $destination -Recurse -Force -ErrorAction SilentlyContinue
+                            }
+                        }
+                    
+                        # Copy any additional folders in OneDrive to the user's profile
+                        $allSubFolders = Get-ChildItem -Path $oneDriveFolder -Directory |
+                            Where-Object { $backupMappings.Source -notcontains $_.Name } # Exclude standard folders already handled
+                        foreach ($subFolder in $allSubFolders) {
+                            $source = $subFolder.FullName
+                            $destination = Join-Path -Path $env:USERPROFILE -ChildPath $subFolder.Name
+                    
+                            # Inform the user and copy the folder
+                            $ResultText.text = "Copying additional folder $source to $destination..."
+                            Copy-Item -Path $source -Destination $destination -Recurse -Force -ErrorAction SilentlyContinue
+                        }
+                    
+                        $ResultText.text = "Backup completed. Standard folders and additional files from OneDrive have been successfully copied."
+                    } else {
+                        $ResultText.text = "No OneDrive folder detected. Skipping file backup."
+                    }
+
+                    # Uninstall all variants of OneDrive using the Uninstall-OneDrive function
+                    Uninstall-OneDrive
+        
+                    # Cleanup leftover files and registry entries
+                    $ResultText.text = "Cleaning up leftover files and registry entries..."
+                    $cleanupPaths = @(
+                        "$env:LOCALAPPDATA\Microsoft\OneDrive",
+                        "$env:LOCALAPPDATA\OneDrive",
+                        "$env:PROGRAMDATA\Microsoft OneDrive",
+                        "$env:SystemDrive\OneDriveTemp",
+                        "C:\Program Files\Microsoft OneDrive",
+                        "C:\Program Files (x86)\Microsoft OneDrive",
+                        "C:\Users\Default\OneDrive",
+                        "$env:USERPROFILE\OneDrive"
+                    )
+        
+                    foreach ($path in $cleanupPaths) {
+                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $path
+                    }
+        
+                    # Delete registry entries
+                    Remove-Item -Path "HKCU:\Software\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
+ 
+                    Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+                    Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Name "System.IsPinnedToNameSpaceTree" -Value 0
+
+                    # Define the path to the OneDrive shortcut in the Start Menu
+                    $shortcutPath = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+
+                    # Check if the shortcut exists and delete it
+                    if (Test-Path $shortcutPath) {
+                        Remove-Item -Path $shortcutPath -Force -ErrorAction SilentlyContinue
+                        Write-Output "OneDrive shortcut deleted successfully."
+                    } else {
+                        Write-Output "OneDrive shortcut not found. No action taken."
+                    }
+        
+                    # Remove scheduled tasks
+                    Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ErrorAction SilentlyContinue |
+                        Unregister-ScheduledTask -Confirm:$false
+        
+                    # Restore User Shell Folders
+                    $ResultText.text = "Restoring user shell folders to default locations..."
+                    $defaultPaths = @{
+                        "{0DDD015D-B06C-45D5-8C4C-F59713854639}" = "%USERPROFILE%\Pictures"      # Pictures
+                        "{374DE290-123F-4565-9164-39C4925E467B}" = "%USERPROFILE%\Downloads"    # Downloads
+                        "{F42EE2D3-909F-4907-8871-4C22FC0BF756}" = "%USERPROFILE%\Documents"    # Documents
+                        "Pictures" = "%USERPROFILE%\Pictures"      # Pictures
+                        "My Pictures" = "%USERPROFILE%\Pictures"      # Pictures
+                        "Downloads" = "%USERPROFILE%\Downloads"    # Downloads
+                        "Documents" = "%USERPROFILE%\Documents"    # Documents
+                        "Music" = "%USERPROFILE%\Music"        # Music
+                        "Videos" = "%USERPROFILE%\Videos"       # Videos
+                        "My Music" = "%USERPROFILE%\Music"        # Music
+                        "My Videos" = "%USERPROFILE%\Videos"       # Videos
+                        "Desktop" = "%USERPROFILE%\Desktop"      # Desktop
+                        "Favorites" = "%USERPROFILE%\Favorites"    # Favorites
+                        "Personal" = "%USERPROFILE%\Personal"    # Favorites
+                    }
+        
+                    foreach ($guid in $defaultPaths.Keys) {
+                        $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+                        $valuePath = $defaultPaths[$guid]
+                        Set-ItemProperty -Path $regPath -Name $guid -Value $valuePath
+                        Write-Output "Restored $guid to $valuePath"
+                    }
+        
+                    $Form.text = "WinTool by Alerion - OneDrive Removed"
+                    $ResultText.text = "OneDrive has been completely removed. User shell folders restored. Ready for the next task!"
+                } else {
+                    $Form.text = "WinTool by Alerion - Operation Cancelled"
+                    $ResultText.text = "OneDrive removal was cancelled. Ready for the next task!"
+                }
+            } else {
+                # Reinstall prompt
+                $confirmReinstall = [System.Windows.Forms.MessageBox]::Show(
+                    "OneDrive is not currently installed. Would you like to reinstall it?",
+                    "Reinstall OneDrive?",
+                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                    [System.Windows.Forms.MessageBoxIcon]::Question
+                )
+        
+                if ($confirmReinstall -eq [System.Windows.Forms.DialogResult]::Yes) {
+                    $Form.text = "WinTool by Alerion - Reinstalling OneDrive..."
+                    $ResultText.text = "Reinstalling OneDrive using winget. Please wait..."
+                    Start-Process -FilePath "winget" -ArgumentList "install --id Microsoft.OneDrive -e --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -Wait
+                    $ResultText.text = "OneDrive has been successfully reinstalled."
+                } else {
+                    $Form.text = "WinTool by Alerion - Reinstallation Cancelled"
+                    $ResultText.text = "OneDrive reinstallation was cancelled. Ready for the next task!"
+                }
+            }
+            
+            Start-Process explorer.exe
+        })
+
         $createShortcutTool.Add_Click({
             # Define paths and icon URL
             $iconPath = 'C:\Windows\heart.ico'
@@ -4273,18 +4356,8 @@ $forcenorkeyboard.Add_Click({
         
             $WshShell = New-Object -comObject WScript.Shell # Needed for creating shortcuts
         
-            # Define potential OneDrive installation paths
-            $oneDrivePaths = @(
-                "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
-                "C:\Program Files\Microsoft OneDrive\OneDrive.exe",
-                "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe"
-            )
-        
-            # Check if OneDrive is installed
-            $oneDriveInstalled = $oneDrivePaths | Where-Object { Test-Path $_ }
-        
             # Determine shortcut location
-            if ($oneDriveInstalled) {
+            if ($oneDrivePackages) {
                 # Detect OneDrive Desktop folder dynamically
                 $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
                     Where-Object { $_.Name -like "OneDrive*" } |
@@ -4321,18 +4394,8 @@ $forcenorkeyboard.Add_Click({
         })
 
 $createShortcutGit.Add_Click({
-    # Define potential OneDrive installation paths
-    $oneDrivePaths = @(
-        "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe",
-        "C:\Program Files\Microsoft OneDrive\OneDrive.exe",
-        "C:\Program Files (x86)\Microsoft OneDrive\OneDrive.exe"
-    )
-
-    # Check if OneDrive is installed
-    $oneDriveInstalled = $oneDrivePaths | Where-Object { Test-Path $_ }
-
     # Determine the desktop path
-    if ($oneDriveInstalled) {
+    if ($oneDrivePackages) {
         # Detect OneDrive Desktop folder dynamically
         $oneDriveFolder = Get-ChildItem -Path "$env:USERPROFILE" -Directory |
             Where-Object { $_.Name -like "OneDrive*" } |
