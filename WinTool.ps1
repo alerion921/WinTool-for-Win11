@@ -83,6 +83,9 @@ function ShowAppSelectionForm {
     $appSelectionForm = New-Object System.Windows.Forms.Form
     $appSelectionForm.Text = "Select Applications to Install"
     $appSelectionForm.StartPosition = "CenterScreen"
+    $appSelectionForm.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+    $appSelectionForm.MaximizeBox = $false # Disable the maximize button
+    $appSelectionForm.MinimizeBox = $true # Optionally keep the minimize button enabled
 
     # Dynamically adjust size based on screen resolution
     $screenWidth = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width
@@ -520,7 +523,7 @@ Function MakeForm {
      $Form.AutoSize = $True
      $Form.AutoScroll = $True
      $Form.FormBorderStyle = 0
-
+     
     # Add Form-Level Buttons
     $xButton = New-Object system.Windows.Forms.Button
     $xButton.Text = "X"
