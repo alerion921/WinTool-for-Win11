@@ -1270,48 +1270,55 @@ function Show-DisplayOptimizationForm {
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
 
+    # Create form
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "Display Optimization"
     $form.Size = New-Object System.Drawing.Size(650, 480)
     $form.StartPosition = "CenterScreen"
 
+    # Intro label
     $lblIntro = New-Object System.Windows.Forms.Label
-    $lblIntro.Text = "Optimize display settings per monitor:"
+    $lblIntro.Text = "Optimize your display settings (multi-monitor detection):"
     $lblIntro.Location = New-Object System.Drawing.Point(10,10)
     $lblIntro.Size     = New-Object System.Drawing.Size(600,20)
     $form.Controls.Add($lblIntro)
 
-    # =========================================================================
-    # Monitor Selection
-    # =========================================================================
-    $lblMon = New-Object System.Windows.Forms.Label
-    $lblMon.Text = "Select Monitor:"
-    $lblMon.Location = New-Object System.Drawing.Point(10,40)
-    $lblMon.Size     = New-Object System.Drawing.Size(120,20)
-    $form.Controls.Add($lblMon)
+    # ---------------------------------------------------------
+    # MONITOR SELECTION
+    # ---------------------------------------------------------
+    $lblMonitor = New-Object System.Windows.Forms.Label
+    $lblMonitor.Text = "Select Monitor:"
+    $lblMonitor.Location = New-Object System.Drawing.Point(10,40)
+    $lblMonitor.Size     = New-Object System.Drawing.Size(120,20)
+    $form.Controls.Add($lblMonitor)
 
     $cmbMonitors = New-Object System.Windows.Forms.ComboBox
     $cmbMonitors.Location = New-Object System.Drawing.Point(130,37)
-    $cmbMonitors.Size     = New-Object System.Drawing.Size(480,21)
+    $cmbMonitors.Size     = New-Object System.Drawing.Size(480, 21)
     $form.Controls.Add($cmbMonitors)
 
-    # We'll store an array of monitor objects.
-    # Each will have: { Name, DeviceID, Resolutions[], RefreshRates[], CurrentResolution, CurrentRefresh }
+    # We'll store an array of "Monitor" objects:
+    # Each object: { Name, DeviceID, Resolutions[], RefreshRates[], CurrentRes, CurrentRefresh, IsHDR }
     $global:MonitorList = @()
 
-    # =========================================================================
-    # HDR (Placeholder)
-    # =========================================================================
+    # ---------------------------------------------------------
+    # HDR CHECKBOX (placeholder)
+    # ---------------------------------------------------------
     $chkHDR = New-Object System.Windows.Forms.CheckBox
     $chkHDR.Text = "Enable HDR (placeholder)"
     $chkHDR.Location = New-Object System.Drawing.Point(10,75)
-    $chkHDR.Size     = New-Object System.Drawing.Size(300,20)
-    $chkHDR.Checked  = $false
+    $chkHDR.Size     = New-Object System.Drawing.Size(250,20)
     $form.Controls.Add($chkHDR)
 
-    # =========================================================================
-    # Resolution
-    # =========================================================================
+    # If you had real detection logic for HDR, do it here:
+    # try {
+    #     $hdrReg = Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\SomeHDRKey" -Name "HdrEnabled" -ErrorAction Stop
+    #     if ($hdrReg.HdrEnabled -eq 1) { $chkHDR.Checked = $true }
+    # } catch {}
+
+    # ---------------------------------------------------------
+    # RESOLUTION
+    # ---------------------------------------------------------
     $lblRes = New-Object System.Windows.Forms.Label
     $lblRes.Text = "Select Resolution:"
     $lblRes.Location = New-Object System.Drawing.Point(10,110)
@@ -1323,9 +1330,9 @@ function Show-DisplayOptimizationForm {
     $cmbResolution.Size     = New-Object System.Drawing.Size(300,21)
     $form.Controls.Add($cmbResolution)
 
-    # =========================================================================
-    # Refresh Rate
-    # =========================================================================
+    # ---------------------------------------------------------
+    # REFRESH RATE
+    # ---------------------------------------------------------
     $lblRR = New-Object System.Windows.Forms.Label
     $lblRR.Text = "Select Refresh Rate (Hz):"
     $lblRR.Location = New-Object System.Drawing.Point(10,145)
@@ -1337,154 +1344,160 @@ function Show-DisplayOptimizationForm {
     $cmbRefreshRate.Size     = New-Object System.Drawing.Size(80,21)
     $form.Controls.Add($cmbRefreshRate)
 
-    # =========================================================================
-    # Gather all possible monitors
-    # =========================================================================
+    # ---------------------------------------------------------
+    # DETECT MONITORS AUTOMATICALLY
+    # ---------------------------------------------------------
     try {
-        # We’ll collect data from:
-        #   Win32_DesktopMonitor (Name, DeviceID)
-        #   Win32_VideoController (CurrentRes, CurrentRefresh, PNPDeviceID)
-        #   WmiMonitorListedSupportedSourceModes (detailed modes)
-        $desktopMons   = Get-CimInstance -ClassName Win32_DesktopMonitor -ErrorAction SilentlyContinue
+        # 1) Win32_VideoController for current resolution, refresh, deviceID
+        # 2) WmiMonitorListedSupportedSourceModes for supported modes
         $videoCtrls    = Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue
-        $supportedModes= Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes -ErrorAction SilentlyContinue
+        $sourceModes   = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes -ErrorAction SilentlyContinue
 
-        # We'll match them by PnPDeviceID or something similar if possible.
-        # Not all systems populate these classes well, especially multi-monitor setups.
+        if ($videoCtrls) {
+            foreach ($vc in $videoCtrls) {
+                $vcName = $vc.Name
+                $vcDev  = $vc.DeviceID
+                $chRes  = $vc.CurrentHorizontalResolution
+                $cvRes  = $vc.CurrentVerticalResolution
+                $cRef   = $vc.CurrentRefreshRate
 
-        foreach ($vc in $videoCtrls) {
-            $vcDevice  = $vc.DeviceID
-            $vcName    = $vc.Name
-            $currHRes  = $vc.CurrentHorizontalResolution
-            $currVRes  = $vc.CurrentVerticalResolution
-            $currRR    = $vc.CurrentRefreshRate
+                # If the resolution is 0 or null, we'll skip
+                if ($chRes -and $cvRes) {
+                    $currResString = "$chRes x $cvRes"
+                }
+                else {
+                    $currResString = $null
+                }
 
-            if (!$currHRes -or !$currVRes) {
-                $currentResString = $null
-            } else {
-                $currentResString = "$currHRes x $currVRes"
-            }
+                # Attempt to find matching WmiMonitor** data
+                # We'll match on the PNPDeviceID from Win32_VideoController
+                $myModes = $sourceModes | Where-Object {
+                    $_.InstanceName -match $vc.PNPDeviceID
+                }
 
-            # Gather the list of supported modes from WmiMonitorListedSupportedSourceModes that might match
-            # The "InstanceName" often has patterns to match with $vc.PNPDeviceID
-            # We'll just take everything for now, or do a partial match:
-            $myModes = $supportedModes | Where-Object {
-                # Attempt naive matching:
-                $_.InstanceName -match $vc.PNPDeviceID
-            }
+                $resList = New-Object System.Collections.Generic.List[string]
+                $rrList  = New-Object System.Collections.Generic.List[int]
 
-            # If we found no matching WmiMonitor, we do a fallback
-            $possibleRes = New-Object System.Collections.Generic.List[String]
-            $possibleRR  = New-Object System.Collections.Generic.List[Int32]
-
-            if ($myModes -and $myModes.Count -gt 0) {
-                foreach ($m in $myModes) {
-                    # Each $m has .VideoModeDescription, .RefreshRate, etc.
-                    if ($m.VideoModeDescription) {
-                        $possibleRes.Add($m.VideoModeDescription) | Out-Null
-                    }
-                    if ($m.RefreshRate -gt 0) {
-                        $possibleRR.Add($m.RefreshRate) | Out-Null
+                if ($myModes) {
+                    foreach ($m in $myModes) {
+                        # Typically .VideoModeDescription is something like "1920 x 1080"
+                        if ($m.VideoModeDescription) {
+                            $resList.Add($m.VideoModeDescription) | Out-Null
+                        }
+                        if ($m.RefreshRate -gt 0) {
+                            $rrList.Add($m.RefreshRate) | Out-Null
+                        }
                     }
                 }
-            }
 
-            # If nothing found, we fallback to some typical sets
-            if ($possibleRes.Count -eq 0) {
-                $possibleRes.AddRange(@("1920 x 1080","1280 x 720","2560 x 1440","3840 x 2160")) | Out-Null
-            }
-            if ($possibleRR.Count -eq 0) {
-                $possibleRR.AddRange(@(60, 75, 120, 144, 165, 240))
-            }
-
-            # Convert to unique + sort
-            $finalRes = $possibleRes | Select-Object -Unique | Sort-Object {
-                # We'll parse "WxH" if possible:
-                if ($_ -match '^(\d+)\s*x\s*(\d+)$') {
-                    [int]$Matches[1] * 10000 + [int]$Matches[2]
+                # If no data found, fallback
+                if ($resList.Count -eq 0) {
+                    $resList.AddRange(@("1920 x 1080","1280 x 720","2560 x 1440","3840 x 2160")) | Out-Null
                 }
-                else { 9999999999 }
-            }
-            $finalRR  = ($possibleRR | Select-Object -Unique | Sort-Object)
+                if ($rrList.Count -eq 0) {
+                    $rrList.AddRange(@(60,75,100,120,144,240)) | Out-Null
+                }
 
-            # Create our object
-            $monObj = [PSCustomObject]@{
-                Name              = $vcName
-                DeviceID          = $vcDevice
-                Resolutions       = $finalRes
-                RefreshRates      = $finalRR
-                CurrentResolution = $currentResString
-                CurrentRefresh    = $currRR
+                # Make them unique + sorted
+                $uniqueRes = $resList | Select-Object -Unique | Sort-Object {
+                    if ($_ -match '^(\d+)\s*x\s*(\d+)$') {
+                        [int]$Matches[1]*10000 + [int]$Matches[2]
+                    }
+                    else { 9999999999 }
+                }
+                $uniqueRR  = ($rrList | Select-Object -Unique | Sort-Object)
+
+                # Create monitor object
+                $monObj = [PSCustomObject]@{
+                    Name              = $vcName
+                    DeviceID          = $vcDev
+                    Resolutions       = $uniqueRes
+                    RefreshRates      = $uniqueRR
+                    CurrentResolution = $currResString
+                    CurrentRefresh    = $cRef
+                    # If you had real HDR detection, store it here:
+                    IsHDR             = $false
+                }
+                $global:MonitorList += $monObj
             }
-            $global:MonitorList += $monObj
+        }
+        else {
+            # If no video controllers found, fallback to one "generic" monitor
+            $global:MonitorList = @(
+                [PSCustomObject]@{
+                    Name              = "Generic Display"
+                    DeviceID          = "DISPLAY1"
+                    Resolutions       = @("1920 x 1080","1280 x 720")
+                    RefreshRates      = @(60,75,120)
+                    CurrentResolution = "1920 x 1080"
+                    CurrentRefresh    = 60
+                    IsHDR             = $false
+                }
+            )
         }
     }
     catch {
-        # If everything fails, we create one fallback
+        # Absolute fallback
         $global:MonitorList = @(
             [PSCustomObject]@{
-                Name              = "Generic Display"
-                DeviceID          = "DISPLAY1"
-                Resolutions       = @("1920 x 1080","1280 x 720","2560 x 1440","3840 x 2160")
-                RefreshRates      = @(60, 75, 120, 144)
+                Name              = "Fallback Display"
+                DeviceID          = "DISPLAY_FALLBACK"
+                Resolutions       = @("1920 x 1080","1280 x 720")
+                RefreshRates      = @(60,75)
                 CurrentResolution = "1920 x 1080"
                 CurrentRefresh    = 60
+                IsHDR             = $false
             }
         )
     }
 
-    # Populate the monitor combo
+    # Populate the monitor dropdown
     $cmbMonitors.Items.Clear()
-    foreach ($mon in $global:MonitorList) {
-        [void]$cmbMonitors.Items.Add($mon.Name)
+    foreach ($m in $global:MonitorList) {
+        $cmbMonitors.Items.Add($m.Name) | Out-Null
     }
     if ($cmbMonitors.Items.Count -gt 0) {
         $cmbMonitors.SelectedIndex = 0
     }
 
-    # =========================================================================
-    # Refresh function
-    # =========================================================================
+    # ---------------------------------------------------------
+    # Helper to refresh the combos based on which monitor is chosen
+    # ---------------------------------------------------------
     function Refresh-SelectedMonitor {
         $cmbResolution.Items.Clear()
         $cmbRefreshRate.Items.Clear()
 
         if ($cmbMonitors.SelectedIndex -ge 0) {
             $monObj = $global:MonitorList[$cmbMonitors.SelectedIndex]
-            # Populate the resolution combo
-            if ($monObj.Resolutions -and $monObj.Resolutions.Count -gt 0) {
-                foreach ($r in $monObj.Resolutions) {
-                    $cmbResolution.Items.Add($r) | Out-Null
-                }
-                # Try to select current
-                if ($monObj.CurrentResolution -and $cmbResolution.Items.Contains($monObj.CurrentResolution)) {
-                    $cmbResolution.SelectedItem = $monObj.CurrentResolution
-                }
-                else {
-                    $cmbResolution.SelectedIndex = 0
-                }
+
+            # (A) Populate resolutions
+            foreach ($r in $monObj.Resolutions) {
+                $cmbResolution.Items.Add($r) | Out-Null
             }
-            else {
-                # fallback
-                $cmbResolution.Items.Add("1920 x 1080") | Out-Null
+            if ($monObj.CurrentResolution -and $cmbResolution.Items.Contains($monObj.CurrentResolution)) {
+                $cmbResolution.SelectedItem = $monObj.CurrentResolution
+            }
+            elseif ($cmbResolution.Items.Count -gt 0) {
                 $cmbResolution.SelectedIndex = 0
             }
 
-            # Populate refresh rates
-            if ($monObj.RefreshRates -and $monObj.RefreshRates.Count -gt 0) {
-                foreach ($rr in $monObj.RefreshRates) {
-                    $cmbRefreshRate.Items.Add($rr) | Out-Null
-                }
-                if ($monObj.CurrentRefresh -and $cmbRefreshRate.Items.Contains($monObj.CurrentRefresh)) {
-                    $cmbRefreshRate.SelectedItem = $monObj.CurrentRefresh
-                }
-                else {
-                    $cmbRefreshRate.SelectedIndex = 0
-                }
+            # (B) Populate refresh rates
+            foreach ($rr in $monObj.RefreshRates) {
+                $cmbRefreshRate.Items.Add($rr) | Out-Null
+            }
+            if ($monObj.CurrentRefresh -and $cmbRefreshRate.Items.Contains($monObj.CurrentRefresh)) {
+                $cmbRefreshRate.SelectedItem = $monObj.CurrentRefresh
+            }
+            elseif ($cmbRefreshRate.Items.Count -gt 0) {
+                $cmbRefreshRate.SelectedIndex = 0
+            }
+
+            # (C) If you track HDR at the per-monitor level:
+            if ($monObj.IsHDR) {
+                $chkHDR.Checked = $true
             }
             else {
-                $cmbRefreshRate.Items.Add(60) | Out-Null
-                $cmbRefreshRate.SelectedIndex = 0
+                $chkHDR.Checked = $false
             }
         }
     }
@@ -1494,44 +1507,51 @@ function Show-DisplayOptimizationForm {
         Refresh-SelectedMonitor
     })
 
-    # Initialize the combos
+    # Initial
     if ($cmbMonitors.Items.Count -gt 0) {
         Refresh-SelectedMonitor
     }
 
-    # =========================================================================
-    # Buttons
-    # =========================================================================
+    # ---------------------------------------------------------
+    # RESET BUTTON (placeholder)
+    # ---------------------------------------------------------
     $btnReset = New-Object System.Windows.Forms.Button
     $btnReset.Text = "Reset Display Settings"
     $btnReset.Location = New-Object System.Drawing.Point(10,200)
     $btnReset.Size     = New-Object System.Drawing.Size(180,30)
     $btnReset.Add_Click({
+        # You could call a custom script or tool here
+        # Example:
+        # Start-Process powershell -ArgumentList '-Command DisplayReset-Defaults'
         [System.Windows.Forms.MessageBox]::Show("Resetting to default display settings (placeholder).","Info")
-        # e.g. Start-Process -FilePath powershell -ArgumentList "DisplayReset-Defaults"
     })
     $form.Controls.Add($btnReset)
 
+    # ---------------------------------------------------------
+    # APPLY BUTTON
+    # ---------------------------------------------------------
     $btnApply = New-Object System.Windows.Forms.Button
     $btnApply.Text = "Apply Changes"
     $btnApply.Location = New-Object System.Drawing.Point(10,240)
     $btnApply.Size     = New-Object System.Drawing.Size(180,30)
     $btnApply.Add_Click({
         try {
-            # HDR 
+            # 1) HDR toggle
             if ($chkHDR.Checked) {
-                # e.g. Start-Process powershell -ArgumentList "Set-DisplayHDR -Enable"
-            } else {
-                # e.g. Start-Process powershell -ArgumentList "Set-DisplayHDR -Disable"
+                # e.g. Start-Process powershell -ArgumentList '-Command Set-DisplayHDR -Enable'
+            }
+            else {
+                # Start-Process powershell -ArgumentList '-Command Set-DisplayHDR -Disable'
             }
 
+            # 2) Resolution + Refresh
             if ($cmbMonitors.SelectedIndex -ge 0) {
                 $monObj = $global:MonitorList[$cmbMonitors.SelectedIndex]
-                $selectedRes = $cmbResolution.SelectedItem
-                $selectedRR  = $cmbRefreshRate.SelectedItem
-                # Placeholders:
-                # Start-Process powershell -ArgumentList "Set-DisplayResolution -Monitor '$($monObj.DeviceID)' -Resolution '$selectedRes'"
-                # Start-Process powershell -ArgumentList "Set-DisplayRefreshRate -Monitor '$($monObj.DeviceID)' -Rate $selectedRR"
+                $chosenRes = $cmbResolution.SelectedItem
+                $chosenRR  = $cmbRefreshRate.SelectedItem
+                # Example placeholders:
+                # Start-Process powershell -ArgumentList "-Command Set-DisplayResolution -Monitor '$($monObj.DeviceID)' -Resolution '$chosenRes'"
+                # Start-Process powershell -ArgumentList "-Command Set-DisplayRefreshRate -Monitor '$($monObj.DeviceID)' -Rate $chosenRR"
             }
 
             [System.Windows.Forms.MessageBox]::Show("Display settings applied (placeholders).","Success")
@@ -1542,6 +1562,9 @@ function Show-DisplayOptimizationForm {
     })
     $form.Controls.Add($btnApply)
 
+    # ---------------------------------------------------------
+    # CLOSE
+    # ---------------------------------------------------------
     $btnClose = New-Object System.Windows.Forms.Button
     $btnClose.Text = "Close"
     $btnClose.Location = New-Object System.Drawing.Point(10,280)
@@ -1551,6 +1574,7 @@ function Show-DisplayOptimizationForm {
     })
     $form.Controls.Add($btnClose)
 
+    # Show form
     $form.ShowDialog()
 }
 
@@ -3356,14 +3380,6 @@ $forcenorkeyboard.Add_Click({
                 $ResultText.text += "Skipped Microsoft Teams removal. `r`n"
             }
         
-            # Enable Highest Performance Power Plan
-            $ResultText.text += "Enabling Highest Performance Power Plan... `r`n"
-            $powerPlanUrl = "https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/Files/Bitsum-Highest-Performance.pow"
-            $powerPlanPath = "$Env:windir\system32\Bitsum-Highest-Performance.pow"
-            Invoke-WebRequest -Uri $powerPlanUrl -OutFile $powerPlanPath -ErrorAction SilentlyContinue
-            powercfg -import $powerPlanPath e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-            powercfg -setactive e6a66b66-d6df-666d-aa66-66f66666eb66 | Out-Null
-        
             # Enable Windows 10 Context Menu
             $ResultText.text += "Restoring Windows 10/Old context menu... `r`n"
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -Force | Out-Null
@@ -3537,16 +3553,6 @@ $forcenorkeyboard.Add_Click({
             } else {
                 $ResultText.text = "No background application settings found to restore. `r`n"
             }
-
-            if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Power Saver")) { powercfg -duplicatescheme a1841308-3541-4fab-bc81-f71556f20b4a }
-            if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Balanced")) { powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e }
-            if (!(Get-CimInstance -Name root\cimv2\power -Class Win32_PowerPlan | Where-Object ElementName -Like "Ultimate Performance")) { powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 }
-            $ResultText.text += "Restored all original power plans: Power Saver, Balanced, and Ultimate Performance."
-
-            # Set Balanced as the active plan
-            powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
-
-            $ResultText.text += "Balanced (Default Option) Power Plan is now set to active. `r`n"
 
             $ResultText.text += "Setting visual effects back to default values (Appearance)... `r`n" 
             Start-Sleep -s 1
