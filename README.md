@@ -6,6 +6,13 @@ Open PowerShell.exe as Administrator.
 
 Run the following command to get started:
 
+Being with (For security removal):
+```
+Set-ExecutionPolicy Unrestricted
+```
+
+Then to run the actual powershell GUI:
+
 ```
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/alerion921/WinTool-for-Win11/main/WinTool.ps1'))
 ```
