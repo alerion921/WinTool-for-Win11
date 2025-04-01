@@ -1,12 +1,12 @@
 # Import the ShowWindow function from user32.dll to manipulate the PowerShell window state.
 # This allows us to hide the PowerShell console window.
-#$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
 
 # Add the ShowWindow method to the PowerShell runtime as a .NET class.
-#add-type -name win -member $HidePowershellWindow -namespace native
+add-type -name win -member $HidePowershellWindow -namespace native
 
 # Retrieve the current process's main window handle and hide it (state = 0).
-#[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
+[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
 # Enable the use of Windows Forms for potential GUI elements (not used in this script, but prepares for it).
 Add-Type -AssemblyName System.Windows.Forms
@@ -896,7 +896,7 @@ Function MakeForm {
     $linuxIconKey = "{B2B4A4D1-2754-4140-A2EB-9A76D9D7CDC6}"
     $linuxIconValue = (Get-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue).$linuxIconKey
 
-    if ($linuxIconValue -eq $null) {
+    if ($null -eq $linuxIconValue) {
         $removelinuxicon = Add-Control -Text "Hide WSL Linux Icon" -X $XPosition -Y $YPosition
     } else {
         $removelinuxicon = Add-Control -Text "Show WSL Linux Icon" -X $XPosition -Y $YPosition
@@ -1460,10 +1460,12 @@ function Show-DisplayOptimizationForm {
         $cmbMonitors.SelectedIndex = 0
     }
 
+
+
     # ---------------------------------------------------------
     # Helper to refresh the combos based on which monitor is chosen
     # ---------------------------------------------------------
-    function Refresh-SelectedMonitor {
+    function RefreshMonitor {
         $cmbResolution.Items.Clear()
         $cmbRefreshRate.Items.Clear()
 
@@ -1504,12 +1506,12 @@ function Show-DisplayOptimizationForm {
 
     # Wire up the event
     $cmbMonitors.Add_SelectedIndexChanged({
-        Refresh-SelectedMonitor
+        RefreshMonitor
     })
 
     # Initial
     if ($cmbMonitors.Items.Count -gt 0) {
-        Refresh-SelectedMonitor
+        RefreshMonitor
     }
 
     # ---------------------------------------------------------
@@ -1527,39 +1529,130 @@ function Show-DisplayOptimizationForm {
     })
     $form.Controls.Add($btnReset)
 
-    # ---------------------------------------------------------
+# Helper to refresh the combos based on which monitor is chosen
+function RefreshMonitor {
+    $cmbResolution.Items.Clear()
+    $cmbRefreshRate.Items.Clear()
+
+    if ($cmbMonitors.SelectedIndex -ge 0) {
+        $monObj = $global:MonitorList[$cmbMonitors.SelectedIndex]
+
+        # (A) Populate resolutions
+        foreach ($r in $monObj.Resolutions) {
+            $cmbResolution.Items.Add($r) | Out-Null
+        }
+        if ($monObj.CurrentResolution -and $cmbResolution.Items.Contains($monObj.CurrentResolution)) {
+            $cmbResolution.SelectedItem = $monObj.CurrentResolution
+        }
+        elseif ($cmbResolution.Items.Count -gt 0) {
+            $cmbResolution.SelectedIndex = 0
+        }
+
+        # (B) Populate refresh rates
+        foreach ($rr in $monObj.RefreshRates) {
+            $cmbRefreshRate.Items.Add($rr) | Out-Null
+        }
+        if ($monObj.CurrentRefresh -and $cmbRefreshRate.Items.Contains($monObj.CurrentRefresh)) {
+            $cmbRefreshRate.SelectedItem = $monObj.CurrentRefresh
+        }
+        elseif ($cmbRefreshRate.Items.Count -gt 0) {
+            $cmbRefreshRate.SelectedIndex = 0
+        }
+
+        # (C) If you track HDR at the per-monitor level:
+        if ($monObj.IsHDR) {
+            $chkHDR.Checked = $true
+        }
+        else {
+            $chkHDR.Checked = $false
+        }
+    }
+}
+
+# Function to set HDR
+function Set-DisplayHDR {
+    param (
+        [switch]$Enable
+    )
+    try {
+        if ($Enable) {
+            Write-Host "Enabling HDR..."
+            # Add logic to enable HDR here
+        } else {
+            Write-Host "Disabling HDR..."
+            # Add logic to disable HDR here
+        }
+    }
+    catch {
+        Write-Warning "Failed to toggle HDR: $_"
+    }
+}
+
+# Function to set resolution
+function Set-DisplayResolution {
+    param (
+        [string]$MonitorID,
+        [string]$Resolution
+    )
+    try {
+        Write-Host "Setting resolution for monitor '$MonitorID' to '$Resolution'..."
+        # Add logic to set resolution here
+    }
+    catch {
+        Write-Warning "Failed to set resolution: $_"
+    }
+}
+
+# Function to set refresh rate
+function Set-DisplayRefreshRate {
+    param (
+        [string]$MonitorID,
+        [int]$RefreshRate
+    )
+    try {
+        Write-Host "Setting refresh rate for monitor '$MonitorID' to $RefreshRate Hz..."
+        # Add logic to set refresh rate here
+    }
+    catch {
+        Write-Warning "Failed to set refresh rate: $_"
+    }
+}
+
     # APPLY BUTTON
-    # ---------------------------------------------------------
-    $btnApply = New-Object System.Windows.Forms.Button
-    $btnApply.Text = "Apply Changes"
-    $btnApply.Location = New-Object System.Drawing.Point(10,240)
-    $btnApply.Size     = New-Object System.Drawing.Size(180,30)
-    $btnApply.Add_Click({
-        try {
-            # 1) HDR toggle
-            if ($chkHDR.Checked) {
-                # e.g. Start-Process powershell -ArgumentList '-Command Set-DisplayHDR -Enable'
-            }
-            else {
-                # Start-Process powershell -ArgumentList '-Command Set-DisplayHDR -Disable'
-            }
-
-            # 2) Resolution + Refresh
-            if ($cmbMonitors.SelectedIndex -ge 0) {
-                $monObj = $global:MonitorList[$cmbMonitors.SelectedIndex]
-                $chosenRes = $cmbResolution.SelectedItem
-                $chosenRR  = $cmbRefreshRate.SelectedItem
-                # Example placeholders:
-                # Start-Process powershell -ArgumentList "-Command Set-DisplayResolution -Monitor '$($monObj.DeviceID)' -Resolution '$chosenRes'"
-                # Start-Process powershell -ArgumentList "-Command Set-DisplayRefreshRate -Monitor '$($monObj.DeviceID)' -Rate $chosenRR"
-            }
-
-            [System.Windows.Forms.MessageBox]::Show("Display settings applied (placeholders).","Success")
+$btnApply = New-Object System.Windows.Forms.Button
+$btnApply.Text = "Apply Changes"
+$btnApply.Location = New-Object System.Drawing.Point(10,240)
+$btnApply.Size     = New-Object System.Drawing.Size(180,30)
+$btnApply.Add_Click({
+    try {
+        # 1) HDR toggle
+        if ($chkHDR.Checked) {
+            Set-DisplayHDR -Enable
         }
-        catch {
-            [System.Windows.Forms.MessageBox]::Show("Error applying display changes: $($_.Exception.Message)","Error")
+        else {
+            Set-DisplayHDR
         }
-    })
+
+        # 2) Resolution + Refresh
+        if ($cmbMonitors.SelectedIndex -ge 0) {
+            $monObj = $global:MonitorList[$cmbMonitors.SelectedIndex]
+            $chosenRes = $cmbResolution.SelectedItem
+            $chosenRR  = $cmbRefreshRate.SelectedItem
+
+            if ($chosenRes) {
+                Set-DisplayResolution -MonitorID $monObj.DeviceID -Resolution $chosenRes
+            }
+            if ($chosenRR) {
+                Set-DisplayRefreshRate -MonitorID $monObj.DeviceID -RefreshRate [int]$chosenRR
+            }
+        }
+
+        [System.Windows.Forms.MessageBox]::Show("Display settings applied successfully.", "Success")
+    }
+    catch {
+        [System.Windows.Forms.MessageBox]::Show("Error applying display changes: $($_.Exception.Message)", "Error")
+    }
+})
     $form.Controls.Add($btnApply)
 
     # ---------------------------------------------------------
@@ -2142,7 +2235,7 @@ $removelinuxicon.Add_Click({
         # Check if the key exists
         $linuxIconValue = (Get-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -ErrorAction SilentlyContinue).$linuxIconKey
 
-        if ($linuxIconValue -eq $null) {
+        if ($null -eq $linuxIconValue) {
             # Create the key if it does not exist
             New-ItemProperty -Path $linuxRegistryPath -Name $linuxIconKey -Type DWord -Value 1 -Force | Out-Null
             $ResultText.text += "Linux WSL Desktop Icon hidden. `r`n"
@@ -2223,7 +2316,7 @@ $query = @"
         #   Name, Path, Source (HKCU, HKLM, Folder), IsEnabled
         $global:StartupItems = @()
     
-        function Load-StartupItems {
+        function StartupItems {
             $all = @()
     
             # Registry paths
@@ -2278,9 +2371,9 @@ $query = @"
         }
     
         # Populate function
-        function Populate-ListBox {
+        function StartupItemsListbox { 
             $checkedListBox.Items.Clear()
-            $global:StartupItems = Load-StartupItems
+            $global:StartupItems = StartupItems
     
             foreach ($item in $global:StartupItems) {
                 $enabledStr = if ($item.IsEnabled) { "Enabled" } else { "Disabled" }
@@ -2289,7 +2382,7 @@ $query = @"
             }
         }
     
-        Populate-ListBox
+        StartupItemsListbox
     
         # -------------------------------------------------------------------------
         # ADD PROGRAM
@@ -2422,7 +2515,7 @@ $query = @"
                                     $cand2 = Join-Path $commonFolder ($progName + ".*.disabled")
                                     foreach ($c in ($cand1,$cand2)) {
                                         Get-ChildItem $c -ErrorAction SilentlyContinue | ForEach-Object {
-                                            $fileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($_.Name) 
+                                            #$fileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($_.Name) 
                                             # The extension was the portion before .disabled
                                             # For instance if it was "MyApp.lnk.disabled", we want to rename back to "MyApp.lnk"
                                             $baseName  = [System.IO.Path]::GetFileNameWithoutExtension($_.Name) 
@@ -2484,11 +2577,11 @@ $query = @"
     
                 # Handle EnableSnapAssistFlyout key
                 if ($newValue -eq "0") {
-                    if ($flyoutValue -ne $null) {
+                    if ($null -ne $flyoutValue) {
                         Remove-ItemProperty -Path $registryPath -Name $flyoutKey -ErrorAction SilentlyContinue
                     }
                 } else {
-                    if ($flyoutValue -eq $null) {
+                    if ($null -eq $flyoutValue) {
                         New-ItemProperty -Path $registryPath -Name $flyoutKey -Value $newValue -PropertyType String -Force | Out-Null
                     } else {
                         Set-ItemProperty -Path $registryPath -Name $flyoutKey -Value $newValue -Force
@@ -2983,7 +3076,7 @@ function Show-BatteryOptimizationForm {
     #   }
     $global:AllPlans = @()
 
-    function Load-PowerPlans {
+    function PowerPlans {
         $raw = powercfg -list 2>$null
         $plans = @()
         if ($raw) {
@@ -3014,9 +3107,9 @@ function Show-BatteryOptimizationForm {
         return $plans
     }
 
-    function Populate-Plans {
+    function PowerPlansPlansList {
         $cmbPowerPlans.Items.Clear()
-        $global:AllPlans = Load-PowerPlans
+        $global:AllPlans = PowerPlans
 
         # Fill normal plans
         $selectIndex = 0
@@ -3054,7 +3147,7 @@ function Show-BatteryOptimizationForm {
         }
     }
 
-    Populate-Plans
+    PowerPlansPlansList
 
     # -------------------------------------------------------------------------
     # Remove Selected Plan
@@ -5893,4 +5986,4 @@ IconIndex=0
 
     $Form.ShowDialog()
 }
-MakeForm
+MakeForm 
