@@ -5986,4 +5986,7 @@ IconIndex=0
 
     $Form.ShowDialog()
 }
+# Make sure ResultText is properly scoped as global
+$global:ResultText = $null
+
 MakeForm 
