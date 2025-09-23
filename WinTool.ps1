@@ -1,9 +1,9 @@
 # Import the ShowWindow function from user32.dll to manipulate the PowerShell window state.
 # This allows us to hide the PowerShell console window.
-$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
+#$HidePowershellWindow = '[DllImport("user32.dll")] public static extern bool ShowWindow(int handle, int state);'
 
 # Add the ShowWindow method to the PowerShell runtime as a .NET class.
-add-type -name win -member $HidePowershellWindow -namespace native
+#add-type -name win -member $HidePowershellWindow -namespace native
 
 # Retrieve the current process's main window handle and hide it (state = 0).
 [native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
@@ -2271,7 +2271,7 @@ $query = @"
         if (-not $bsodEvents) {
             $ResultText.text = "No BSOD events found.`r`n"
         } else {
-            foreach ($event in $bsodEvents) {
+            foreach ($events in $bsodEvents) {
                 $eventData = [xml]$event.ToXml()
                 $eventDetails = $eventData.Event.EventData.Data
     
@@ -2279,7 +2279,7 @@ $query = @"
                 $ResultText.text = "Time Created: $($event.TimeCreated)`r`n"
                 $ResultText.text += "BugCheck Code: $($eventDetails[0].'#text')`r`n"
                 $ResultText.text += "Parameter 1: $($eventDetails[1].'#text')`r`n"
-                $ResultText.text += "Parameter 2: $($eventDetails[2].'#text')`r`n"
+                $ResultText.text += "Parameter 2: $(Details[2].'#text')`r`n"
                 $ResultText.text += "Parameter 3: $($eventDetails[3].'#text')`r`n"
                 $ResultText.text += "Parameter 4: $($eventDetails[4].'#text')`r`n"
                 $ResultText.text += "Dump File: $($eventDetails[5].'#text')`r`n"
