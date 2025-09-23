@@ -6,7 +6,7 @@
 #add-type -name win -member $HidePowershellWindow -namespace native
 
 # Retrieve the current process's main window handle and hide it (state = 0).
-[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
+#[native.win]::ShowWindow(([System.Diagnostics.Process]::GetCurrentProcess() | Get-Process).MainWindowHandle, 0)
 
 # Enable the use of Windows Forms for potential GUI elements (not used in this script, but prepares for it).
 Add-Type -AssemblyName System.Windows.Forms
@@ -277,6 +277,7 @@ function ShowAppSelectionForm {
     $okButton.Size = New-Object System.Drawing.Size(120, 30)
     $okButton.Location = New-Object System.Drawing.Point(10, 5)
     $okButton.Add_Click({
+   
         # Ensure Winget is available before proceeding
         if (-not (EnsureWinget)) {
             return
@@ -336,29 +337,75 @@ function ShowAppSelectionForm {
 
     [void]$appSelectionForm.ShowDialog()
 }
-
 function OneDriveInstalled {
     param (
         [switch]$VerboseOutput
     )
 
-    $oneDrivePackages = winget list | Where-Object { $_ -match "OneDrive" }
-
-    if ($oneDrivePackages) {
-        if ($VerboseOutput) {
-            Write-Output "Detected the following OneDrive packages:"
-            $oneDrivePackages | ForEach-Object { Write-Output $_ }
+    try {
+        # First check if winget is available
+        if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+            if ($VerboseOutput) {
+                Write-Output "Winget not available"
+            }
+            return $null
         }
-        return $oneDrivePackages
-    } else {
+
+        # Use Start-Process to run winget with a timeout
+        $tempFile = [System.IO.Path]::GetTempFileName()
+        $process = Start-Process -FilePath "winget" -ArgumentList "list" -NoNewWindow -PassThru -RedirectStandardOutput $tempFile
+        
+        # Wait for the process with a timeout (5 seconds)
+        $completed = $process.WaitForExit(5000)
+        
+        if (-not $completed) {
+            # Process timed out, kill it
+            $process.Kill()
+            if ($VerboseOutput) {
+                Write-Output "Winget command timed out"
+            }
+            return $null
+        }
+        
+        # Read output and filter
+        $output = Get-Content $tempFile
+        $oneDrivePackages = $output | Where-Object { $_ -match "OneDrive" }
+        
+        # Clean up temp file
+        Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
+        
+        if ($oneDrivePackages) {
+            if ($VerboseOutput) {
+                Write-Output "Detected the following OneDrive packages:"
+                $oneDrivePackages | ForEach-Object { Write-Output $_ }
+            }
+            return $oneDrivePackages
+        } else {
+            return $null
+        }
+    }
+    catch {
+        if ($VerboseOutput) {
+            Write-Output "Error detecting OneDrive: $_"
+        }
+        # Return null on error to allow the script to continue
         return $null
     }
 }
-
 function Uninstall-OneDrive {
-    $ResultText.text = "Starting removal of OneDrive-related packages..."
+    $ResultText.text = "Starting comprehensive removal of OneDrive..."
 
-    # Step 1: Remove AppxPackages for all users
+    # Step 1: Kill OneDrive processes
+    $ResultText.text = "Terminating OneDrive processes..."
+    Stop-Process -Name "OneDrive" -Force -ErrorAction SilentlyContinue
+    Stop-Process -Name "FileCoAuth" -Force -ErrorAction SilentlyContinue
+    Stop-Process -Name "FileSyncHelper" -Force -ErrorAction SilentlyContinue
+    Stop-Process -Name "Microsoft.SharePoint.exe" -Force -ErrorAction SilentlyContinue
+    taskkill /F /IM "OneDrive.exe" 2>$null
+    taskkill /F /IM "FileSyncHelper.exe" 2>$null
+    Start-Sleep -Seconds 2
+
+    # Step 2: Remove AppxPackages for all users
     $ResultText.text = "Removing OneDrive AppxPackages for all users..."
     $appxPackages = Get-AppxPackage -AllUsers | Where-Object { $_.Name -like "*OneDrive*" }
     if ($appxPackages) {
@@ -370,7 +417,7 @@ function Uninstall-OneDrive {
         $ResultText.text = "No OneDrive AppxPackages found for removal."
     }
 
-    # Step 2: Remove Provisioned AppxPackages
+    # Step 3: Remove Provisioned AppxPackages
     $ResultText.text = "Removing provisioned OneDrive packages..."
     $provisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*OneDrive*" }
     if ($provisionedPackages) {
@@ -382,15 +429,88 @@ function Uninstall-OneDrive {
         $ResultText.text = "No provisioned OneDrive packages found for removal."
     }
 
-    # Step 3: Remove OneDrive packages via winget
-    $ResultText.text = "Detecting all installed OneDrive packages using winget..."
+    # Step 4: Run OneDrive's own uninstaller if it exists
+    $ResultText.text = "Running OneDrive's built-in uninstaller..."
+    $oneDriveSetup = "$env:SystemRoot\SysWOW64\OneDriveSetup.exe"
+    if (!(Test-Path $oneDriveSetup)) {
+        $oneDriveSetup = "$env:SystemRoot\System32\OneDriveSetup.exe"
+    }
+    if (Test-Path $oneDriveSetup) {
+        Start-Process -FilePath $oneDriveSetup -ArgumentList "/uninstall" -Wait -NoNewWindow
+        Start-Sleep -Seconds 5
+    }
 
-    # Attempt to uninstall it again
-    $ResultText.text = "Confirming winget has uninstalled the package..."
+    # Step 5: Remove OneDrive packages via winget
+    $ResultText.text = "Uninstalling OneDrive via winget..."
     Start-Process -FilePath "winget" -ArgumentList "uninstall --id Microsoft.OneDrive" -NoNewWindow -Wait
 
+    # Step 6: Clean up OneDrive directories
+    $ResultText.text = "Removing OneDrive directories..."
+    $oneDrivePaths = @(
+        "$env:LOCALAPPDATA\Microsoft\OneDrive",
+        "$env:LOCALAPPDATA\OneDrive",
+        "$env:PROGRAMDATA\Microsoft OneDrive",
+        "$env:SYSTEMDRIVE\OneDriveTemp",
+        "$env:USERPROFILE\OneDrive",
+        "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk",
+        "C:\Program Files\Microsoft OneDrive",
+        "C:\Program Files (x86)\Microsoft OneDrive",
+        "C:\Windows\SysWOW64\OneDriveSetup.exe",
+        "C:\Windows\System32\OneDriveSetup.exe"
+    )
+
+    foreach ($path in $oneDrivePaths) {
+        if (Test-Path $path) {
+            $ResultText.text = "Removing directory: $path"
+            Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue
+        }
+    }
+
+    # Step 7: Remove OneDrive from Explorer sidebar by modifying registry
+    $ResultText.text = "Removing OneDrive from Explorer sidebar..."
+    $registryKeys = @(
+        "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
+    )
+    foreach ($key in $registryKeys) {
+        if (Test-Path $key) {
+            Set-ItemProperty -Path $key -Name "System.IsPinnedToNameSpaceTree" -Value 0 -ErrorAction SilentlyContinue
+        }
+    }
+
+    # Step 8: Remove OneDrive scheduled tasks
+    $ResultText.text = "Removing OneDrive scheduled tasks..."
+    Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
+
+    # Step 9: Disable OneDrive via Group Policy Registry settings
+    $ResultText.text = "Disabling OneDrive via registry settings..."
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
+
+    # Step 10: Remove additional registry entries
+    Remove-Item -Path "HKCU:\Software\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Step 11: Fix User Shell Folders registry entries that might be pointing to OneDrive
+    $ResultText.text = "Restoring default User Shell Folders paths..."
+    $shellFolders = @{
+        "Desktop" = "$env:USERPROFILE\Desktop"
+        "Documents" = "$env:USERPROFILE\Documents"
+        "Pictures" = "$env:USERPROFILE\Pictures"
+        "Music" = "$env:USERPROFILE\Music"
+        "Videos" = "$env:USERPROFILE\Videos"
+        "Downloads" = "$env:USERPROFILE\Downloads"
+    }
+
+    foreach ($folder in $shellFolders.Keys) {
+        $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+        Set-ItemProperty -Path $path -Name $folder -Value $shellFolders[$folder] -ErrorAction SilentlyContinue
+    }
+
     # Final confirmation
-    $ResultText.text = "All detected OneDrive-related packages have been removed."
+    $ResultText.text = "OneDrive has been completely removed from your system. A system restart is recommended."
 }
 
 $oneDrivePackages = OneDriveInstalled -VerboseOutput
@@ -668,6 +788,17 @@ Function MakeForm {
      $Form.AutoSize = $True
      $Form.AutoScroll = $True
      $Form.FormBorderStyle = 0
+
+    # GUI Icon
+    $iconBase64 = [Convert]::ToBase64String((Get-Content "C:\Windows\heart.ico" -Encoding Byte))
+    $iconBytes = [Convert]::FromBase64String($iconBase64)
+    $stream = New-Object IO.MemoryStream($iconBytes, 0, $iconBytes.Length)
+    $stream.Write($iconBytes, 0, $iconBytes.Length)
+    $Form.Icon = [System.Drawing.Icon]::FromHandle((New-Object System.Drawing.Bitmap -Argument $stream).GetHIcon())
+    $Form.Width = $objImage.Width
+    $Form.Height = $objImage.Height
+    $Form.MinimizeBox = $false;
+    $Form.MaximizeBox = $false;
      
     # Add Form-Level Buttons
     $xButton = New-Object system.Windows.Forms.Button
@@ -680,17 +811,6 @@ Function MakeForm {
     $xButton.ForeColor = $backcolor
     $xButton.FlatStyle = "Flat"
     $xButton.FlatAppearance.MouseOverBackColor = $hovercolor
-
-    # GUI Icon
-    $iconBase64 = [Convert]::ToBase64String((Get-Content "C:\Windows\heart.ico" -Encoding Byte))
-    $iconBytes = [Convert]::FromBase64String($iconBase64)
-    $stream = New-Object IO.MemoryStream($iconBytes, 0, $iconBytes.Length)
-    $stream.Write($iconBytes, 0, $iconBytes.Length)
-    $Form.Icon = [System.Drawing.Icon]::FromHandle((New-Object System.Drawing.Bitmap -Argument $stream).GetHIcon())
-    $Form.Width = $objImage.Width
-    $Form.Height = $objImage.Height
-    $Form.MinimizeBox = $false;
-    $Form.MaximizeBox = $false;
 
     $supportWintool = New-Object system.Windows.Forms.Button
     $supportWintool.text = "Support WinTool!"
